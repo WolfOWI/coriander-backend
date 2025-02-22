@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,10 +14,38 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty; // This makes Swagger UI the root page
+    });
+
+    // Section added to open browser automatically when "dotnet run" is executed
+    // ------------------------------------------------------------------------
+    var url = "http://localhost:5121";
+    try
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = url,
+            UseShellExecute = true
+        });
+    }
+    catch
+    {
+        // If Process.Start fails, try platform specific commands
+        if (OperatingSystem.IsMacOS())
+        {
+            Process.Start("open", url);
+        }
+        else if (OperatingSystem.IsLinux())
+        {
+            Process.Start("xdg-open", url);
+        }
+    }
 }
+// ------------------------------------------------------------------------
 
 app.UseHttpsRedirection();
 
