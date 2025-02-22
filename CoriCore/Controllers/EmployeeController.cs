@@ -46,8 +46,8 @@ namespace CoriCore.Controllers
         [HttpPost]
         public ActionResult<Employee> CreateEmployee(Employee employee)
         {
-            employee.Id = employees.Count + 1;
-            employees.Add(employee);
+            employee.Id = employees.Count + 1; // Set ID of new employee
+            employees.Add(employee); // Adding new employee to list
             return CreatedAtAction(nameof(GetEmployees), new { id = employee.Id }, employee);
         }
     }
