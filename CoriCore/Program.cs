@@ -2,6 +2,9 @@ using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add controllers
+builder.Services.AddControllers();
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -67,6 +70,9 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
+
+// Map GET, POST, PUT, DELETE requests to the all controllers
+app.MapControllers();
 
 app.Run();
 
