@@ -1,6 +1,3 @@
-I'll add the content to the README.md file:
-
-````markdown:README.md
 # CoriCore API
 
 A .NET Core Web API project with integrated Swagger UI documentation.
@@ -12,10 +9,11 @@ A .NET Core Web API project with integrated Swagger UI documentation.
 ## Getting Started
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/WolfOWI/coriander-backend.git
 cd coriander-backend/CoriCore
-````
+```
 
 2. Install dependencies:
 
