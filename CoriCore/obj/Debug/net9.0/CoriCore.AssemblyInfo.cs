@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CoriCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8a808c239be19a60cff765214b9c6b8d014230c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e10788ef5cb7eb83a28e8dda397393d625b24de4")]
 [assembly: System.Reflection.AssemblyProductAttribute("CoriCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CoriCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

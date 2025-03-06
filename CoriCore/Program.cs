@@ -1,16 +1,34 @@
 using System.Diagnostics;
+using CoriCore.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add controllers
-builder.Services.AddControllers();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+builder.Services.AddControllers(); // Add controllers
 builder.Services.AddOpenApi();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(); // Adding Swagger Package
+
+// Replace the database connection section with this:
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    // Fallback to environment variables if connection string is not in config
+    var host = Environment.GetEnvironmentVariable("PGHOST");
+    var port = Environment.GetEnvironmentVariable("PGPORT");
+    var user = Environment.GetEnvironmentVariable("PGUSER");
+    var password = Environment.GetEnvironmentVariable("PGPASSWORD");
+    var database = Environment.GetEnvironmentVariable("PGDATABASE");
+
+    connectionString = $"Host={host};Port={port};Username={user};Password={password};Database={database};SSLMode=Require";
+}
+
+// Add the db context to the services
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
+
 
 var app = builder.Build();
 

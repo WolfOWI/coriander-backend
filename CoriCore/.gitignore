@@ -79,3 +79,11 @@ artifacts/
 # Windows specific
 Thumbs.db
 Desktop.ini
+
+# Ignore environment variables file
+.env
+
+# Sensitive configuration files
+appsettings.Development.json
+appsettings.json
+Properties/launchSettings.json

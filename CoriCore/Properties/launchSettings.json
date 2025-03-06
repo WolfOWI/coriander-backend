@@ -8,7 +8,12 @@
       "launchUrl": "",
       "applicationUrl": "http://localhost:5121",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PGHOST": "coriander-db-coriander.c.aivencloud.com",
+        "PGPORT": "23592",
+        "PGUSER": "avnadmin",
+        "PGPASSWORD": "AVNS_d8QRavs1ni7jR3jMI73",
+        "PGDATABASE": "defaultdb"
       }
     },
     "https": {
@@ -16,9 +21,14 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "",
-      "applicationUrl": "https://localhost:7139;http://localhost:5121",
+      "applicationUrl": "http://localhost:5121",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PGHOST": "coriander-db-coriander.c.aivencloud.com",
+        "PGPORT": "23592",
+        "PGUSER": "avnadmin",
+        "PGPASSWORD": "AVNS_d8QRavs1ni7jR3jMI73",
+        "PGDATABASE": "defaultdb"
       }
     }
   }
