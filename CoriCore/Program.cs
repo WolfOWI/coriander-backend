@@ -1,6 +1,10 @@
 using System.Diagnostics;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
+
+// Load environment variables (from .env file)
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
