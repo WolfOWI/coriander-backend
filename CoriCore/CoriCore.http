@@ -1,6 +1,0 @@
-@CoriCore_HostAddress = http://localhost:5121
-
-GET {{CoriCore_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

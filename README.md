@@ -6,7 +6,7 @@ A .NET Core Web API project with integrated Swagger UI documentation.
 
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 
-## Getting Started
+## Setting up the project
 
 1. Clone the repository & navigate to the CoriCore directory:
 
