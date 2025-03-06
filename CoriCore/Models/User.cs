@@ -43,5 +43,8 @@ public class User
 
     [Required] // Not Null
     public UserRole role { get; set; } = UserRole.Unassigned;
+
+    // One-to-one relationship with Admin (a user can optionally be an admin)
+    public Admin? Admin { get; set; }
     
 }

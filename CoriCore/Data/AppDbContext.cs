@@ -15,5 +15,8 @@ public class AppDbContext : DbContext
     // User table
     public DbSet<User> Users { get; set; }
 
+    // Admin table
+    public DbSet<Admin> Admins { get; set; }
+
     // ------------------------------------------------------------------------
 }
