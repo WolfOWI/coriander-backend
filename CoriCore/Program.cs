@@ -1,21 +1,19 @@
 using System.Diagnostics;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
-using DotNetEnv;
+using DotNetEnv; // Library for loading environment variables from a .env file
 
 // Load environment variables (from .env file)
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 builder.Services.AddControllers(); // Add controllers
-builder.Services.AddOpenApi();
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddOpenApi(); // Add OpenAPI support
+builder.Services.AddEndpointsApiExplorer(); // Add endpoints explorer
 builder.Services.AddSwaggerGen(); // Adding Swagger Package
 
-// Replace the database connection section with this:
+// Database connection configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
 {
@@ -33,10 +31,9 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -74,31 +71,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
-// Map GET, POST, PUT, DELETE requests to the all controllers
 app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
