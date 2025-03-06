@@ -47,7 +47,7 @@ namespace CoriCore.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
         {
-            if (id != user.user_id)
+            if (id != user.userId)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace CoriCore.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.user_id }, user);
+            return CreatedAtAction("GetUser", new { id = user.userId }, user);
         }
 
         // DELETE: api/User/5
@@ -102,7 +102,7 @@ namespace CoriCore.Controllers
 
         private bool UserExists(int id)
         {
-            return _context.Users.Any(e => e.user_id == id);
+            return _context.Users.Any(e => e.userId == id);
         }
     }
 }
