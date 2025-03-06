@@ -85,5 +85,3 @@ Desktop.ini
 
 # Sensitive configuration files
 appsettings.Development.json
-appsettings.json
-Properties/launchSettings.json
