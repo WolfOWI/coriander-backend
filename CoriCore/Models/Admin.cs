@@ -11,16 +11,20 @@ namespace CoriCore.Models;
 
 public class Admin
 {
-
-    
-    [Key] // Primary Key
+    // adminId (Primary Key)
+    // ----------------------------------------
+    [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
     public int adminId { get; set; }
+    // ----------------------------------------
 
+    // userId (Foreign Key)
+    // ----------------------------------------
     [Required] // Not Null
-     public int userId { get; set; } // Foreign Key
+    public int userId { get; set; }
 
-    [ForeignKey("userId")] // Explicitly linking UserId to User.UserId
+    [ForeignKey("userId")] // Link UserId to User.UserId
     public User User { get; set; } = null!;
+    // ----------------------------------------
 
 }

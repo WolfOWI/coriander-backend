@@ -20,31 +20,57 @@ public enum UserRole
 
 public class User
 {
-
+    // Properties
+// ========================================
+    // userId (Primary Key)
+    // ----------------------------------------
     [Key] // Primary Key
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
     public int userId { get; set; }
+    // ----------------------------------------
 
-    [Required] // Not Null
+    // fullName (Required)
+    // ----------------------------------------
+    [Required]
     public string fullName { get; set; } = string.Empty;
+    // ----------------------------------------
 
-    [Required] // Not Null
-    [EmailAddress] // Email Address
+    // email (Required)
+    // ----------------------------------------
+    [Required]
+    [EmailAddress]
     public string email { get; set; } = string.Empty;
+    // ----------------------------------------
 
-    // Can be null (if user is logged in with Google)
+    // password (Can be null if user is logged in with Google)
+    // ----------------------------------------
     public string? password { get; set; }
+    // ----------------------------------------
 
-    // Can be null (if user is NOT logged in with Google)
+    // googleId (Can be null if user is NOT logged in with Google)
+    // ----------------------------------------
     public string? googleId { get; set; }
+    // ----------------------------------------
 
-    // Can be null
+    // profilePicture (Can be null)
+    // ----------------------------------------
     public string? profilePicture { get; set; }
+    // ----------------------------------------
 
-    [Required] // Not Null
+    // role (Required)
+    // ----------------------------------------
+    [Required]
     public UserRole role { get; set; } = UserRole.Unassigned;
+    // ----------------------------------------
+    // ========================================
 
+
+    // RELATIONSHIPS
+    // ========================================
     // One-to-one relationship with Admin (a user can optionally be an admin)
+    // ----------------------------------------
     public Admin? Admin { get; set; }
-    
+    // ----------------------------------------
+    // ========================================
+
 }
