@@ -18,5 +18,9 @@ public class AppDbContext : DbContext
     // Admin table
     public DbSet<Admin> Admins { get; set; }
 
+    // Employee table
+    public DbSet<Employee> Employees { get; set; }    
+    
+
     // ------------------------------------------------------------------------
 }
