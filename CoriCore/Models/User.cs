@@ -21,10 +21,10 @@ public enum UserRole
 public class User
 {
     // Properties
-// ========================================
+    // ========================================
     // userId (Primary Key)
     // ----------------------------------------
-    [Key] // Primary Key
+    [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
     public int userId { get; set; }
     // ----------------------------------------
@@ -65,12 +65,19 @@ public class User
     // ========================================
 
 
-    // RELATIONSHIPS
+    // RELATIONSHIPS (Not Foreign Keys)
     // ========================================
+
     // One-to-one relationship with Admin (a user can optionally be an admin)
     // ----------------------------------------
     public Admin? Admin { get; set; }
     // ----------------------------------------
+
+    // One-to-one relationship with Employee (a user can optionally be an employee)
+    // ----------------------------------------
+    public Employee? Employee { get; set; }
+    // ----------------------------------------
+    
     // ========================================
 
 }
