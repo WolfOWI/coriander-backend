@@ -47,7 +47,7 @@ namespace CoriCore.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
-            if (id != employee.employeeId)
+            if (id != employee.EmployeeId)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace CoriCore.Controllers
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEmployee", new { id = employee.employeeId }, employee);
+            return CreatedAtAction("GetEmployee", new { id = employee.EmployeeId }, employee);
         }
 
         // DELETE: api/Employee/5
@@ -102,7 +102,7 @@ namespace CoriCore.Controllers
 
         private bool EmployeeExists(int id)
         {
-            return _context.Employees.Any(e => e.employeeId == id);
+            return _context.Employees.Any(e => e.EmployeeId == id);
         }
     }
 }
