@@ -3,6 +3,7 @@ using System;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250307121340_CapitaliseFix")]
+    partial class CapitaliseFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,27 +111,6 @@ namespace CoriCore.Migrations
                 });
 
             modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
-                {
-                    b.Property<int>("payCycleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("payCycleId"));
-
-                    b.Property<int>("cycleDays")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("payCycleName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("payCycleId");
-
-                    b.ToTable("PayCycles");
-                });
-
-            modelBuilder.Entity("CoriCore.Models.User", b =>
                 {
                     b.Property<int>("payCycleId")
                         .ValueGeneratedOnAdd()

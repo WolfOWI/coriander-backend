@@ -30,102 +30,101 @@ public class Employee
 {
     // Properties
     // ========================================
-    // employeeId (Primary Key)
+    // EmployeeId (Primary Key)
     // ----------------------------------------
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
-    public int employeeId { get; set; }
+    public int EmployeeId { get; set; }
     // ----------------------------------------
 
-    // userId (Foreign Key)
+    // UserId (Foreign Key)
     // ----------------------------------------
     [Required]
-    public int userId { get; set; }
+    public int UserId { get; set; }
 
-    [ForeignKey("userId")]
+    [ForeignKey("UserId")]
     public User User { get; set; } = null!;
     // ----------------------------------------
 
-    // gender
+    // Gender
     // ----------------------------------------
     [Required]
-    public Gender gender { get; set; } = Gender.Other;
+    public Gender Gender { get; set; } = Gender.Other;
     // ----------------------------------------
 
-    // dateOfBirth
+    // DateOfBirth
     // ----------------------------------------
     [Required]
-    public DateOnly dateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
     // ----------------------------------------
 
-    // phone (nullable)
+    // PhoneNumber (nullable)
     // ----------------------------------------
     [Phone]
-    public string phone { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
     // ----------------------------------------
 
-    // jobTitle
+    // JobTitle
     // ----------------------------------------
     [Required]
-    public string jobTitle { get; set; } = string.Empty;
+    public string JobTitle { get; set; } = string.Empty;
     // ----------------------------------------
 
-    // department
+    // Department
     // ----------------------------------------
     [Required]
-    public string department { get; set; } = string.Empty;
+    public string Department { get; set; } = string.Empty;
     // ----------------------------------------
 
-    // salary
+    // SalaryAmount
     // ----------------------------------------
     [Required]
-    public decimal salary { get; set; }
+    public decimal SalaryAmount { get; set; }
     // ----------------------------------------
-    
-    // TODO Add this later (after pay cycle is implemented)
-    // payCycleId (Foreign Key)
+
+    // PayCycleId (Foreign Key)
     // ----------------------------------------
     [Required]
-    public int payCycleId { get; set; }
-    // [ForeignKey("payCycleId")]
-    // public PayCycle PayCycle { get; set; } = null!;
+    public int PayCycleId { get; set; }
+    [ForeignKey("PayCycleId")]
+    public PayCycle PayCycle { get; set; } = null!;
     // ----------------------------------------
 
-    // lastPayday (nullable)
+    // LastPayday (nullable)
     // ----------------------------------------
-    public DateOnly? lastPayday { get; set; }
-    // ----------------------------------------
-
-    // lastPayDayIsPaid (nullable)
-    // ----------------------------------------
-    public bool? lastPayDayIsPaid { get; set; } = false;
+    public DateOnly? LastPayday { get; set; }
     // ----------------------------------------
 
-    // nextPayday (nullable)
+    // LastPayDayIsPaid (nullable)
     // ----------------------------------------
-    public DateOnly? nextPayday { get; set; }
+    public bool? LastPayDayIsPaid { get; set; } = false;
     // ----------------------------------------
 
-    // employType
+    // NextPayday (nullable)
+    // ----------------------------------------
+    public DateOnly? NextPayday { get; set; }
+    // ----------------------------------------
+
+    // EmployType
     // ----------------------------------------
     [Required]
-    public EmployType employType { get; set; } = EmployType.FullTime;
+    public EmployType EmployType { get; set; } = EmployType.FullTime;
     // ----------------------------------------
 
-    // employDate
+    // EmployDate
     // ----------------------------------------
     [Required]
-    public DateOnly employDate { get; set; }
+    public DateOnly EmployDate { get; set; }
     // ----------------------------------------
 
-    // isSuspended
+    // IsSuspended
     // ----------------------------------------
-    public bool isSuspended { get; set; } = false;
+    public bool IsSuspended { get; set; } = false;
     // ----------------------------------------
 
-    // suspensionEndDate (nullable)
+    // SuspensionEndDate (nullable)
     // ----------------------------------------
-    public DateOnly? suspensionEndDate { get; set; }
+    public DateOnly? SuspensionEndDate { get; set; }
     // ----------------------------------------
     // ========================================
 
@@ -152,6 +151,6 @@ public class Employee
     // ----------------------------------------
     // public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
     // ----------------------------------------
-    
+
     // ========================================
 }

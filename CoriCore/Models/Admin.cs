@@ -14,18 +14,18 @@ public class Admin
     // Properties
     // ========================================
 
-    // adminId (Primary Key)
+    // AdminId (Primary Key)
     // ----------------------------------------
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
-    public int adminId { get; set; }
+    public int AdminId { get; set; }
     // ----------------------------------------
 
     // userId (Foreign Key)
     // ----------------------------------------
     [Required] // Not Null
-    public int userId { get; set; }
-    [ForeignKey("userId")] // Link UserId to User.UserId
+    public int UserId { get; set; }
+    [ForeignKey("UserId")] // Link UserId to User.UserId
     public User User { get; set; } = null!;
     // ----------------------------------------
 

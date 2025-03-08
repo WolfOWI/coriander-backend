@@ -22,45 +22,45 @@ public class User
 {
     // Properties
     // ========================================
-    // userId (Primary Key)
+    // UserId (Primary Key)
     // ----------------------------------------
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // Auto-increment
-    public int userId { get; set; }
+    public int UserId { get; set; }
     // ----------------------------------------
 
-    // fullName (Required)
+    // FullName (Required)
     // ----------------------------------------
     [Required]
-    public string fullName { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
     // ----------------------------------------
 
-    // email (Required)
+    // Email (Required)
     // ----------------------------------------
     [Required]
     [EmailAddress]
-    public string email { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
     // ----------------------------------------
 
-    // password (Can be null if user is logged in with Google)
+    // Password (Can be null if user is logged in with Google)
     // ----------------------------------------
-    public string? password { get; set; }
-    // ----------------------------------------
-
-    // googleId (Can be null if user is NOT logged in with Google)
-    // ----------------------------------------
-    public string? googleId { get; set; }
+    public string? Password { get; set; }
     // ----------------------------------------
 
-    // profilePicture (Can be null)
+    // GoogleId (Can be null if user is NOT logged in with Google)
     // ----------------------------------------
-    public string? profilePicture { get; set; }
+    public string? GoogleId { get; set; }
     // ----------------------------------------
 
-    // role (Required)
+    // ProfilePicture (Can be null)
+    // ----------------------------------------
+    public string? ProfilePicture { get; set; }
+    // ----------------------------------------
+
+    // Role (Required)
     // ----------------------------------------
     [Required]
-    public UserRole role { get; set; } = UserRole.Unassigned;
+    public UserRole Role { get; set; } = UserRole.Unassigned;
     // ----------------------------------------
     // ========================================
 
@@ -77,7 +77,7 @@ public class User
     // ----------------------------------------
     public Employee? Employee { get; set; }
     // ----------------------------------------
-    
+
     // ========================================
 
 }

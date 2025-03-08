@@ -47,7 +47,7 @@ namespace CoriCore.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAdmin(int id, Admin admin)
         {
-            if (id != admin.adminId)
+            if (id != admin.AdminId)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace CoriCore.Controllers
             _context.Admins.Add(admin);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAdmin", new { id = admin.adminId }, admin);
+            return CreatedAtAction("GetAdmin", new { id = admin.AdminId }, admin);
         }
 
         // DELETE: api/Admin/5
@@ -102,7 +102,7 @@ namespace CoriCore.Controllers
 
         private bool AdminExists(int id)
         {
-            return _context.Admins.Any(e => e.adminId == id);
+            return _context.Admins.Any(e => e.AdminId == id);
         }
     }
 }
