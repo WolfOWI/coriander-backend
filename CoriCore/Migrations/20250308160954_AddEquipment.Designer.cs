@@ -3,6 +3,7 @@ using System;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250308160954_AddEquipment")]
+    partial class AddEquipment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,18 +27,18 @@ namespace CoriCore.Migrations
 
             modelBuilder.Entity("CoriCore.Models.Admin", b =>
                 {
-                    b.Property<int>("AdminId")
+                    b.Property<int>("adminId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdminId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("adminId"));
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("userId")
                         .HasColumnType("integer");
 
-                    b.HasKey("AdminId");
+                    b.HasKey("adminId");
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("userId")
                         .IsUnique();
 
                     b.ToTable("Admins");
@@ -43,70 +46,67 @@ namespace CoriCore.Migrations
 
             modelBuilder.Entity("CoriCore.Models.Employee", b =>
                 {
-                    b.Property<int>("EmployeeId")
+                    b.Property<int>("employeeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EmployeeId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("employeeId"));
 
-                    b.Property<DateOnly>("DateOfBirth")
+                    b.Property<DateOnly>("dateOfBirth")
                         .HasColumnType("date");
 
-                    b.Property<string>("Department")
+                    b.Property<string>("department")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("EmployDate")
+                    b.Property<DateOnly>("employDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("EmployType")
+                    b.Property<int>("employType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Gender")
+                    b.Property<int>("gender")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsSuspended")
+                    b.Property<bool>("isSuspended")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("JobTitle")
+                    b.Property<string>("jobTitle")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool?>("LastPayDayIsPaid")
+                    b.Property<bool?>("lastPayDayIsPaid")
                         .HasColumnType("boolean");
 
-                    b.Property<DateOnly?>("LastPayday")
+                    b.Property<DateOnly?>("lastPayday")
                         .HasColumnType("date");
 
-                    b.Property<DateOnly?>("NextPayday")
+                    b.Property<DateOnly?>("nextPayday")
                         .HasColumnType("date");
 
-                    b.Property<int>("PayCycleId")
+                    b.Property<int>("payCycleId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("phone")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("SalaryAmount")
+                    b.Property<decimal>("salary")
                         .HasColumnType("numeric");
 
-                    b.Property<DateOnly?>("SuspensionEndDate")
+                    b.Property<DateOnly?>("suspensionEndDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("userId")
                         .HasColumnType("integer");
 
-                    b.HasKey("EmployeeId");
+                    b.HasKey("employeeId");
 
-                    b.HasIndex("PayCycleId");
-
-                    b.HasIndex("UserId")
+                    b.HasIndex("userId")
                         .IsUnique();
 
                     b.ToTable("Employees");
                 });
-
 
             modelBuilder.Entity("CoriCore.Models.Equipment", b =>
                 {
@@ -154,56 +154,35 @@ namespace CoriCore.Migrations
                     b.ToTable("EquipmentCategories");
                 });
 
-            modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
-                {
-                    b.Property<int>("payCycleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("payCycleId"));
-
-                    b.Property<int>("cycleDays")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("payCycleName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("payCycleId");
-
-                    b.ToTable("PayCycles");
-                });
-
             modelBuilder.Entity("CoriCore.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("userId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("userId"));
 
-                    b.Property<string>("Email")
+                    b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("fullName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("GoogleId")
+                    b.Property<string>("googleId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("password")
                         .HasColumnType("text");
 
-                    b.Property<string>("ProfilePicture")
+                    b.Property<string>("profilePicture")
                         .HasColumnType("text");
 
-                    b.Property<int>("Role")
+                    b.Property<int>("role")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId");
+                    b.HasKey("userId");
 
                     b.ToTable("Users");
                 });
@@ -212,7 +191,7 @@ namespace CoriCore.Migrations
                 {
                     b.HasOne("CoriCore.Models.User", "User")
                         .WithOne("Admin")
-                        .HasForeignKey("CoriCore.Models.Admin", "UserId")
+                        .HasForeignKey("CoriCore.Models.Admin", "userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -221,19 +200,11 @@ namespace CoriCore.Migrations
 
             modelBuilder.Entity("CoriCore.Models.Employee", b =>
                 {
-                    b.HasOne("CoriCore.Models.PayCycle", "PayCycle")
-                        .WithMany()
-                        .HasForeignKey("PayCycleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CoriCore.Models.User", "User")
                         .WithOne("Employee")
-                        .HasForeignKey("CoriCore.Models.Employee", "UserId")
+                        .HasForeignKey("CoriCore.Models.Employee", "userId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("PayCycle");
 
                     b.Navigation("User");
                 });
