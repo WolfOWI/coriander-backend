@@ -31,6 +31,15 @@ public class AppDbContext : DbContext
     // EquipmentCategory table
     public DbSet<EquipmentCategory> EquipmentCategories { get; set; }
 
+    // LeaveBalance table
+    public DbSet<LeaveBalance> LeaveBalances { get; set; }
+
+    // LeaveRequest table
+    public DbSet<LeaveRequest> LeaveRequests { get; set; }
+
+    // LeaveType table
+    public DbSet<LeaveType> LeaveTypes { get; set; }
+
 
     // ------------------------------------------------------------------------
 }
