@@ -1,5 +1,5 @@
 // ========================================
-// EMPLOYEE ENTITY
+// EQUIPMENT ENTITY
 // ========================================
 // Iné Smith
 
@@ -23,36 +23,36 @@ public class Equipment
     // EquipmentId (Primary Key)
     // ----------------------------------------
     [Key]
-    public int equipmentId { get; set; }
+    public int EquipmentId { get; set; }
     // ----------------------------------------
 
-    // employeeId (Foreign Key)
+    // EmployeeId (Foreign Key)
     // ----------------------------------------
     [Required]
-    public int employeeId { get; set; }
+    public int EmployeeId { get; set; }
 
-    [ForeignKey("employeeId")]
+    [ForeignKey("EmployeeId")]
     public Employee Employee { get; set; } = null!;
     // ----------------------------------------
 
-    // equipmentCatId (Foreign Key)
+    // EquipmentCatId (Foreign Key)
     // ----------------------------------------
     [Required]
-    public int equipmentCatId { get; set; }
+    public int EquipmentCatId { get; set; }
 
-    [ForeignKey("equipmentCatId")]
+    [ForeignKey("EquipmentCatId")]
     public EquipmentCategory EquipmentCategory { get; set; } = null!;
     // ----------------------------------------
 
-    // assignedDate
+    // AssignedDate
     // ----------------------------------------
     [Required]
-    public DateTime assignedDate { get; set; }
+    public DateTime AssignedDate { get; set; }
     // ----------------------------------------
 
-    // condition
+    // Condition
     // ----------------------------------------
     [Required]
-    public EquipmentCondition condition { get; set; } = EquipmentCondition.New;
+    public EquipmentCondition Condition { get; set; } = EquipmentCondition.New;
     // ----------------------------------------
 }

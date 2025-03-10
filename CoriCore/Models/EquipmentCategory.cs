@@ -1,5 +1,5 @@
 // ========================================
-// EMPLOYEE ENTITY
+// EQUIPMENT CATEGORY ENTITY
 // ========================================
 // Iné Smith
 
@@ -15,16 +15,16 @@ namespace CoriCore.Models;
 
 public class EquipmentCategory
 {
-    // equipmentCatId (Primary Key)
+    // EquipmentCatId (Primary Key)
     // ----------------------------------------
     [Key]
-    public int equipmentCatId { get; set; }
+    public int EquipmentCatId { get; set; }
     // ----------------------------------------
 
-    // equipmentCatName
+    // EquipmentCatName
     // ----------------------------------------
     [Required]
-    public string equipmentCatName { get; set; } = string.Empty;
+    public string EquipmentCatName { get; set; } = string.Empty;
     // ----------------------------------------
 }
 
