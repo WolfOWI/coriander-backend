@@ -1,6 +1,7 @@
 // Ruan Klopper
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,4 +32,10 @@ public class LeaveType
     [Required]
     public required int DefaultDays { get; set; }
     // ---------------------------------------
+
+    // RELATIONSHIPS (Not Foreign Keys)
+    // ========================================
+    public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
+    public ICollection<LeaveBalance>? LeaveBalances { get; set; } = new List<LeaveBalance>();
+    // ========================================
 }

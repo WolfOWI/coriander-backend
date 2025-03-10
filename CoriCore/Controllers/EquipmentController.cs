@@ -47,7 +47,7 @@ namespace CoriCore.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEquipment(int id, Equipment equipment)
         {
-            if (id != equipment.equipmentId)
+            if (id != equipment.EquipmentId)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace CoriCore.Controllers
             _context.Equipments.Add(equipment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEquipment", new { id = equipment.equipmentId }, equipment);
+            return CreatedAtAction("GetEquipment", new { id = equipment.EquipmentId }, equipment);
         }
 
         // DELETE: api/Equipment/5
@@ -102,7 +102,7 @@ namespace CoriCore.Controllers
 
         private bool EquipmentExists(int id)
         {
-            return _context.Equipments.Any(e => e.equipmentId == id);
+            return _context.Equipments.Any(e => e.EquipmentId == id);
         }
     }
 }

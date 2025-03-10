@@ -30,9 +30,9 @@ public class Equipment
     // ----------------------------------------
     [Required]
     public int EmployeeId { get; set; }
-
+    
     [ForeignKey("EmployeeId")]
-    public Employee Employee { get; set; } = null!;
+    public virtual Employee Employee { get; set; } = null!;
     // ----------------------------------------
 
     // EquipmentCatId (Foreign Key)
@@ -41,7 +41,7 @@ public class Equipment
     public int EquipmentCatId { get; set; }
 
     [ForeignKey("EquipmentCatId")]
-    public EquipmentCategory EquipmentCategory { get; set; } = null!;
+    public virtual EquipmentCategory EquipmentCategory { get; set; } = null!;
     // ----------------------------------------
 
     // AssignedDate
@@ -55,4 +55,8 @@ public class Equipment
     [Required]
     public EquipmentCondition Condition { get; set; } = EquipmentCondition.New;
     // ----------------------------------------
+
+
+    
+
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250310074210_PerformanceReviewCreation")]
-    partial class PerformanceReviewCreation
+    [Migration("20250310111456_RenamePaydayProperties")]
+    partial class RenamePaydayProperties
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,14 +75,14 @@ namespace CoriCore.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool?>("LastPayDayIsPaid")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateOnly?>("LastPayday")
-                        .HasColumnType("date");
-
                     b.Property<DateOnly?>("NextPayday")
                         .HasColumnType("date");
+
+                    b.Property<DateOnly?>("PastPayday")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("PastPaydayIsPaid")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("PayCycleId")
                         .HasColumnType("integer");
@@ -108,6 +108,136 @@ namespace CoriCore.Migrations
                         .IsUnique();
 
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.Equipment", b =>
+                {
+                    b.Property<int>("EquipmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EquipmentId"));
+
+                    b.Property<DateTime>("AssignedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Condition")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EquipmentCatId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("EquipmentId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("EquipmentCatId");
+
+                    b.ToTable("Equipments");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.EquipmentCategory", b =>
+                {
+                    b.Property<int>("EquipmentCatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EquipmentCatId"));
+
+                    b.Property<string>("EquipmentCatName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("EquipmentCatId");
+
+                    b.ToTable("EquipmentCategories");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.LeaveBalance", b =>
+                {
+                    b.Property<int>("LeaveBalanceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LeaveBalanceId"));
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LeaveTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RemainingDays")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LeaveBalanceId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("LeaveTypeId");
+
+                    b.ToTable("LeaveBalances");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.LeaveRequest", b =>
+                {
+                    b.Property<int>("LeaveRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LeaveRequestId"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("LeaveTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LeaveRequestId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("LeaveTypeId");
+
+                    b.ToTable("LeaveRequests");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.LeaveType", b =>
+                {
+                    b.Property<int>("LeaveTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LeaveTypeId"));
+
+                    b.Property<int>("DefaultDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LeaveTypeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("LeaveTypeId");
+
+                    b.ToTable("LeaveTypes");
                 });
 
             modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
@@ -224,7 +354,7 @@ namespace CoriCore.Migrations
             modelBuilder.Entity("CoriCore.Models.Employee", b =>
                 {
                     b.HasOne("CoriCore.Models.PayCycle", "PayCycle")
-                        .WithMany()
+                        .WithMany("Employees")
                         .HasForeignKey("PayCycleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -240,16 +370,73 @@ namespace CoriCore.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CoriCore.Models.Equipment", b =>
+                {
+                    b.HasOne("CoriCore.Models.Employee", "Employee")
+                        .WithMany("Equipment")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoriCore.Models.EquipmentCategory", "EquipmentCategory")
+                        .WithMany("Equipment")
+                        .HasForeignKey("EquipmentCatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("EquipmentCategory");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.LeaveBalance", b =>
+                {
+                    b.HasOne("CoriCore.Models.Employee", "Employee")
+                        .WithMany("LeaveBalances")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoriCore.Models.LeaveType", "LeaveType")
+                        .WithMany("LeaveBalances")
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.LeaveRequest", b =>
+                {
+                    b.HasOne("CoriCore.Models.Employee", "Employee")
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoriCore.Models.LeaveType", "LeaveType")
+                        .WithMany("LeaveRequests")
+                        .HasForeignKey("LeaveTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("LeaveType");
+                });
+
             modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>
                 {
                     b.HasOne("CoriCore.Models.Admin", "Admin")
-                        .WithMany()
+                        .WithMany("PerformanceReviews")
                         .HasForeignKey("AdminId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("CoriCore.Models.Employee", "Employee")
-                        .WithMany()
+                        .WithMany("PerformanceReviews")
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -257,6 +444,39 @@ namespace CoriCore.Migrations
                     b.Navigation("Admin");
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.Admin", b =>
+                {
+                    b.Navigation("PerformanceReviews");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.Employee", b =>
+                {
+                    b.Navigation("Equipment");
+
+                    b.Navigation("LeaveBalances");
+
+                    b.Navigation("LeaveRequests");
+
+                    b.Navigation("PerformanceReviews");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.EquipmentCategory", b =>
+                {
+                    b.Navigation("Equipment");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.LeaveType", b =>
+                {
+                    b.Navigation("LeaveBalances");
+
+                    b.Navigation("LeaveRequests");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
+                {
+                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("CoriCore.Models.User", b =>

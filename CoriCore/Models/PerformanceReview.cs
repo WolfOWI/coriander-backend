@@ -32,7 +32,7 @@ public class PerformanceReview
     public int EmployeeId { get; set; }
 
     [ForeignKey("EmployeeId")]
-    public Employee Employee { get; set; } = null!; 
+    public virtual Employee Employee { get; set; } = null!; 
 
     // Review Details
         [MaxLength(255)]

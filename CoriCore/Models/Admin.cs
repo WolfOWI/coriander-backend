@@ -4,6 +4,7 @@
 // Wolf Botha
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,12 +22,12 @@ public class Admin
     public int AdminId { get; set; }
     // ----------------------------------------
 
-    // userId (Foreign Key)
+    // UserId (Foreign Key)
     // ----------------------------------------
-    [Required] // Not Null
+    [Required]
     public int UserId { get; set; }
     [ForeignKey("UserId")] // Link UserId to User.UserId
-    public User User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
     // ----------------------------------------
 
     // ========================================
@@ -35,10 +36,9 @@ public class Admin
     // RELATIONSHIPS (Not Foreign Keys)
     // ========================================
 
-    // TODO Add this later (after PerformanceReview is set up)
     // One-to-many relationship with PerformanceReview (an admin can have zero or many performance reviews)
     // ----------------------------------------
-    // public ICollection<PerformanceReview>? PerformanceReviews { get; set; } = new List<PerformanceReview>();
+    public ICollection<PerformanceReview>? PerformanceReviews { get; set; } = new List<PerformanceReview>();
     // ----------------------------------------
 
     // ========================================

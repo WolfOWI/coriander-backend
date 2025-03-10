@@ -21,7 +21,7 @@ public class LeaveBalance
     public int EmployeeId { get; set; }
 
     [ForeignKey("EmployeeId")]
-    public Employee Employee { get; set; } = null!;
+    public virtual Employee Employee { get; set; } = null!;
     // ---------------------------------------
 
     // ---------------------------------------
@@ -30,7 +30,7 @@ public class LeaveBalance
     public int LeaveTypeId { get; set; }
 
     [ForeignKey("LeaveTypeId")]
-    public LeaveType LeaveType { get; set; } = null!;
+    public virtual LeaveType LeaveType { get; set; } = null!;
     // ---------------------------------------
 
     // ---------------------------------------

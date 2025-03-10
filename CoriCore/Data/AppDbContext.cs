@@ -1,7 +1,6 @@
-using System;
-using CoriCore.Migrations;
-using CoriCore.Models;
 using Microsoft.EntityFrameworkCore;
+using CoriCore.Models;
+using System;
 
 namespace CoriCore.Data;
 

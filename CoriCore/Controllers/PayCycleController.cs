@@ -12,9 +12,14 @@ namespace CoriCore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PayCycleController(AppDbContext context) : ControllerBase
+    public class PayCycleController : ControllerBase
     {
-        private readonly AppDbContext _context = context;
+        private readonly AppDbContext _context;
+
+        public PayCycleController(AppDbContext context)
+        {
+            _context = context;
+        }
 
         // GET: api/PayCycle
         [HttpGet]

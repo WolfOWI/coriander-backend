@@ -23,7 +23,7 @@ namespace CoriCore.Controllers
 
         // GET: api/LeaveBalance
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveBalance>>> GetLeaveBalance()
+        public async Task<ActionResult<IEnumerable<LeaveBalance>>> GetLeaveBalances()
         {
             return await _context.LeaveBalances.ToListAsync();
         }

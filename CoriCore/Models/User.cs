@@ -4,6 +4,7 @@
 // Wolf Botha
 
 using System;
+using System.Collections.Generic;
 // For Data Annotations (Like Primary Key, Auto-increment, etc.)
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -70,12 +71,12 @@ public class User
 
     // One-to-one relationship with Admin (a user can optionally be an admin)
     // ----------------------------------------
-    public Admin? Admin { get; set; }
+    public virtual Admin? Admin { get; set; }
     // ----------------------------------------
 
     // One-to-one relationship with Employee (a user can optionally be an employee)
     // ----------------------------------------
-    public Employee? Employee { get; set; }
+    public virtual Employee? Employee { get; set; }
     // ----------------------------------------
 
     // ========================================

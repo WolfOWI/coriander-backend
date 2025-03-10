@@ -4,6 +4,7 @@
 // Wolf Botha
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -43,7 +44,7 @@ public class Employee
     public int UserId { get; set; }
 
     [ForeignKey("UserId")]
-    public User User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
     // ----------------------------------------
 
     // Gender
@@ -87,17 +88,17 @@ public class Employee
     [Required]
     public int PayCycleId { get; set; }
     [ForeignKey("PayCycleId")]
-    public PayCycle PayCycle { get; set; } = null!;
+    public virtual PayCycle PayCycle { get; set; } = null!;
     // ----------------------------------------
 
-    // LastPayday (nullable)
+    // PastPayday (nullable)
     // ----------------------------------------
-    public DateOnly? LastPayday { get; set; }
+    public DateOnly? PastPayday { get; set; }
     // ----------------------------------------
 
-    // LastPayDayIsPaid (nullable)
+    // PastPaydayIsPaid (nullable)
     // ----------------------------------------
-    public bool? LastPayDayIsPaid { get; set; } = false;
+    public bool? PastPaydayIsPaid { get; set; } = false;
     // ----------------------------------------
 
     // NextPayday (nullable)
@@ -129,28 +130,11 @@ public class Employee
     // ========================================
 
 
-    // TODO Add relationships later
     // RELATIONSHIPS (Not Foreign Keys)
     // ========================================
-    // One-to-many relationship with PerformanceReview (an employee can have zero or many performance reviews)
-    // ----------------------------------------
-    // public ICollection<PerformanceReview>? PerformanceReviews { get; set; } = new List<PerformanceReview>();
-    // ----------------------------------------
-
-    // One-to-many relationship with Equipment (an employee can have zero or many equipment items)
-    // ----------------------------------------
-    // public ICollection<Equipment>? EquipmentItems {get; set;} = new List<Equipment>();
-    // ----------------------------------------
-
-    // One-to-many relationship with LeaveBalance (an employee MUST have many leave balances)
-    // ----------------------------------------
-    // public ICollection<LeaveBalance> LeaveBalances { get; set; } = new List<LeaveBalance>();
-    // ----------------------------------------
-
-    // One-to-many relationship with LeaveRequest (an employee can have zero or many leave requests)
-    // ----------------------------------------
-    // public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
-    // ----------------------------------------
-
+    public ICollection<PerformanceReview>? PerformanceReviews { get; set; } = new List<PerformanceReview>();
+    public ICollection<Equipment>? Equipment { get; set; } = new List<Equipment>();
+    public ICollection<LeaveBalance>? LeaveBalances { get; set; } = new List<LeaveBalance>();
+    public ICollection<LeaveRequest>? LeaveRequests { get; set; } = new List<LeaveRequest>();
     // ========================================
 }

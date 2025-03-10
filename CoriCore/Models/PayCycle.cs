@@ -22,4 +22,9 @@ public class PayCycle
 
     [Required]
     public int CycleDays { get; set; }
+
+    // RELATIONSHIPS (Not Foreign Keys)
+    // ========================================
+    public ICollection<Employee>? Employees { get; set; } = new List<Employee>();
+    // ========================================
 }

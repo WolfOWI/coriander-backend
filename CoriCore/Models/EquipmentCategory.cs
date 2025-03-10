@@ -26,5 +26,10 @@ public class EquipmentCategory
     [Required]
     public string EquipmentCatName { get; set; } = string.Empty;
     // ----------------------------------------
+
+    // RELATIONSHIPS (Not Foreign Keys)
+    // ========================================
+    public ICollection<Equipment>? Equipment { get; set; } = new List<Equipment>(); 
+    // ========================================
 }
 
