@@ -3,6 +3,7 @@ using System;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310071409_ChangePaycycleNames")]
+    partial class ChangePaycycleNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,52 +131,6 @@ namespace CoriCore.Migrations
                     b.ToTable("PayCycles");
                 });
 
-            modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ReviewId"));
-
-                    b.Property<int>("AdminId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DocUrl")
-                        .HasColumnType("text");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("MeetLink")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<int?>("Rating")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("varchar(20)");
-
-                    b.HasKey("ReviewId");
-
-                    b.HasIndex("AdminId");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("PerformanceReviews");
-                });
-
             modelBuilder.Entity("CoriCore.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -235,25 +192,6 @@ namespace CoriCore.Migrations
                     b.Navigation("PayCycle");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>
-                {
-                    b.HasOne("CoriCore.Models.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoriCore.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Admin");
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("CoriCore.Models.User", b =>

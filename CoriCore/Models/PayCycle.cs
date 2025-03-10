@@ -18,7 +18,7 @@ public class PayCycle
 
     [Required]
     [MaxLength(255)]
-    public string PayCycleName { get; set; }
+    public required string PayCycleName { get; set; }
 
     [Required]
     public int CycleDays { get; set; }

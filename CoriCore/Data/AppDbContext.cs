@@ -23,6 +23,9 @@ public class AppDbContext : DbContext
 
     // PayCycle table
     public DbSet<PayCycle> PayCycles { get; set; }
+
+    // PerformanceReview table
+    public DbSet<PerformanceReview> PerformanceReviews { get; set; }
     
 
     // ------------------------------------------------------------------------

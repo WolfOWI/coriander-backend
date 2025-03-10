@@ -12,14 +12,9 @@ namespace CoriCore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PayCycleController : ControllerBase
+    public class PayCycleController(AppDbContext context) : ControllerBase
     {
-        private readonly AppDbContext _context;
-
-        public PayCycleController(AppDbContext context)
-        {
-            _context = context;
-        }
+        private readonly AppDbContext _context = context;
 
         // GET: api/PayCycle
         [HttpGet]
@@ -47,7 +42,7 @@ namespace CoriCore.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPayCycle(int id, PayCycle payCycle)
         {
-            if (id != payCycle.payCycleId)
+            if (id != payCycle.PayCycleId)
             {
                 return BadRequest();
             }
@@ -81,7 +76,7 @@ namespace CoriCore.Controllers
             _context.PayCycles.Add(payCycle);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPayCycle", new { id = payCycle.payCycleId }, payCycle);
+            return CreatedAtAction("GetPayCycle", new { id = payCycle.PayCycleId }, payCycle);
         }
 
         // DELETE: api/PayCycle/5
@@ -102,7 +97,7 @@ namespace CoriCore.Controllers
 
         private bool PayCycleExists(int id)
         {
-            return _context.PayCycles.Any(e => e.payCycleId == id);
+            return _context.PayCycles.Any(e => e.PayCycleId == id);
         }
     }
 }
