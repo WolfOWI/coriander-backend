@@ -14,12 +14,12 @@ public class PayCycle
 
     [Key] //Primary Key
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int payCycleId { get; set; }
+    public int PayCycleId { get; set; }
 
     [Required]
     [MaxLength(255)]
-    public string payCycleName { get; set; }
+    public required string PayCycleName { get; set; }
 
     [Required]
-    public int cycleDays { get; set; }
+    public int CycleDays { get; set; }
 }

@@ -40,6 +40,9 @@ public class AppDbContext : DbContext
     // LeaveType table
     public DbSet<LeaveType> LeaveTypes { get; set; }
 
+    // PerformanceReview table
+    public DbSet<PerformanceReview> PerformanceReviews { get; set; }
+
 
     // ------------------------------------------------------------------------
 }

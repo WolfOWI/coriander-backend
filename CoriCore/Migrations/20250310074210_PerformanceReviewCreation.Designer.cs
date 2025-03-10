@@ -3,6 +3,7 @@ using System;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310074210_PerformanceReviewCreation")]
+    partial class PerformanceReviewCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,53 +108,6 @@ namespace CoriCore.Migrations
                         .IsUnique();
 
                     b.ToTable("Employees");
-                });
-
-
-            modelBuilder.Entity("CoriCore.Models.Equipment", b =>
-                {
-                    b.Property<int>("equipmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("equipmentId"));
-
-                    b.Property<DateTime>("assignedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("condition")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("employeeId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("equipmentCatId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("equipmentId");
-
-                    b.HasIndex("employeeId");
-
-                    b.HasIndex("equipmentCatId");
-
-                    b.ToTable("Equipments");
-                });
-
-            modelBuilder.Entity("CoriCore.Models.EquipmentCategory", b =>
-                {
-                    b.Property<int>("equipmentCatId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("equipmentCatId"));
-
-                    b.Property<string>("equipmentCatName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("equipmentCatId");
-
-                    b.ToTable("EquipmentCategories");
                 });
 
             modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
@@ -282,25 +238,6 @@ namespace CoriCore.Migrations
                     b.Navigation("PayCycle");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CoriCore.Models.Equipment", b =>
-                {
-                    b.HasOne("CoriCore.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("employeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CoriCore.Models.EquipmentCategory", "EquipmentCategory")
-                        .WithMany()
-                        .HasForeignKey("equipmentCatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("EquipmentCategory");
                 });
 
             modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>
