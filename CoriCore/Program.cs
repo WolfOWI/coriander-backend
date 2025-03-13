@@ -8,7 +8,14 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers(); // Add controllers
+// Add controllers & prevent object loops (e.g: employee -> equipment -> employee ...)
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+    });
+
+
 builder.Services.AddOpenApi(); // Add OpenAPI support
 builder.Services.AddEndpointsApiExplorer(); // Add endpoints explorer
 builder.Services.AddSwaggerGen(); // Adding Swagger Package
