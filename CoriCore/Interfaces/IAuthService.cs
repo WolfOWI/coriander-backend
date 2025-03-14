@@ -23,7 +23,7 @@ public interface IAuthService
     // Verify a hashed password
     Task<bool> VerifyPassword(User user, string password);
 
-    // Login a user and return a JWT token
+    // Login a user
     Task<string> LoginUser(string email, string password);
 
     // Check if email exists

@@ -29,15 +29,12 @@ public class AuthServices : IAuthService
 
     // User Registration & Role Assignment
     // ========================================
-    /// <summary>
-    /// Registers a new user in the database
-    /// </summary>
-    /// <param name="user">The user to register</param>
-    /// <returns>True if the user was registered successfully, otherwise false</returns>
+    // Register a new user
     public async Task<bool> RegisterUser(User user)
     {
         User? doesUserExist = await EmailExists(user.Email);
 
+        // If the user already exists, return false
         if (doesUserExist != null)
         {
             return false;
@@ -59,11 +56,7 @@ public class AuthServices : IAuthService
         throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Hashes a password using a secure algorithm
-    /// </summary>
-    /// <param name="password">The password to hash</param>
-    /// <returns>The hashed password</returns>
+    // Hash a password using BCrypt
     public Task<string> HashPassword(string password)
     {
         string HashedPassword = BCrypt.Net.BCrypt.HashPassword(password, 13);
@@ -84,16 +77,13 @@ public class AuthServices : IAuthService
 
     // User Login & Authentication
     // ========================================
-    /// <summary>
-    /// Logs a user in.
-    /// </summary>
-    /// <param name="email">The email of the user to login</param>
-    /// <param name="password">The password of the user to login</param>
-    /// <returns>A message indicating the success or failure of the login attempt</returns>
+    // Login a user (with email & password)
     public async Task<string> LoginUser(string email, string password)
     {
+        // Check if the user exists
         User? user = await EmailExists(email);
 
+        // If the user does not exist
         if (user == null)
         {
             return "User not found";
@@ -102,11 +92,13 @@ public class AuthServices : IAuthService
         // Check if the password is valid
         bool isPasswordValid = await VerifyPassword(user, password);
 
+        // If the password is invalid
         if (!isPasswordValid)
         {
             return "Invalid password";
         }
 
+        // Return a success message
         return "Login successful";
     }
 
@@ -115,12 +107,7 @@ public class AuthServices : IAuthService
         throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Verifies a password against a hashed password
-    /// </summary>
-    /// <param name="user">The user to verify the password for</param>
-    /// <param name="password">The password to verify</param>
-    /// <returns>True if the password is valid, otherwise false</returns>
+    // Verify a User's password against a hashed password
     public Task<bool> VerifyPassword(User user, string password)
     {
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password);
@@ -145,13 +132,10 @@ public class AuthServices : IAuthService
 
     // Helper Methods
     // ========================================
-    /// <summary>
-    /// Checks if a user with the given email exists in the database
-    /// </summary>
-    /// <param name="email">The email to check</param>
-    /// <returns>The user if they exist, otherwise null</returns>
+    // Check if a user with the given email exists in the database
     public async Task<User?> EmailExists(string email)
     {
+        // Get the user from the database
         User? userfromDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
         return userfromDb;
