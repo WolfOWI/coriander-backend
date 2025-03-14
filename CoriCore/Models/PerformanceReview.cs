@@ -1,4 +1,5 @@
 // Kayla Posthumus
+// Small additions by Wolf Botha (after database change)
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -35,6 +36,12 @@ public class PerformanceReview
     public virtual Employee Employee { get; set; } = null!; 
 
     // Review Details
+        [Required]
+        public bool IsOnline { get; set; }
+
+        [MaxLength(255)]
+        public string? MeetLocation { get; set; }
+    
         [MaxLength(255)]
         public string? MeetLink { get; set; }  // Nullable
 
