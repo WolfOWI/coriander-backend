@@ -1,19 +1,29 @@
 using System.Diagnostics;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
-using DotNetEnv; // Library for loading environment variables from a .env file
+using DotNetEnv;
+using CoriCore.Interfaces;
+using CoriCore.Services; // Library for loading environment variables from a .env file
 
 // Load environment variables (from .env file)
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add controllers & prevent object loops (e.g: employee -> equipment -> employee ...)
+// SERVICES
+// ========================================
+// Authentication Service
+builder.Services.AddScoped<IAuthService, AuthServices>();
+// ========================================
+
+// CONTROLLERS
+// ========================================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-    });
+    });// Prevent object loops (e.g: employee -> equipment -> employee ...)
+// ========================================
 
 
 builder.Services.AddOpenApi(); // Add OpenAPI support

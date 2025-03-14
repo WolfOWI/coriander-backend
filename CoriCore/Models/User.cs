@@ -11,7 +11,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CoriCore.Models;
 
-// Enum for User Role
+
+/// <summary>
+/// Enum for user roles (used for role-based access control)
+/// 0 = Unassigned, 1 = Employee, 2 = Admin
+/// </summary>
 public enum UserRole
 {
     Unassigned = 0,
