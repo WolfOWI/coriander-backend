@@ -1,3 +1,5 @@
+// Wolf Botha
+
 using System;
 using CoriCore.Models;
 
@@ -13,13 +15,13 @@ public interface IAuthService
     // ============================
     
     // Register a new user
-    Task<bool> RegisterUser(string email, string password);
+    Task<bool> RegisterUser(User user);
 
     // Hash a password (using a secure algorithm)
-    string HashPassword(string password);
+    Task<string> HashPassword(string password);
 
     // Verify a hashed password
-    bool VerifyPassword(string hashedPassword, string password);
+    Task<bool> VerifyPassword(User user, string password);
 
     // Login a user and return a JWT token
     Task<string> LoginUser(string email, string password);

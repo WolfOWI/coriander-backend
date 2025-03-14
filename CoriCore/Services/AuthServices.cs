@@ -1,7 +1,11 @@
+// Wolf Botha & Ruan Klopper
+
 using System;
 using CoriCore.Data;
 using CoriCore.Interfaces;
 using CoriCore.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace CoriCore.Services;
 
 /// <summary>
@@ -22,42 +26,112 @@ public class AuthServices : IAuthService
     }
     // ========================================
     
+
+    // User Registration & Role Assignment
+    // ========================================
+    /// <summary>
+    /// Registers a new user in the database
+    /// </summary>
+    /// <param name="user">The user to register</param>
+    /// <returns>True if the user was registered successfully, otherwise false</returns>
+    public async Task<bool> RegisterUser(User user)
+    {
+        User? doesUserExist = await EmailExists(user.Email);
+
+        if (doesUserExist != null)
+        {
+            return false;
+        }
+
+        // Hash the password
+        user.Password = await HashPassword(user.Password);
+
+        // Adding the user to the database
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        return true;
+        
+    }
+
+    public Task<bool> RegisterWithGoogle(string googleToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Hashes a password using a secure algorithm
+    /// </summary>
+    /// <param name="password">The password to hash</param>
+    /// <returns>The hashed password</returns>
+    public Task<string> HashPassword(string password)
+    {
+        string HashedPassword = BCrypt.Net.BCrypt.HashPassword(password, 13);
+        return Task.FromResult(HashedPassword);
+    }
+
     public Task<bool> AssignRole(int userId, UserRole role)
     {
         throw new NotImplementedException();
     }
-
-    public Task<User?> EmailExists(string email)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<User?> GetCurrentAuthenticatedUser()
-    {
-        throw new NotImplementedException();
-    }
-
+    
     public Task<UserRole?> GetUserRole(int userId)
     {
         throw new NotImplementedException();
     }
+    // ========================================
+    
 
-    public string HashPassword(string password)
+    // User Login & Authentication
+    // ========================================
+    /// <summary>
+    /// Logs a user in.
+    /// </summary>
+    /// <param name="email">The email of the user to login</param>
+    /// <param name="password">The password of the user to login</param>
+    /// <returns>A message indicating the success or failure of the login attempt</returns>
+    public async Task<string> LoginUser(string email, string password)
     {
-        throw new NotImplementedException();
-    }
+        User? user = await EmailExists(email);
 
-    public Task<bool> IsUserAuthenticated()
-    {
-        throw new NotImplementedException();
-    }
+        if (user == null)
+        {
+            return "User not found";
+        }
 
-    public Task<string> LoginUser(string email, string password)
-    {
-        throw new NotImplementedException();
+        // Check if the password is valid
+        bool isPasswordValid = await VerifyPassword(user, password);
+
+        if (!isPasswordValid)
+        {
+            return "Invalid password";
+        }
+
+        return "Login successful";
     }
 
     public Task<string> LoginWithGoogle(string googleToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Verifies a password against a hashed password
+    /// </summary>
+    /// <param name="user">The user to verify the password for</param>
+    /// <param name="password">The password to verify</param>
+    /// <returns>True if the password is valid, otherwise false</returns>
+    public Task<bool> VerifyPassword(User user, string password)
+    {
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password);
+        return Task.FromResult(isPasswordValid);
+    }
+    // ========================================
+
+    
+    // Session Management
+    // ========================================
+    public Task<bool> RevokeToken(string token)
     {
         throw new NotImplementedException();
     }
@@ -66,24 +140,34 @@ public class AuthServices : IAuthService
     {
         throw new NotImplementedException();
     }
+    // ========================================
 
-    public Task<bool> RegisterUser(string email, string password)
+
+    // Helper Methods
+    // ========================================
+    /// <summary>
+    /// Checks if a user with the given email exists in the database
+    /// </summary>
+    /// <param name="email">The email to check</param>
+    /// <returns>The user if they exist, otherwise null</returns>
+    public async Task<User?> EmailExists(string email)
+    {
+        User? userfromDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        return userfromDb;
+        // If the user exists, return the user
+        // If the user does not exist, return null
+    }
+
+    public Task<User?> GetCurrentAuthenticatedUser()
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> RegisterWithGoogle(string googleToken)
+    public Task<bool> IsUserAuthenticated()
     {
         throw new NotImplementedException();
     }
+    // ========================================
 
-    public Task<bool> RevokeToken(string token)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool VerifyPassword(string hashedPassword, string password)
-    {
-        throw new NotImplementedException();
-    }
 }
