@@ -14,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 // ========================================
 // Authentication Service
 builder.Services.AddScoped<IAuthService, AuthServices>();
+// Employee Service
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 // ========================================
 
 // CONTROLLERS

@@ -3,7 +3,7 @@ using CoriCore.Models;
 
 namespace CoriCore.DTOs;
 
-public class CreateEmployeeDto
+public class EmployeeDto
 {
     public int UserId { get; set; }
     public Gender Gender { get; set; }

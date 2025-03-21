@@ -122,7 +122,7 @@ namespace CoriCore.Controllers
 
 
         [HttpPost("create-from-dto")]
-        public async Task<ActionResult<Employee>> PostEmployeeFromDto(CreateEmployeeDto dto)
+        public async Task<ActionResult<Employee>> PostEmployeeFromDto(EmployeeDto dto)
         {
             var user = await _context.Users.FindAsync(dto.UserId);
             if (user == null)
@@ -154,6 +154,7 @@ namespace CoriCore.Controllers
 
             return CreatedAtAction(nameof(GetEmployee), new { id = employee.EmployeeId }, employee);
         }
-
+        // function: all unassigned users
     }
+        // fucntion: checks if user is unassigned
 }

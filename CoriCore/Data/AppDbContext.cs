@@ -53,7 +53,7 @@ public class AppDbContext : DbContext
             .WithOne(e => e.User)
             .HasForeignKey<Employee>(e => e.UserId);
 
-        // (Optional) One-to-one User ↔ Admin
+        // One-to-one User ↔ Admin
         modelBuilder.Entity<User>()
             .HasOne(u => u.Admin)
             .WithOne(a => a.User)
