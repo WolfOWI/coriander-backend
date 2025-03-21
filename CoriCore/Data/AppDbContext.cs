@@ -42,6 +42,24 @@ public class AppDbContext : DbContext
     // PerformanceReview table
     public DbSet<PerformanceReview> PerformanceReviews { get; set; }
 
+    // Relationships:
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
+        // One-to-one User ↔ Employee
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Employee)
+            .WithOne(e => e.User)
+            .HasForeignKey<Employee>(e => e.UserId);
+
+        // (Optional) One-to-one User ↔ Admin
+        modelBuilder.Entity<User>()
+            .HasOne(u => u.Admin)
+            .WithOne(a => a.User)
+            .HasForeignKey<Admin>(a => a.UserId);
+
+        // ...any other relationships...
+    }
     // ------------------------------------------------------------------------
 }

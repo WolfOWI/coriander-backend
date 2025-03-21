@@ -3,24 +3,22 @@ using CoriCore.Models;
 
 namespace CoriCore.DTOs;
 
-public class CreateEmployeeDTO
+public class CreateEmployeeDto
 {
     public int UserId { get; set; }
-    public CoriCore.Models.Gender Gender { get; set; }
+    public Gender Gender { get; set; }
     public DateOnly DateOfBirth { get; set; }
-    public string PhoneNumber { get; set; } = string.Empty;
-    public string JobTitle { get; set; } = string.Empty;
-    public string Department { get; set; } = string.Empty;
+    public required string PhoneNumber { get; set; }
+    public required string JobTitle { get; set; }
+    public required string Department { get; set; }
     public decimal SalaryAmount { get; set; }
-    public CoriCore.Models.EmployType EmployType { get; set; }
+    public int PayCycleId { get; set; }
+    public DateOnly? PastPayday { get; set; }
+    public bool? PastPaydayIsPaid { get; set; }
+    public DateOnly? NextPayday { get; set; }
+    public EmployType EmployType { get; set; }
     public DateOnly EmployDate { get; set; }
     public bool IsSuspended { get; set; }
     public DateOnly? SuspensionEndDate { get; set; }
-
-    // PayCycle fields
-    public string PayCycleName { get; set; } = string.Empty;
-    public int CycleDays { get; set; }
-
-    // Optionally, Equipment fields (can be an empty list)
-    public List<CreateEquipmentDTO>? Equipment { get; set; } = new List<CreateEquipmentDTO>();
 }
+
