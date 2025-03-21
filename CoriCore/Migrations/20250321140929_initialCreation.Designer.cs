@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250314134012_PerfReviewMeetTypesAdded")]
-    partial class PerfReviewMeetTypesAdded
+    [Migration("20250321140929_initialCreation")]
+    partial class initialCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,7 +84,7 @@ namespace CoriCore.Migrations
                     b.Property<bool?>("PastPaydayIsPaid")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("PayCycleId")
+                    b.Property<int>("PayCycle")
                         .HasColumnType("integer");
 
                     b.Property<string>("PhoneNumber")
@@ -94,15 +94,10 @@ namespace CoriCore.Migrations
                     b.Property<decimal>("SalaryAmount")
                         .HasColumnType("numeric");
 
-                    b.Property<DateOnly?>("SuspensionEndDate")
-                        .HasColumnType("date");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("EmployeeId");
-
-                    b.HasIndex("PayCycleId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -240,27 +235,6 @@ namespace CoriCore.Migrations
                     b.ToTable("LeaveTypes");
                 });
 
-            modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
-                {
-                    b.Property<int>("PayCycleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PayCycleId"));
-
-                    b.Property<int>("CycleDays")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("PayCycleName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.HasKey("PayCycleId");
-
-                    b.ToTable("PayCycles");
-                });
-
             modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>
                 {
                     b.Property<int>("ReviewId")
@@ -360,19 +334,11 @@ namespace CoriCore.Migrations
 
             modelBuilder.Entity("CoriCore.Models.Employee", b =>
                 {
-                    b.HasOne("CoriCore.Models.PayCycle", "PayCycle")
-                        .WithMany("Employees")
-                        .HasForeignKey("PayCycleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CoriCore.Models.User", "User")
                         .WithOne("Employee")
                         .HasForeignKey("CoriCore.Models.Employee", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("PayCycle");
 
                     b.Navigation("User");
                 });
@@ -479,11 +445,6 @@ namespace CoriCore.Migrations
                     b.Navigation("LeaveBalances");
 
                     b.Navigation("LeaveRequests");
-                });
-
-            modelBuilder.Entity("CoriCore.Models.PayCycle", b =>
-                {
-                    b.Navigation("Employees");
                 });
 
             modelBuilder.Entity("CoriCore.Models.User", b =>

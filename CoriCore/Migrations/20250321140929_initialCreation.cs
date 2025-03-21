@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initialCreation : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,20 +38,6 @@ namespace CoriCore.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LeaveTypes", x => x.LeaveTypeId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PayCycles",
-                columns: table => new
-                {
-                    PayCycleId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PayCycleName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    CycleDays = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PayCycles", x => x.PayCycleId);
                 });
 
             migrationBuilder.CreateTable(
@@ -104,24 +90,17 @@ namespace CoriCore.Migrations
                     JobTitle = table.Column<string>(type: "text", nullable: false),
                     Department = table.Column<string>(type: "text", nullable: false),
                     SalaryAmount = table.Column<decimal>(type: "numeric", nullable: false),
-                    PayCycleId = table.Column<int>(type: "integer", nullable: false),
-                    LastPayday = table.Column<DateOnly>(type: "date", nullable: true),
-                    LastPayDayIsPaid = table.Column<bool>(type: "boolean", nullable: true),
+                    PayCycle = table.Column<int>(type: "integer", nullable: false),
+                    PastPayday = table.Column<DateOnly>(type: "date", nullable: true),
+                    PastPaydayIsPaid = table.Column<bool>(type: "boolean", nullable: true),
                     NextPayday = table.Column<DateOnly>(type: "date", nullable: true),
                     EmployType = table.Column<int>(type: "integer", nullable: false),
                     EmployDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    IsSuspended = table.Column<bool>(type: "boolean", nullable: false),
-                    SuspensionEndDate = table.Column<DateOnly>(type: "date", nullable: true)
+                    IsSuspended = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employees", x => x.EmployeeId);
-                    table.ForeignKey(
-                        name: "FK_Employees_PayCycles_PayCycleId",
-                        column: x => x.PayCycleId,
-                        principalTable: "PayCycles",
-                        principalColumn: "PayCycleId",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Employees_Users_UserId",
                         column: x => x.UserId,
@@ -223,6 +202,8 @@ namespace CoriCore.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AdminId = table.Column<int>(type: "integer", nullable: false),
                     EmployeeId = table.Column<int>(type: "integer", nullable: false),
+                    IsOnline = table.Column<bool>(type: "boolean", nullable: false),
+                    MeetLocation = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     MeetLink = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -253,11 +234,6 @@ namespace CoriCore.Migrations
                 table: "Admins",
                 column: "UserId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_PayCycleId",
-                table: "Employees",
-                column: "PayCycleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_UserId",
@@ -332,9 +308,6 @@ namespace CoriCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "Employees");
-
-            migrationBuilder.DropTable(
-                name: "PayCycles");
 
             migrationBuilder.DropTable(
                 name: "Users");

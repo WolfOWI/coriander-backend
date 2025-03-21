@@ -21,9 +21,6 @@ public class AppDbContext : DbContext
     // Employee table
     public DbSet<Employee> Employees { get; set; }
 
-    // PayCycle table
-    public DbSet<PayCycle> PayCycles { get; set; }
-
     // Equipment table
     public DbSet<Equipment> Equipments { get; set; }
 

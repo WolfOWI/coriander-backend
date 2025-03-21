@@ -27,6 +27,14 @@ public enum EmployType
     Intern = 3
 }
 
+// Enum for PayCycle
+public enum PayCycle
+{
+    Monthly = 0,
+    BiWeekly = 1,
+    Weekly = 2,
+}
+
 public class Employee
 {
     // Properties
@@ -83,12 +91,10 @@ public class Employee
     public decimal SalaryAmount { get; set; }
     // ----------------------------------------
 
-    // PayCycleId (Foreign Key)
+    // PayCycle
     // ----------------------------------------
     [Required]
-    public int PayCycleId { get; set; }
-    [ForeignKey("PayCycleId")]
-    public virtual PayCycle PayCycle { get; set; } = null!;
+    public PayCycle PayCycle { get; set; }
     // ----------------------------------------
 
     // PastPayday (nullable)
@@ -123,10 +129,6 @@ public class Employee
     public bool IsSuspended { get; set; } = false;
     // ----------------------------------------
 
-    // SuspensionEndDate (nullable)
-    // ----------------------------------------
-    public DateOnly? SuspensionEndDate { get; set; }
-    // ----------------------------------------
     // ========================================
 
 

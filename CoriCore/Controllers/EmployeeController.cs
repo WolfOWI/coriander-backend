@@ -139,14 +139,13 @@ namespace CoriCore.Controllers
                 JobTitle = dto.JobTitle,
                 Department = dto.Department,
                 SalaryAmount = dto.SalaryAmount,
-                PayCycleId = dto.PayCycleId,
+                PayCycle = dto.PayCycle,
                 PastPayday = dto.PastPayday,
                 PastPaydayIsPaid = dto.PastPaydayIsPaid,
                 NextPayday = dto.NextPayday,
                 EmployType = dto.EmployType,
                 EmployDate = dto.EmployDate,
                 IsSuspended = dto.IsSuspended,
-                SuspensionEndDate = dto.SuspensionEndDate
             };
 
             _context.Employees.Add(employee);
