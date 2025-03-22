@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
 using CoriCore.DTOs;
+using CoriCore.Interfaces;
 
 namespace CoriCore.Controllers
 {
@@ -16,10 +17,12 @@ namespace CoriCore.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(AppDbContext context)
+        public EmployeeController(AppDbContext context, IEmployeeService employeeService)
         {
             _context = context;
+            _employeeService = employeeService;
         }
 
         // GET: api/Employee
@@ -106,54 +109,21 @@ namespace CoriCore.Controllers
             return _context.Employees.Any(e => e.EmployeeId == id);
         }
 
-
-        // Creating an Employee
-        // [HttpPost("CreateEmployeeFull")]
-        // public async Task<ActionResult<Employee>> CreateEmployeeFull(CreateEmployeeDTO dto)
-        // {
-            // 1. Check if user exists
-            // 2. Validate data
-            // 3. Create PayCycle
-            // 4. Assign Leave
-            // 5. Create Employee
-            // 6. Assign Equipment
-            // 7. Return 201 Created
-        // }
-
-
-        [HttpPost("create-from-dto")]
-        public async Task<ActionResult<Employee>> PostEmployeeFromDto(EmployeeDto dto)
+        // POST: api/Employee/register
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterEmployee([FromBody] EmployeeDto employeeDto)
         {
-            var user = await _context.Users.FindAsync(dto.UserId);
-            if (user == null)
-            {
-                return BadRequest($"User with ID {dto.UserId} does not exist.");
-            }
-
-            var employee = new Employee
-            {
-                UserId = dto.UserId,
-                Gender = dto.Gender,
-                DateOfBirth = dto.DateOfBirth,
-                PhoneNumber = dto.PhoneNumber,
-                JobTitle = dto.JobTitle,
-                Department = dto.Department,
-                SalaryAmount = dto.SalaryAmount,
-                PayCycle = dto.PayCycle,
-                PastPayday = dto.PastPayday,
-                PastPaydayIsPaid = dto.PastPaydayIsPaid,
-                NextPayday = dto.NextPayday,
-                EmployType = dto.EmployType,
-                EmployDate = dto.EmployDate,
-                IsSuspended = dto.IsSuspended,
-            };
-
-            _context.Employees.Add(employee);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetEmployee), new { id = employee.EmployeeId }, employee);
+            var result = await _employeeService.RegisterEmployeeAsync(employeeDto);
+            return StatusCode(result.Code, new { result.Message });
         }
-        // function: all unassigned users
+
+        // GET: api/Employee/nextpayday/{payCycle}
+        [HttpGet("nextpayday/{payCycle}")]
+        public async Task<IActionResult> CalculateNextPayday(int payCycle)
+        {
+            var result = await _employeeService.CalculateNextPayDayAsync(payCycle);
+            return StatusCode(result.Code, new { result.Message, result.NextPayDay });
+        }
     }
         // fucntion: checks if user is unassigned
 }

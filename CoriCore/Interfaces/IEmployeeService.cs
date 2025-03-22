@@ -5,31 +5,55 @@ using CoriCore.Models;
 namespace CoriCore.Interfaces
 {
     /// <summary>
-    /// Interface for employee-related business logic operations
+    /// Interface for handling Employee-related services and operations.
     /// </summary>
     public interface IEmployeeService
     {
         /// <summary>
-        /// Validates the employee and pay cycle data
+        /// Validates the provided employee information.
         /// </summary>
-        /// <param name="employeeDto">Employee input object</param>
-        /// <param name="payCycleDto">PayCycle input object</param>
-        /// <returns>201 for valid data, 400 for validation failure</returns>
-        Task<int> ValidateEmployeeInfo(EmployeeDto employeeDto);
+        /// <param name="employeeDto">EmployeeDto object containing employee details.</param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message)
+        /// 201 - Success
+        /// 400 - Missing or incorrect field
+        /// </returns>
+        Task<(int Code, string Message)> ValidateEmployeeInfoAsync(EmployeeDto employeeDto);
 
         /// <summary>
-        /// Creates an employee record and links it to an existing PayCycle
+        /// Calculates the next payday based on the pay cycle.
         /// </summary>
-        /// <param name="employeeDto">Employee data including PayCycleId</param>
-        /// <returns>201: success, 400: error message</returns>
-        Task<(bool Success, string Message)> CreateEmployee(EmployeeDto employeeDto);
+        /// <param name="payCycle">
+        /// PayCycle int values:
+        /// 0 = Monthly,
+        /// 1 = Bi-Weekly,
+        /// 2 = Weekly
+        /// </param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message, DateOnly NextPayDay)
+        /// </returns>
+        Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle);
 
         /// <summary>
-        /// Registers a new employee, performing full validation and pay cycle creation
+        /// Creates a new employee record.
         /// </summary>
-        /// <param name="employeeDto">Employee input object</param>
-        /// <param name="payCycleDto">PayCycle input object</param>
-        /// <returns>201: Employee Successfully registered, 400: Corresponding error</returns>
-        Task<(bool Success, string Message)> RegisterEmployee(EmployeeDto employeeDto);
+        /// <param name="employeeDto">EmployeeDto object containing employee details.</param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message)
+        /// 201 - Registered Employee
+        /// 400 - Invalid data with corresponding error message
+        /// </returns>
+        Task<(int Code, string Message)> CreateEmployeeAsync(EmployeeDto employeeDto);
+
+        /// <summary>
+        /// Registers a new employee by processing and validating data, setting roles, and creating the record.
+        /// </summary>
+        /// <param name="employeeDto">EmployeeDto object containing employee details.</param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message)
+        /// 201 - Employee Successfully registered
+        /// 400 - Corresponding error code from validation or creation step
+        /// </returns>
+        Task<(int Code, string Message)> RegisterEmployeeAsync(EmployeeDto employeeDto);
     }
 }
