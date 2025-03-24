@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
+using CoriCore.DTOs;
+using CoriCore.Interfaces;
 
 namespace CoriCore.Controllers
 {
@@ -15,11 +17,40 @@ namespace CoriCore.Controllers
     public class LeaveBalanceController : ControllerBase
     {
         private readonly AppDbContext _context;
-
-        public LeaveBalanceController(AppDbContext context)
+        private readonly ILeaveBalanceService _leaveBalanceService;
+        public LeaveBalanceController(AppDbContext context, ILeaveBalanceService leaveBalanceService)
         {
             _context = context;
+            _leaveBalanceService = leaveBalanceService;
         }
+
+        /// <summary>
+        /// Get all leave balances (with their types) by employee id
+        /// </summary>
+        /// <param name="employeeId">The id of the employee</param>
+        /// <returns>A list of leave balances</returns>
+        // GET: api/LeaveBalance/employee/{employeeId}
+        [HttpGet("employee/{employeeId}")]
+        public async Task<ActionResult<List<LeaveBalanceDTO>>> GetLeaveBalancesByEmployeeId(int employeeId)
+        {
+            var leaveBalances = await _leaveBalanceService.GetAllLeaveBalancesByEmployeeId(employeeId);
+            return Ok(leaveBalances);
+        }
+
+        /// <summary>
+        /// Create all default leave balances for a (new) employee
+        /// </summary>
+        /// <param name="employeeId">The id of the employee</param>
+        /// <returns>A boolean indicating the success or failure of the operation</returns>
+        // POST: api/LeaveBalance/default/employee/{employeeId}
+        [HttpPost("default/employee/{employeeId}")]
+        public async Task<ActionResult<bool>> CreateDefaultLeaveBalances(int employeeId)
+        {
+            var result = await _leaveBalanceService.CreateDefaultLeaveBalances(employeeId);
+            return Ok(result);
+        }
+
+        // AUTO GENERATED ENDPOINTS BELOW:
 
         // GET: api/LeaveBalance
         [HttpGet]

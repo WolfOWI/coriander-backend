@@ -18,6 +18,8 @@ builder.Services.AddScoped<IAuthService, AuthServices>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 // User service
 builder.Services.AddScoped<IUserService, UserService>();
+// Leave Balance Service
+builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 // ========================================
 
 // CONTROLLERS
