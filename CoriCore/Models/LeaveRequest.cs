@@ -61,4 +61,12 @@ public class LeaveRequest
     [Required]
     public LeaveStatus Status { get; set; } = LeaveStatus.Pending;
     // ---------------------------------------
+
+    // ---------------------------------------
+    // CreatedAt - DateTime
+    [Required]
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    // ---------------------------------------
+    
+    
 }
