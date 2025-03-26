@@ -32,7 +32,7 @@ namespace CoriCore.Interfaces
         /// <returns>
         /// Tuple result: (int Code, string Message, DateOnly NextPayDay)
         /// </returns>
-        Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle);
+        // Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle);
 
         /// <summary>
         /// Creates a new employee record.

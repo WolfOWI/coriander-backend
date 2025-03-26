@@ -33,19 +33,19 @@ namespace CoriCore.Services
             return (201, "Validation successful");
         }
 
-        public async Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle)
-        {
-            var today = DateOnly.FromDateTime(DateTime.Today);
-            DateOnly nextPayDay = payCycle switch
-            {
-                (int)PayCycle.Monthly => new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month)),
-                (int)PayCycle.Weekly => today.AddDays(7 - (int)today.DayOfWeek),
-                (int)PayCycle.BiWeekly => today.AddDays(14 - (int)today.DayOfWeek),
-                _ => today
-            };
+        // public async Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle)
+        // {
+        //     var today = DateOnly.FromDateTime(DateTime.Today);
+        //     DateOnly nextPayDay = payCycle switch
+        //     {
+        //         (int)PayCycle.Monthly => new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month)),
+        //         (int)PayCycle.Weekly => today.AddDays(7 - (int)today.DayOfWeek),
+        //         (int)PayCycle.BiWeekly => today.AddDays(14 - (int)today.DayOfWeek),
+        //         _ => today
+        //     };
 
-            return (201, "Next payday calculated successfully", nextPayDay);
-        }
+        //     return (201, "Next payday calculated successfully", nextPayDay);
+        // }
 
         public async Task<(int Code, string Message)> CreateEmployeeAsync(EmployeeDto dto)
         {
@@ -63,9 +63,7 @@ namespace CoriCore.Services
                 Department = dto.Department,
                 SalaryAmount = dto.SalaryAmount,
                 PayCycle = dto.PayCycle,
-                PastPayday = dto.PastPayday,
-                PastPaydayIsPaid = dto.PastPaydayIsPaid,
-                NextPayday = dto.NextPayday ?? (await CalculateNextPayDayAsync((int)dto.PayCycle)).NextPayDay,
+                LastPaidDate = dto.LastPaidDate,
                 EmployType = dto.EmployType,
                 EmployDate = dto.EmployDate,
                 IsSuspended = dto.IsSuspended
@@ -86,8 +84,8 @@ namespace CoriCore.Services
             if (validation.Code != 201)
                 return validation;
 
-            var paydayResult = await CalculateNextPayDayAsync((int)dto.PayCycle);
-            dto.NextPayday = paydayResult.NextPayDay;
+            // var paydayResult = await CalculateNextPayDayAsync((int)dto.PayCycle);
+            // dto.NextPayday = paydayResult.NextPayDay;
 
             var roleSet = await _userService.SetUserRoleAsync(dto.UserId, (int)UserRole.Employee);
             if (roleSet != 201)

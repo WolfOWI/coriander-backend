@@ -13,9 +13,7 @@ public class EmployeeDto
     public required string Department { get; set; }
     public decimal SalaryAmount { get; set; }
     public PayCycle PayCycle { get; set; }
-    public DateOnly? PastPayday { get; set; }
-    public bool? PastPaydayIsPaid { get; set; }
-    public DateOnly? NextPayday { get; set; }
+    public DateOnly? LastPaidDate { get; set; }
     public EmployType EmployType { get; set; }
     public DateOnly EmployDate { get; set; }
     public bool IsSuspended { get; set; }

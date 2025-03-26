@@ -97,19 +97,10 @@ public class Employee
     public PayCycle PayCycle { get; set; }
     // ----------------------------------------
 
-    // PastPayday (nullable)
+    // LastPaidDate (nullable)
     // ----------------------------------------
-    public DateOnly? PastPayday { get; set; }
-    // ----------------------------------------
-
-    // PastPaydayIsPaid (nullable)
-    // ----------------------------------------
-    public bool? PastPaydayIsPaid { get; set; } = false;
-    // ----------------------------------------
-
-    // NextPayday (nullable)
-    // ----------------------------------------
-    public DateOnly? NextPayday { get; set; }
+    [Column(TypeName = "date")]
+    public DateOnly? LastPaidDate { get; set; }
     // ----------------------------------------
 
     // EmployType

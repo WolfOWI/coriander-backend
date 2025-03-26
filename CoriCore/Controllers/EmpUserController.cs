@@ -44,12 +44,10 @@ namespace CoriCore.Controllers
                     Department = e.Department,
                     SalaryAmount = e.SalaryAmount,
                     PayCycle = e.PayCycle,
-                    PastPayday = e.PastPayday,
-                    PastPaydayIsPaid = e.PastPaydayIsPaid,
-                    NextPayday = e.NextPayday,
+                    LastPaidDate = e.LastPaidDate,
                     EmployType = e.EmployType,
                     EmployDate = e.EmployDate,
-                    IsSuspended = e.IsSuspended
+                    IsSuspended = e.IsSuspended,
                 })
                 .ToListAsync();
 

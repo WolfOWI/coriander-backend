@@ -118,12 +118,12 @@ namespace CoriCore.Controllers
         }
 
         // GET: api/Employee/nextpayday/{payCycle}
-        [HttpGet("nextpayday/{payCycle}")]
-        public async Task<IActionResult> CalculateNextPayday(int payCycle)
-        {
-            var result = await _employeeService.CalculateNextPayDayAsync(payCycle);
-            return StatusCode(result.Code, new { result.Message, result.NextPayDay });
-        }
+        // [HttpGet("nextpayday/{payCycle}")]
+        // public async Task<IActionResult> CalculateNextPayday(int payCycle)
+        // {
+        //     var result = await _employeeService.CalculateNextPayDayAsync(payCycle);
+        //     return StatusCode(result.Code, new { result.Message, result.NextPayDay });
+        // }
     }
         // fucntion: checks if user is unassigned
 }
