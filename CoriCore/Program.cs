@@ -22,6 +22,18 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 // ========================================
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
+
 // CONTROLLERS
 // ========================================
 builder.Services.AddControllers()
@@ -91,6 +103,8 @@ if (app.Environment.IsDevelopment())
     }
 }
 // ------------------------------------------------------------------------
+
+app.UseCors("AllowLocalhost");
 
 app.UseHttpsRedirection();
 
