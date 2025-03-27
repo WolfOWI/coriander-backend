@@ -20,6 +20,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IUserService, UserService>();
 // Leave Balance Service
 builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
+// EmpUser Service
+builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // ========================================
 
 // CORS

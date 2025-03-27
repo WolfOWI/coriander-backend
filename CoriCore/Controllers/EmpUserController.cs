@@ -1,5 +1,6 @@
 using CoriCore.Data;
 using CoriCore.DTOs;
+using CoriCore.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +11,15 @@ namespace CoriCore.Controllers
     [ApiController]
     public class EmpUserController : ControllerBase
     {
-        private readonly AppDbContext _context;
 
-        public EmpUserController(AppDbContext context)
+        // Dependency Injection
+        private readonly AppDbContext _context;
+        private readonly IEmpUserService _empUserService;
+
+        public EmpUserController(AppDbContext context, IEmpUserService empUserService)
         {
             _context = context;
+            _empUserService = empUserService;
         }
 
         /// <summary>
@@ -22,35 +27,9 @@ namespace CoriCore.Controllers
         /// </summary>
         /// <returns>List of EmpUserDTO</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EmpUserDTO>>> GetAllEmpUser()
+        public async Task<ActionResult<IEnumerable<EmpUserDTO>>> GetAllEmpUsers()
         {
-            var empUsers = await _context.Employees
-                .Include(e => e.User)
-                .Select(e => new EmpUserDTO
-                {
-                    // User Information
-                    UserId = e.UserId,
-                    FullName = e.User.FullName,
-                    Email = e.User.Email,
-                    ProfilePicture = e.User.ProfilePicture,
-                    Role = e.User.Role,
-
-                    // Employee Information
-                    EmployeeId = e.EmployeeId,
-                    Gender = e.Gender,
-                    DateOfBirth = e.DateOfBirth,
-                    PhoneNumber = e.PhoneNumber,
-                    JobTitle = e.JobTitle,
-                    Department = e.Department,
-                    SalaryAmount = e.SalaryAmount,
-                    PayCycle = e.PayCycle,
-                    LastPaidDate = e.LastPaidDate,
-                    EmployType = e.EmployType,
-                    EmployDate = e.EmployDate,
-                    IsSuspended = e.IsSuspended,
-                })
-                .ToListAsync();
-
+            var empUsers = await _empUserService.GetAllEmpUsers();
             return Ok(empUsers);
         }
     }
