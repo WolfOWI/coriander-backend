@@ -37,19 +37,6 @@ namespace CoriCore.Controllers
             return Ok(leaveBalances);
         }
 
-        /// <summary>
-        /// Create all default leave balances for a (new) employee
-        /// </summary>
-        /// <param name="employeeId">The id of the employee</param>
-        /// <returns>A boolean indicating the success or failure of the operation</returns>
-        // POST: api/LeaveBalance/default/employee/{employeeId}
-        [HttpPost("default/employee/{employeeId}")]
-        public async Task<ActionResult<bool>> CreateDefaultLeaveBalances(int employeeId)
-        {
-            var result = await _leaveBalanceService.CreateDefaultLeaveBalances(employeeId);
-            return Ok(result);
-        }
-
         // AUTO GENERATED ENDPOINTS BELOW:
 
         // GET: api/LeaveBalance

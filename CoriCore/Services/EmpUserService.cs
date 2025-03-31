@@ -48,7 +48,7 @@ public class EmpUserService : IEmpUserService
 
 
     // Get EmpUser by ID
-    public async Task<EmpUserDTO> GetEmpUserById(int id)
+    public async Task<EmpUserDTO> GetEmpUserByEmpId(int id)
     {
         var empUser = await _context.Employees
             .Include(e => e.User)

@@ -43,7 +43,7 @@ namespace CoriCore.Controllers
         {
             try
             {
-                var empUser = await _empUserService.GetEmpUserById(id);
+                var empUser = await _empUserService.GetEmpUserByEmpId(id);
                 return Ok(empUser);
             }
             catch (Exception ex)

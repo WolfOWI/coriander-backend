@@ -10,11 +10,12 @@ namespace CoriCore.Services
     {
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
-
-        public EmployeeService(AppDbContext context, IUserService userService)
+        private readonly ILeaveBalanceService _leaveBalanceService;
+        public EmployeeService(AppDbContext context, IUserService userService, ILeaveBalanceService leaveBalanceService)
         {
             _context = context;
             _userService = userService;
+            _leaveBalanceService = leaveBalanceService;
         }
 
         public async Task<(int Code, string Message)> ValidateEmployeeInfoAsync(EmployeeDto employeeDto)
@@ -71,6 +72,13 @@ namespace CoriCore.Services
 
             _context.Employees.Add(employee);
             await _context.SaveChangesAsync();
+
+            // Create the employee's default leave balances after the employee is saved
+            var balsCreated = await _leaveBalanceService.CreateDefaultLeaveBalances(employee.EmployeeId);
+            if (!balsCreated) {
+                return (400, "Failed to create default leave balances");
+            }
+
             return (201, "Employee successfully registered");
         }
 

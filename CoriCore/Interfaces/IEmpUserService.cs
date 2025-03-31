@@ -7,6 +7,6 @@ public interface IEmpUserService
 {
     Task<List<EmpUserDTO>> GetAllEmpUsers();
 
-    Task<EmpUserDTO> GetEmpUserById(int id);
+    Task<EmpUserDTO> GetEmpUserByEmpId(int id);
 
 }
