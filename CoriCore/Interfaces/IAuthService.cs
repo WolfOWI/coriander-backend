@@ -1,6 +1,7 @@
 // Wolf Botha
 
 using System;
+using CoriCore.DTOs;
 using CoriCore.Models;
 
 namespace CoriCore.Interfaces;
@@ -14,8 +15,8 @@ public interface IAuthService
     // USER MANAGEMENT
     // ============================
     
-    // Register a new user
-    Task<bool> RegisterUser(User user);
+    // Register a new user (via email method)
+    Task<bool> RegisterWithEmail(UserEmailRegisterDTO user);
 
     // Hash a password (using a secure algorithm)
     Task<string> HashPassword(string password);
@@ -23,8 +24,8 @@ public interface IAuthService
     // Verify a hashed password
     Task<bool> VerifyPassword(User user, string password);
 
-    // Login a user
-    Task<string> LoginUser(string email, string password);
+    // Login a user (via email method)
+    Task<string> LoginWithEmail(string email, string password);
 
     // Check if email exists
     // Returns user data or null (if user doesn't exist)
@@ -57,7 +58,7 @@ public interface IAuthService
     Task<bool> AssignRole(int userId, UserRole role);
 
     // ============================
-    // GOOGLE LOGIN
+    // GOOGLE SIGN UP & LOGIN
     // ============================
     
     // Login with Google (accepts OAuth token)

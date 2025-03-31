@@ -2,6 +2,7 @@
 
 using System;
 using CoriCore.Data;
+using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -29,8 +30,8 @@ public class AuthServices : IAuthService
 
     // User Registration & Role Assignment
     // ========================================
-    // Register a new user
-    public async Task<bool> RegisterUser(User user)
+    // Register a new user (via email method)
+    public async Task<bool> RegisterWithEmail(UserEmailRegisterDTO user)
     {
         User? doesUserExist = await EmailExists(user.Email);
 
@@ -41,14 +42,23 @@ public class AuthServices : IAuthService
         }
 
         // Hash the password
-        user.Password = await HashPassword(user.Password);
+        string hashedPassword = await HashPassword(user.Password);
+
+        // Create new user from DTO
+        var newUser = new User
+        {
+            FullName = user.FullName,
+            Email = user.Email,
+            Password = hashedPassword,
+            ProfilePicture = user.ProfilePicture,
+            Role = user.Role
+        };
 
         // Adding the user to the database
-        await _context.Users.AddAsync(user);
+        await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
 
         return true;
-        
     }
 
     public Task<bool> RegisterWithGoogle(string googleToken)
@@ -78,7 +88,7 @@ public class AuthServices : IAuthService
     // User Login & Authentication
     // ========================================
     // Login a user (with email & password)
-    public async Task<string> LoginUser(string email, string password)
+    public async Task<string> LoginWithEmail(string email, string password)
     {
         // Check if the user exists
         User? user = await EmailExists(email);

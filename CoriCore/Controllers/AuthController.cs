@@ -27,9 +27,9 @@ namespace CoriCore.Controllers
         /// <param name="user">The user to register</param>
         /// <returns>A message indicating the success or failure of the registration attempt</returns>
         [HttpPost("register")]
-        public async Task<IActionResult> Register(User user)
+        public async Task<IActionResult> Register(UserEmailRegisterDTO user)
         {
-            bool isRegistered = await _authService.RegisterUser(user);
+            bool isRegistered = await _authService.RegisterWithEmail(user);
 
             if (!isRegistered)
             {
@@ -48,7 +48,7 @@ namespace CoriCore.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
         {
-            string loginResult = await _authService.LoginUser(user.Email, user.Password);
+            string loginResult = await _authService.LoginWithEmail(user.Email, user.Password);
 
             if (loginResult != "Login successful")
             {
