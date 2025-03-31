@@ -45,4 +45,44 @@ public class EmpUserService : IEmpUserService
                 .ToListAsync();
         return empUsers;
     }
+
+
+    // Get EmpUser by ID
+    public async Task<EmpUserDTO> GetEmpUserById(int id)
+    {
+        var empUser = await _context.Employees
+            .Include(e => e.User)
+            .FirstOrDefaultAsync(e => e.EmployeeId == id);
+
+        // If the employee-user is not found
+        if (empUser == null)
+        {
+            throw new Exception("Employee-User not found");
+        }
+
+        return new EmpUserDTO
+        {
+            // User Information
+            UserId = empUser.UserId,
+            FullName = empUser.User.FullName,
+            Email = empUser.User.Email,
+            ProfilePicture = empUser.User.ProfilePicture,
+            Role = empUser.User.Role,
+
+            // Employee Information
+            EmployeeId = empUser.EmployeeId,
+            Gender = empUser.Gender,
+            DateOfBirth = empUser.DateOfBirth,
+            PhoneNumber = empUser.PhoneNumber,
+            JobTitle = empUser.JobTitle,
+            Department = empUser.Department,
+            SalaryAmount = empUser.SalaryAmount,
+            PayCycle = empUser.PayCycle,
+            LastPaidDate = empUser.LastPaidDate,
+            EmployType = empUser.EmployType,
+            EmployDate = empUser.EmployDate,
+            IsSuspended = empUser.IsSuspended,
+        };
+    }
+
 }

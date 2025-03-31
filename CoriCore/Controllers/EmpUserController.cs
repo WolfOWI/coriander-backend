@@ -32,5 +32,24 @@ namespace CoriCore.Controllers
             var empUsers = await _empUserService.GetAllEmpUsers();
             return Ok(empUsers);
         }
+
+        /// <summary>
+        /// Get an user employee by their ID
+        /// </summary>
+        /// <param name="id">The ID of the user employee to get</param>
+        /// <returns>An EmpUserDTO</returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<EmpUserDTO>> GetEmpUserById(int id)
+        {
+            try
+            {
+                var empUser = await _empUserService.GetEmpUserById(id);
+                return Ok(empUser);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }
