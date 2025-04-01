@@ -24,6 +24,7 @@ builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
 // ========================================
 
 // CORS

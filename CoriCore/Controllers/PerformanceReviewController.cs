@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
+using CoriCore.Interfaces;
+using static CoriCore.DTOs.PerformaceReviewDTO;
 
 namespace CoriCore.Controllers
 {
@@ -15,10 +17,12 @@ namespace CoriCore.Controllers
     public class PerformanceReviewController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IPerformanceReviewRepository _performanceReviewRepository;
 
-        public PerformanceReviewController(AppDbContext context)
+        public PerformanceReviewController(AppDbContext context, IPerformanceReviewRepository performanceReviewRepository)
         {
             _context = context;
+            _performanceReviewRepository = performanceReviewRepository;
         }
 
         // GET: api/PerformanceReview
@@ -40,6 +44,70 @@ namespace CoriCore.Controllers
             }
 
             return performanceReview;
+        }
+
+        // GET: api/PerformanceReviewByStartDateAdminId
+        [HttpGet("GetPrmByStartDateAdminId/{adminId}/{startDate}")]
+        public async Task<IActionResult> GetPrmByStartDateAdminId(int adminId, DateTime startDate)
+        {
+            var reviews = await _performanceReviewRepository.GetPrmByStartDateAdminId(adminId, startDate);
+
+            if (reviews == null || !reviews.Any())
+            {
+                return NotFound("No Performance Reviews found for the given Admin and Start Date.");
+            }
+
+            var reviewDTOs = reviews.Select(pr => new PerformanceReviewDTO
+            {
+                ReviewId = pr.ReviewId,
+                AdminId = pr.AdminId,
+                AdminName = pr.Admin.User.FullName, // Fetch Admin Name
+                EmployeeId = pr.EmployeeId,
+                EmployeeName = pr.Employee.User.FullName, // Fetch Employee Name
+                IsOnline = pr.IsOnline,
+                MeetLocation = pr.MeetLocation,
+                MeetLink = pr.MeetLink,
+                StartDate = pr.StartDate,
+                EndDate = pr.EndDate,
+                Rating = pr.Rating,
+                Comment = pr.Comment,
+                DocUrl = pr.DocUrl,
+                Status = (DTOs.Status)pr.Status
+            });
+
+            return Ok(reviewDTOs);
+        }
+
+        //Get Performance Review By Employee Id
+        [HttpGet("GetPrmByEmpId/{employeeId}")]
+        public async Task<IActionResult> GetPrmByEmpId(int employeeId)
+        {
+            var reviews = await _performanceReviewRepository.GetPrmByEmpId(employeeId);
+
+            if (reviews == null || !reviews.Any())
+            {
+                return NotFound($"No Performance Reviews found for Employee ID {employeeId}.");
+            }
+
+            var reviewDTOs = reviews.Select(pr => new PerformanceReviewDTO
+            {
+                ReviewId = pr.ReviewId,
+                AdminId = pr.AdminId,
+                AdminName = pr.Admin.User.FullName, // Fetch Admin Name
+                EmployeeId = pr.EmployeeId,
+                EmployeeName = pr.Employee.User.FullName, // Fetch Employee Name
+                IsOnline = pr.IsOnline,
+                MeetLocation = pr.MeetLocation,
+                MeetLink = pr.MeetLink,
+                StartDate = pr.StartDate,
+                EndDate = pr.EndDate,
+                Rating = pr.Rating,
+                Comment = pr.Comment,
+                DocUrl = pr.DocUrl,
+                Status = (DTOs.Status)pr.Status
+            });
+
+            return Ok(reviewDTOs);
         }
 
         // PUT: api/PerformanceReview/5
