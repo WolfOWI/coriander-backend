@@ -26,14 +26,14 @@ public class PerformanceReview
     public int AdminId { get; set; }
 
     [ForeignKey("AdminId")]
-    public Admin Admin { get; set; } = null!;
+    public Admin? Admin { get; set; }
 
 
     [Required]
     public int EmployeeId { get; set; }
 
     [ForeignKey("EmployeeId")]
-    public virtual Employee Employee { get; set; } = null!; 
+    public Employee? Employee { get; set; }
 
     // Review Details
         [Required]
