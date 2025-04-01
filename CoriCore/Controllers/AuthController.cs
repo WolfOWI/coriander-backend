@@ -58,8 +58,30 @@ namespace CoriCore.Controllers
             return Ok(loginResult);
         }
         
-        
-        
-        
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO dto)
+        {
+            string token = await _authService.LoginWithGoogle(dto.IdToken);
+
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized("Invalid Google login.");
+            }
+
+            return Ok(new { token });
+        }
+
+        [HttpPost("google-register")]
+        public async Task<IActionResult> GoogleRegister([FromBody] GoogleRegisterDTO dto)
+        {
+            bool isRegistered = await _authService.RegisterWithGoogle(dto.IdToken);
+
+            if (!isRegistered)
+            {
+                return BadRequest("User already exists or registration failed.");
+            }
+
+            return Ok("Google registration successful.");
+        }
     }
 }

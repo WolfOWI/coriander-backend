@@ -6,6 +6,7 @@ using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
 using Microsoft.EntityFrameworkCore;
+using Google.Apis.Auth;
 
 namespace CoriCore.Services;
 
@@ -61,9 +62,32 @@ public class AuthServices : IAuthService
         return true;
     }
 
-    public Task<bool> RegisterWithGoogle(string googleToken)
+    public async Task<bool> RegisterWithGoogle(string googleToken)
     {
-        throw new NotImplementedException();
+        var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+
+        // Check if user already exists by Google ID or email
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u =>
+            u.GoogleId == payload.Subject || u.Email == payload.Email);
+
+        if (existingUser != null)
+        {
+            return false; // Already registered
+        }
+
+        var user = new User
+        {
+            FullName = payload.Name,
+            Email = payload.Email,
+            GoogleId = payload.Subject,
+            ProfilePicture = payload.Picture,
+            Role = UserRole.Employee // Default role or Unassigned
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 
     // Hash a password using BCrypt
@@ -112,9 +136,29 @@ public class AuthServices : IAuthService
         return "Login successful";
     }
 
-    public Task<string> LoginWithGoogle(string googleToken)
+    public async Task<string> LoginWithGoogle(string googleToken)
     {
-        throw new NotImplementedException();
+        var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == payload.Subject || u.Email == payload.Email);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                FullName = payload.Name,
+                Email = payload.Email,
+                GoogleId = payload.Subject,
+                ProfilePicture = payload.Picture,
+                Role = UserRole.Employee // or default
+            };
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+        }
+
+        // TODO: Replace with your actual JWT generation logic
+        return $"JWT_FOR_{user.Email}";
     }
 
     // Verify a User's password against a hashed password

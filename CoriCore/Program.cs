@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 using CoriCore.Interfaces;
 using CoriCore.Services; // Library for loading environment variables from a .env file
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+
 
 // Load environment variables (from .env file)
 Env.Load();
@@ -48,6 +51,20 @@ builder.Services.AddControllers()
     });// Prevent object loops (e.g: employee -> equipment -> employee ...)
 // ========================================
 
+// Google Authentication and Cookies
+// ========================================
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+{
+    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+});
+// ========================================
 
 builder.Services.AddOpenApi(); // Add OpenAPI support
 builder.Services.AddEndpointsApiExplorer(); // Add endpoints explorer
@@ -112,6 +129,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowLocalhost");
 
 app.UseHttpsRedirection();
+
+// Middleware for Google Authentication
+app.UseAuthentication();
 
 app.MapControllers();
 
