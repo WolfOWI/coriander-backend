@@ -7,19 +7,40 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
+using CoriCore.Interfaces;
+using CoriCore.DTOs;
 
 namespace CoriCore.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class LeaveRequestController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public LeaveRequestController(AppDbContext context)
+        private readonly ILeaveRequestService _leaveRequestService;
+
+        public LeaveRequestController(AppDbContext context, ILeaveRequestService leaveRequestService)
         {
+            _leaveRequestService = leaveRequestService;
             _context = context;
         }
+
+        // GET: api/LeaveRequest/EmployeeId
+        [HttpGet("EmployeeId/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<LeaveRequestDTO>>> GetLeaveRequestsByEmployeeId(int employeeId) // IEmumerable = List
+        {
+            var leaveRequests = await _leaveRequestService.GetLeaveRequestsByEmployeeId(employeeId);
+
+            if (leaveRequests == null || !leaveRequests.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(leaveRequests);
+        }
+
 
         // GET: api/LeaveRequest
         [HttpGet]
