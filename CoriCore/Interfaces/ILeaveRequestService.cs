@@ -1,28 +1,22 @@
 //Iné Smith
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CoriCore.DTOs;
 
-namespace CoriCore.Interfaces;
-
-// Get a list of all the leave requests of an employee by their id.
-public interface ILeaveRequestService
+namespace CoriCore.Interfaces
 {
-    // Get all leave requests by employee ID
-    Task<List<LeaveRequestDTO>> GetAllLeaveRequestsByEmpId(int employeeId);
-    Task<List<LeaveRequestDTO>> GetLeaveRequestsByEmployeeId(int employeeId);
+    // Interface for managing leave requests
+    public interface ILeaveRequestService
+    {
+        // Get all leave requests by employee ID
+        Task<List<LeaveRequestDTO>> GetLeaveRequestsByEmployeeId(int employeeId);
 
-    // Returns a list of leave requests of a single employee (LeaveRequestDTO)
+        // Calculate the duration between two dates (in days)
+        int DurationBetweenDates(DateTime startDate, DateTime endDate);
 
-    // Calculate the durations of the leave, and add it to the data.
-    int DurationBetweenDates(DateTime startDate, DateTime endDate); // durationBetweenDates (date 1, date 2)
-    Task<List<LeaveRequestDTO>> AddDurationToLeaveRequests(List<LeaveRequestDTO> leaveRequests);
-
-    // Returns the number of dates between two dates
+        // Add duration to each leave request's data
+        Task<List<LeaveRequestDTO>> AddDurationToLeaveRequests(List<LeaveRequestDTO> leaveRequests);
+    }
 }
-
-// Returns a list of leave requests of a single employee (LeaveRequestDTO) with duration data.
-
-
-
-
