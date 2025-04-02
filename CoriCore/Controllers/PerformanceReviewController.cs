@@ -17,12 +17,12 @@ namespace CoriCore.Controllers
     public class PerformanceReviewController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IPerformanceReviewRepository _performanceReviewRepository;
+        private readonly IPerformanceReviewService _PerformanceReviewService;
 
-        public PerformanceReviewController(AppDbContext context, IPerformanceReviewRepository performanceReviewRepository)
+        public PerformanceReviewController(AppDbContext context, IPerformanceReviewService PerformanceReviewService)
         {
             _context = context;
-            _performanceReviewRepository = performanceReviewRepository;
+            _PerformanceReviewService = PerformanceReviewService;
         }
 
         // GET: api/PerformanceReview
@@ -50,7 +50,7 @@ namespace CoriCore.Controllers
         [HttpGet("GetPrmByStartDateAdminId/{adminId}/{startDate}")]
         public async Task<IActionResult> GetPrmByStartDateAdminId(int adminId, DateTime startDate)
         {
-            var reviews = await _performanceReviewRepository.GetPrmByStartDateAdminId(adminId, startDate);
+            var reviews = await _PerformanceReviewService.GetPrmByStartDateAdminId(adminId, startDate);
 
             if (reviews == null || !reviews.Any())
             {
@@ -82,7 +82,7 @@ namespace CoriCore.Controllers
         [HttpGet("GetPrmByEmpId/{employeeId}")]
         public async Task<IActionResult> GetPrmByEmpId(int employeeId)
         {
-            var reviews = await _performanceReviewRepository.GetPrmByEmpId(employeeId);
+            var reviews = await _PerformanceReviewService.GetPrmByEmpId(employeeId);
 
             if (reviews == null || !reviews.Any())
             {

@@ -30,7 +30,7 @@ builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 // Performance Review Service
-builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
+builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
 // ========================================
 
 // CONTROLLERS
