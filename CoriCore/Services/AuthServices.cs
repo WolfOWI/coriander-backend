@@ -33,6 +33,7 @@ public class AuthServices : IAuthService
     // ========================================
     // Register a new user (via email method)
     public async Task<bool> RegisterWithEmail(UserEmailRegisterDTO user)
+    
     {
         User? doesUserExist = await EmailExists(user.Email);
 
@@ -62,6 +63,34 @@ public class AuthServices : IAuthService
         return true;
     }
 
+    // Register a new admin-user (via email method)
+    public async Task<bool> RegisterAdminWithEmail(AdminUserEmailRegisterDTO user)
+    {
+        User? doesUserExist = await EmailExists(user.Email);
+
+        // If the user already exists, return false
+        if (doesUserExist != null)
+        {
+            return false;
+        }
+
+        // Hash the password
+        string hashedPassword = await HashPassword(user.Password);
+
+        // Create new admin with DTO (include User model & admin model)
+        var newAdmin = new AdminUserEmailRegisterDTO
+        {
+            FullName = user.FullName,
+            Email = user.Email,
+            Password = hashedPassword,
+            ProfilePicture = user.ProfilePicture,
+            Role = user.Role,
+            AdminId = user.AdminId
+        };
+
+        return true;
+    }
+
     public async Task<bool> RegisterWithGoogle(string googleToken)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
@@ -81,7 +110,7 @@ public class AuthServices : IAuthService
             Email = payload.Email,
             GoogleId = payload.Subject,
             ProfilePicture = payload.Picture,
-            Role = UserRole.Employee // Default role or Unassigned
+            Role = UserRole.Unassigned // (Changed this from employee to unassigned - Wolf)
         };
 
         await _context.Users.AddAsync(user);
@@ -150,7 +179,7 @@ public class AuthServices : IAuthService
                 Email = payload.Email,
                 GoogleId = payload.Subject,
                 ProfilePicture = payload.Picture,
-                Role = UserRole.Employee // or default
+                Role = UserRole.Unassigned // (Changed this from employee to unassigned - Wolf)
             };
 
             await _context.Users.AddAsync(user);

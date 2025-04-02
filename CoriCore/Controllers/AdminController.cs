@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
+using CoriCore.Interfaces;
+using CoriCore.DTOs;
 
 namespace CoriCore.Controllers
 {
@@ -15,10 +17,20 @@ namespace CoriCore.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IAdminService _adminService;
 
-        public AdminController(AppDbContext context)
+        public AdminController(AppDbContext context, IAdminService adminService)
         {
             _context = context;
+            _adminService = adminService;
+        }
+
+        // Create a new admin
+        [HttpPost("register-admin")]
+        public async Task<ActionResult<Admin>> CreateAdmin(AdminDTO adminDTO)
+        {
+            var result = await _adminService.CreateAdmin(adminDTO);
+            return Ok(result);
         }
 
         // GET: api/Admin
@@ -73,16 +85,17 @@ namespace CoriCore.Controllers
             return NoContent();
         }
 
+        // Already implemented as a custom method
         // POST: api/Admin
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Admin>> PostAdmin(Admin admin)
-        {
-            _context.Admins.Add(admin);
-            await _context.SaveChangesAsync();
+        // [HttpPost]
+        // public async Task<ActionResult<Admin>> PostAdmin(Admin admin)
+        // {
+        //     _context.Admins.Add(admin);
+        //     await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAdmin", new { id = admin.AdminId }, admin);
-        }
+        //     return CreatedAtAction("GetAdmin", new { id = admin.AdminId }, admin);
+        // }
 
         // DELETE: api/Admin/5
         [HttpDelete("{id}")]

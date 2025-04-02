@@ -19,6 +19,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuthService, AuthServices>();
 // Employee Service
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+// Admin Service
+builder.Services.AddScoped<IAdminService, AdminService>();
 // User service
 builder.Services.AddScoped<IUserService, UserService>();
 // Leave Balance Service
@@ -27,6 +29,7 @@ builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+// Performance Review Service
 builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
 // ========================================
 

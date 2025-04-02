@@ -29,5 +29,13 @@ namespace CoriCore.Interfaces
         /// - 400: "UserId does not exist".
         /// </returns>
         Task<int> SetUserRoleAsync(int userId, int userRole);
+
+        /// <summary>
+        /// Check the role of a user.
+        /// </summary>
+        /// <param name="userId">Unique identifier for the user.</param>
+        /// <returns>
+        /// </returns>
+        Task<UserRole> GetUserRoleAsync(int userId);
     }
 }

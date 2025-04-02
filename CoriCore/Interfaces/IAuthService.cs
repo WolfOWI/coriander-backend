@@ -18,6 +18,9 @@ public interface IAuthService
     // Register a new user (via email method)
     Task<bool> RegisterWithEmail(UserEmailRegisterDTO user);
 
+    // Register a new admin-user (via email method)
+    Task<bool> RegisterAdminWithEmail(AdminUserEmailRegisterDTO user);
+
     // Hash a password (using a secure algorithm)
     Task<string> HashPassword(string password);
 
