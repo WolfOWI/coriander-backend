@@ -16,10 +16,7 @@ public interface IAuthService
     // ============================
     
     // Register a new user (via email method)
-    Task<bool> RegisterWithEmail(UserEmailRegisterDTO user);
-
-    // Register a new admin-user (via email method)
-    Task<bool> RegisterAdminWithEmail(AdminUserEmailRegisterDTO user);
+    Task<User> RegisterWithEmail(UserEmailRegisterDTO user);
 
     // Hash a password (using a secure algorithm)
     Task<string> HashPassword(string password);
@@ -29,10 +26,6 @@ public interface IAuthService
 
     // Login a user (via email method)
     Task<string> LoginWithEmail(string email, string password);
-
-    // Check if email exists
-    // Returns user data or null (if user doesn't exist)
-    Task<User?> EmailExists(string email);
 
     // ============================
     // SESSION MANAGEMENT
@@ -49,16 +42,6 @@ public interface IAuthService
 
     // Check if a user is authenticated
     Task<bool> IsUserAuthenticated();
-
-    // ============================
-    // ROLE MANAGEMENT
-    // ============================
-    
-    // Get the role of the current user
-    Task<UserRole?> GetUserRole(int userId);
-
-    // Assign a role to a user (0 = Unassigned, 1 = Employee, 2 = Admin)
-    Task<bool> AssignRole(int userId, UserRole role);
 
     // ============================
     // GOOGLE SIGN UP & LOGIN

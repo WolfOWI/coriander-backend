@@ -3,6 +3,7 @@ using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
@@ -17,6 +18,7 @@ public class AdminService : IAdminService
         _userService = userService;
     }
 
+    // Create a new admin (from a linked user)
     public async Task<string> CreateAdmin(AdminDTO adminDTO)
     {
         // Make sure a user does exist (to link to being an admin)
@@ -26,13 +28,9 @@ public class AdminService : IAdminService
             return "A user with that id could not be found";
         }
 
-        // Check if the user is an employee / already an admin
-        var userRole = await _userService.GetUserRoleAsync(adminDTO.UserId);
-        if (userRole == UserRole.Employee)
-        {
-            return "The user is an employee and cannot be promoted to an admin";
-            
-        } else if (userRole == UserRole.Admin)
+        // Check if the user is already an admin
+        var existingAdmin = await _context.Admins.FirstOrDefaultAsync(a => a.UserId == adminDTO.UserId);
+        if (existingAdmin != null)
         {
             return "The user is already an admin";
         }
@@ -47,9 +45,6 @@ public class AdminService : IAdminService
         await _context.Admins.AddAsync(admin);
         await _context.SaveChangesAsync();
 
-        // Set the user role to admin
-        await _userService.SetUserRoleAsync(adminDTO.UserId, 2); // Set user role to admin
-
-        return "Admin created successfully & user's role was set to admin";
+        return "Admin created successfully";
     }
 }

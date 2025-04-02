@@ -109,9 +109,9 @@ namespace CoriCore.Controllers
             return _context.Employees.Any(e => e.EmployeeId == id);
         }
 
-        // POST: api/Employee/register
-        [HttpPost("register")]
-        public async Task<IActionResult> RegisterEmployee([FromBody] EmployeeDto employeeDto)
+        // POST: api/Employee/setup-user-as-employee
+        [HttpPost("setup-user-as-employee")]
+        public async Task<IActionResult> SetupUserAsEmployee([FromBody] EmployeeDto employeeDto)
         {
             var result = await _employeeService.RegisterEmployeeAsync(employeeDto);
             return StatusCode(result.Code, new { result.Message });

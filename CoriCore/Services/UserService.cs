@@ -64,6 +64,17 @@ namespace CoriCore.Services
             return user.Role;
         }
 
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
         // Template
         // public Task<int> SetUserRoleAsync(int userId, int userRole)
         // {

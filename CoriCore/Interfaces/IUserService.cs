@@ -37,5 +37,13 @@ namespace CoriCore.Interfaces
         /// <returns>
         /// </returns>
         Task<UserRole> GetUserRoleAsync(int userId);
+
+
+        /// Get user by email
+        /// </summary>
+        /// <param name="email">Email of the user.</param>
+        /// <returns>
+        /// </returns>
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }
