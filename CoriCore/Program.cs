@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 using CoriCore.Interfaces;
 using CoriCore.Services; // Library for loading environment variables from a .env file
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+
 
 // Load environment variables (from .env file)
 Env.Load();
@@ -16,6 +19,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuthService, AuthServices>();
 // Employee Service
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+// Admin Service
+builder.Services.AddScoped<IAdminService, AdminService>();
 // User service
 builder.Services.AddScoped<IUserService, UserService>();
 // Leave Balance Service
@@ -24,7 +29,7 @@ builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
-// Performance Review Repository
+// Performance Review Service
 builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
 // ========================================
 
@@ -37,6 +42,20 @@ builder.Services.AddControllers()
     });// Prevent object loops (e.g: employee -> equipment -> employee ...)
 // ========================================
 
+// Google Authentication and Cookies
+// ========================================
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie()
+.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+{
+    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
+    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+});
+// ========================================
 
 builder.Services.AddOpenApi(); // Add OpenAPI support
 builder.Services.AddEndpointsApiExplorer(); // Add endpoints explorer
@@ -99,6 +118,9 @@ if (app.Environment.IsDevelopment())
 // ------------------------------------------------------------------------
 
 app.UseHttpsRedirection();
+
+// Middleware for Google Authentication
+app.UseAuthentication();
 
 app.MapControllers();
 
