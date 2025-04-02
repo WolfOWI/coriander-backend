@@ -24,20 +24,9 @@ builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+// Performance Review Repository
 builder.Services.AddScoped<IPerformanceReviewRepository, PerformanceReviewRepository>();
 // ========================================
-
-// CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowLocalhost", policy =>
-    {
-        policy.WithOrigins("http://localhost:5173")
-               .AllowAnyMethod()
-               .AllowAnyHeader()
-               .AllowCredentials();
-    });
-});
 
 // CONTROLLERS
 // ========================================
@@ -108,8 +97,6 @@ if (app.Environment.IsDevelopment())
     }
 }
 // ------------------------------------------------------------------------
-
-app.UseCors("AllowLocalhost");
 
 app.UseHttpsRedirection();
 
