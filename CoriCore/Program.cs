@@ -33,6 +33,18 @@ builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
 // ========================================
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
+
 // CONTROLLERS
 // ========================================
 builder.Services.AddControllers()
@@ -116,6 +128,8 @@ if (app.Environment.IsDevelopment())
     }
 }
 // ------------------------------------------------------------------------
+
+app.UseCors("AllowLocalhost");
 
 app.UseHttpsRedirection();
 
