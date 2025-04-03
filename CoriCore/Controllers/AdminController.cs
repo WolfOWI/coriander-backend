@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
+using CoriCore.Interfaces;
+using CoriCore.DTOs;
 
 namespace CoriCore.Controllers
 {
@@ -15,10 +17,37 @@ namespace CoriCore.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IAdminService _adminService;
+        private readonly IUserService _userService;
 
-        public AdminController(AppDbContext context)
+        public AdminController(AppDbContext context, IAdminService adminService, IUserService userService)
         {
             _context = context;
+            _adminService = adminService;
+            _userService = userService;
+        }
+
+        // Promote an existinguser to admin (and create a new admin with userId)
+        // POST: api/Admin/promote-existing-user-to-admin
+        [HttpPost("promote-existing-user-to-admin")]
+        public async Task<ActionResult<Admin>> PromoteExistingUserToAdmin(AdminDTO adminDTO)
+        {
+
+            // Set the user role to admin
+            var roleResult = await _userService.SetUserRoleAsync(adminDTO.UserId, (int)UserRole.Admin);
+            if (roleResult != 201)
+            {
+                return BadRequest("Failed to set user role to admin");
+            }
+
+            // Create a new admin with the userId
+            var result = await _adminService.CreateAdmin(adminDTO);
+
+            if (result == null)
+            {
+                return BadRequest("Failed to create admin");
+            }
+            return Ok(result);
         }
 
         // GET: api/Admin
@@ -73,16 +102,17 @@ namespace CoriCore.Controllers
             return NoContent();
         }
 
+        // Already implemented as a custom method
         // POST: api/Admin
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Admin>> PostAdmin(Admin admin)
-        {
-            _context.Admins.Add(admin);
-            await _context.SaveChangesAsync();
+        // [HttpPost]
+        // public async Task<ActionResult<Admin>> PostAdmin(Admin admin)
+        // {
+        //     _context.Admins.Add(admin);
+        //     await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAdmin", new { id = admin.AdminId }, admin);
-        }
+        //     return CreatedAtAction("GetAdmin", new { id = admin.AdminId }, admin);
+        // }
 
         // DELETE: api/Admin/5
         [HttpDelete("{id}")]

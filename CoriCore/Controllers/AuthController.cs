@@ -14,29 +14,63 @@ namespace CoriCore.Controllers
         // Dependency Injection
         // ========================================
         private readonly IAuthService _authService;
-
-        public AuthController(IAuthService authService)
+        private readonly IAdminService _adminService;
+        public AuthController(IAuthService authService, IAdminService adminService)
         {
             _authService = authService;
+            _adminService = adminService;
         }
         // ========================================
 
         /// <summary>
-        /// Registers a new user.
+        /// Registers a new user (unassigned role).
         /// </summary>
         /// <param name="user">The user to register</param>
         /// <returns>A message indicating the success or failure of the registration attempt</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserEmailRegisterDTO user)
         {
-            bool isRegistered = await _authService.RegisterWithEmail(user);
+            User createdUser = await _authService.RegisterWithEmail(user);
 
-            if (!isRegistered)
+            if (createdUser == null)
             {
                 return BadRequest("User already exists");
             }
 
             return Ok("User registered successfully");
+        }
+
+        /// <summary>
+        /// Registers a new admin user. Creating both a user (with admin role) and a linked admin.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpPost("register-admin")]
+        public async Task<IActionResult> RegisterAdmin(UserEmailRegisterDTO user)
+        {
+            // Set the role to Admin before registration
+            user.Role = UserRole.Admin;
+
+            // USER CREATION
+            // ========================================
+            User createdUser = await _authService.RegisterWithEmail(user);
+
+            if (createdUser == null)
+            {
+                return BadRequest("User was not created");
+            }
+
+            // ADMIN CREATION (ASSIGNMENT TO USER)
+            // ========================================
+            // Create an AdminDTO from the created user
+            var adminDTO = new AdminDTO
+            {
+                UserId = createdUser.UserId
+            };
+
+            await _adminService.CreateAdmin(adminDTO);
+
+            return Ok("Admin registered successfully");
         }
 
         /// <summary>

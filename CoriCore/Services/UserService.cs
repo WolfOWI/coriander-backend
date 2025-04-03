@@ -52,6 +52,29 @@ namespace CoriCore.Services
             return 201; // Successfully set user role
         }
 
+        public async Task<UserRole> GetUserRoleAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            // If user is not found
+            if (user == null)
+            {
+                throw new Exception($"User with ID {userId} not found");
+            }
+
+            return user.Role;
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return null;
+            }
+
+            return user;
+        }
+
         // Template
         // public Task<int> SetUserRoleAsync(int userId, int userRole)
         // {

@@ -18,13 +18,14 @@ public class AuthServices : IAuthService
     
     // DEPENDENCY INJECTION
     // ========================================
-    // Inject the database context into the service
     private readonly AppDbContext _context;
+    private readonly IUserService _userService;
 
     // Constructor: Allows this service to interact with the database.
-    public AuthServices(AppDbContext context)
+    public AuthServices(AppDbContext context, IUserService userService)
     {
         _context = context;
+        _userService = userService;
     }
     // ========================================
     
@@ -32,14 +33,12 @@ public class AuthServices : IAuthService
     // User Registration & Role Assignment
     // ========================================
     // Register a new user (via email method)
-    public async Task<bool> RegisterWithEmail(UserEmailRegisterDTO user)
+    public async Task<User> RegisterWithEmail(UserEmailRegisterDTO user)
     {
-        User? doesUserExist = await EmailExists(user.Email);
-
-        // If the user already exists, return false
-        if (doesUserExist != null)
+        // Check if the user already exists
+        if (await userExistsByEmail(user.Email))
         {
-            return false;
+            throw new Exception($"User with email {user.Email} already exists");
         }
 
         // Hash the password
@@ -59,9 +58,10 @@ public class AuthServices : IAuthService
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
 
-        return true;
+        return newUser;
     }
 
+    // Register a new user (via Google method)
     public async Task<bool> RegisterWithGoogle(string googleToken)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
@@ -81,7 +81,7 @@ public class AuthServices : IAuthService
             Email = payload.Email,
             GoogleId = payload.Subject,
             ProfilePicture = payload.Picture,
-            Role = UserRole.Employee // Default role or Unassigned
+            Role = UserRole.Unassigned // (Changed this from employee to unassigned - Wolf)
         };
 
         await _context.Users.AddAsync(user);
@@ -96,16 +96,6 @@ public class AuthServices : IAuthService
         string HashedPassword = BCrypt.Net.BCrypt.HashPassword(password, 13);
         return Task.FromResult(HashedPassword);
     }
-
-    public Task<bool> AssignRole(int userId, UserRole role)
-    {
-        throw new NotImplementedException();
-    }
-    
-    public Task<UserRole?> GetUserRole(int userId)
-    {
-        throw new NotImplementedException();
-    }
     // ========================================
     
 
@@ -115,12 +105,12 @@ public class AuthServices : IAuthService
     public async Task<string> LoginWithEmail(string email, string password)
     {
         // Check if the user exists
-        User? user = await EmailExists(email);
+        User? user = await _userService.GetUserByEmailAsync(email);
 
         // If the user does not exist
         if (user == null)
         {
-            return "User not found";
+            throw new Exception($"User with email {email} not found");
         }
 
         // Check if the password is valid
@@ -129,7 +119,7 @@ public class AuthServices : IAuthService
         // If the password is invalid
         if (!isPasswordValid)
         {
-            return "Invalid password";
+            throw new Exception("Invalid password");
         }
 
         // Return a success message
@@ -150,7 +140,7 @@ public class AuthServices : IAuthService
                 Email = payload.Email,
                 GoogleId = payload.Subject,
                 ProfilePicture = payload.Picture,
-                Role = UserRole.Employee // or default
+                Role = UserRole.Unassigned // (Changed this from employee to unassigned - Wolf)
             };
 
             await _context.Users.AddAsync(user);
@@ -172,6 +162,16 @@ public class AuthServices : IAuthService
     
     // Session Management
     // ========================================
+    // Check if a user with the given email exists in the database
+    public async Task<bool> userExistsByEmail(string email)
+    {
+        // Get the user from the database
+        User? userfromDb = await _userService.GetUserByEmailAsync(email);
+        
+        if (userfromDb == null) return false;
+
+        return true;
+    }
     public Task<bool> RevokeToken(string token)
     {
         throw new NotImplementedException();
@@ -186,17 +186,6 @@ public class AuthServices : IAuthService
 
     // Helper Methods
     // ========================================
-    // Check if a user with the given email exists in the database
-    public async Task<User?> EmailExists(string email)
-    {
-        // Get the user from the database
-        User? userfromDb = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-
-        return userfromDb;
-        // If the user exists, return the user
-        // If the user does not exist, return null
-    }
-
     public Task<User?> GetCurrentAuthenticatedUser()
     {
         throw new NotImplementedException();

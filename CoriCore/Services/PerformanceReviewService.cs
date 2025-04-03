@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
-public class PerformanceReviewRepository : IPerformanceReviewRepository
+public class PerformanceReviewService : IPerformanceReviewService
 {
     // ========================================
     // DEPENDENCY INJECTION
     // ========================================
     private readonly AppDbContext _context;
 
-    public PerformanceReviewRepository(AppDbContext context)
+    public PerformanceReviewService(AppDbContext context)
     {
         _context = context;
     }

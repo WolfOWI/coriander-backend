@@ -3,7 +3,7 @@ using CoriCore.Models;
 
 namespace CoriCore.Interfaces;
 
-public interface IPerformanceReviewRepository
+public interface IPerformanceReviewService
 {
     Task<IEnumerable<PerformanceReview>> GetPrmByStartDateAdminId(int adminId, DateTime startDate);
 
