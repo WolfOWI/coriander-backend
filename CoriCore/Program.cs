@@ -31,6 +31,8 @@ builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 // Performance Review Service
 builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
+// Email Service
+builder.Services.AddScoped<IEmailService, EmailService>();
 // ========================================
 
 // CORS
