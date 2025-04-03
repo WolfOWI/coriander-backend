@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using CoriCore.Models;
 using System;
+using CoriCore.DTOs;
 
 namespace CoriCore.Data;
 

@@ -1,5 +1,6 @@
 using System;
 using CoriCore.Data;
+using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,49 @@ public class PerformanceReviewService : IPerformanceReviewService
             .ToListAsync();
     }
 
+    // Returns rating metrics for all employees (with atleast 1 rating)
+    // EmployeeId, FullName, AverageRating, NumberOfRatings, MostRecentRating
+    public async Task<List<EmpUserRatingMetricsDTO>> GetEmpUserRatingMetrics()
+    {
+        // Fetch all the data
+        var reviews = await _context.PerformanceReviews
+            .Include(pr => pr.Employee) // include the employee
+            .ThenInclude(e => e.User) // include the user
+            .Where(pr => pr.Rating != null) // filter to only include reviews that have a rating
+            .ToListAsync();
 
+        // If no reviews are found
+        if (reviews.Count == 0)
+        {
+            return new List<EmpUserRatingMetricsDTO>(); // Return empty list
+        }
 
+            // Calculations
+        var results = reviews
+            // Group the reviews by employee (using both EmployeeId and FullName)
+            .GroupBy(pr => new { pr.EmployeeId, pr.Employee.User.FullName })
+            // For empUser, create new DTO
+            .Select(group => new EmpUserRatingMetricsDTO
+            {
+                EmployeeId = group.Key.EmployeeId,
+                FullName = group.Key.FullName,
+
+                // Average rating
+                AverageRating = Math.Round(group.Where(pr => pr.Rating.HasValue)  // Only include reviews with ratings
+                .Average(pr => pr.Rating!.Value), 2), // Calculate avg (rounded to 2)
+
+                // Number of ratings
+                NumberOfRatings = group.Count(),
+
+                // Most recent rating
+                MostRecentRating = group
+                    .Where(pr => pr.Rating.HasValue)
+                    .OrderByDescending(pr => pr.StartDate)
+                    .First()
+                    .Rating!.Value // Won't be null because of the filter above
+            })
+            .ToList();
+
+        return results;
+    }
 }
