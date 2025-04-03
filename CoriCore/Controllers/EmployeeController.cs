@@ -63,36 +63,13 @@ namespace CoriCore.Controllers
             return employee;
         }
 
-        // PUT: api/Employee/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutEmployee(int id, Employee employee)
-        // {
-        //     if (id != employee.EmployeeId)
-        //     {
-        //         return BadRequest();
-        //     }
-
-        //     _context.Entry(employee).State = EntityState.Modified;
-
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!EmployeeExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
-
-        //     return NoContent();
-        // }
+        // PUT: api/Employee/edit-by-id/{id}
+        [HttpPut("edit-by-id/{id}")]
+        public async Task<IActionResult> EditEmployeeDetailsById(int id, [FromBody] EmployeeUpdateDTO updateDto)
+        {
+            var result = await _employeeService.UpdateEmployeeDetailsByIdAsync(id, updateDto);
+            return StatusCode(result.Code, new { result.Message });
+        }
 
         // POST: api/Employee
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
