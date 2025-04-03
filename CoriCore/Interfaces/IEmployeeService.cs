@@ -21,20 +21,6 @@ namespace CoriCore.Interfaces
         Task<(int Code, string Message)> ValidateEmployeeInfoAsync(EmployeeDto employeeDto);
 
         /// <summary>
-        /// Calculates the next payday based on the pay cycle.
-        /// </summary>
-        /// <param name="payCycle">
-        /// PayCycle int values:
-        /// 0 = Monthly,
-        /// 1 = Bi-Weekly,
-        /// 2 = Weekly
-        /// </param>
-        /// <returns>
-        /// Tuple result: (int Code, string Message, DateOnly NextPayDay)
-        /// </returns>
-        // Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle);
-
-        /// <summary>
         /// Creates a new employee record.
         /// </summary>
         /// <param name="employeeDto">EmployeeDto object containing employee details.</param>
@@ -55,5 +41,17 @@ namespace CoriCore.Interfaces
         /// 400 - Corresponding error code from validation or creation step
         /// </returns>
         Task<(int Code, string Message)> RegisterEmployeeAsync(EmployeeDto employeeDto);
+
+        /// <summary>
+        /// Toggle the IsSuspended status of an employee.
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee to suspend.</param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message)
+        /// 200 - Successfully updated
+        /// 404 - Employee not found
+        /// 400 - Error updating employee status
+        /// </returns>
+        Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId);
     }
 }

@@ -67,7 +67,7 @@ namespace CoriCore.Services
                 LastPaidDate = dto.LastPaidDate,
                 EmployType = dto.EmployType,
                 EmployDate = dto.EmployDate,
-                IsSuspended = dto.IsSuspended
+                IsSuspended = false // default to false
             };
 
             _context.Employees.Add(employee);
@@ -101,6 +101,25 @@ namespace CoriCore.Services
 
             var createResult = await CreateEmployeeAsync(dto);
             return createResult;
+        }
+
+        public async Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId)
+        {
+            // Find the employee
+            var emp = await _context.Employees.FindAsync(employeeId);
+
+            // If employee not found
+            if (emp == null)
+                {
+                    return (404, "Employee not found");
+                }
+
+            // (Found) Toggle the suspension status
+            emp.IsSuspended = !emp.IsSuspended;
+            await _context.SaveChangesAsync();
+
+            // Return the result
+            return (200, "Employee suspension status updated to " + (emp.IsSuspended ? "suspended" : "unsuspended"));
         }
     }
 }
