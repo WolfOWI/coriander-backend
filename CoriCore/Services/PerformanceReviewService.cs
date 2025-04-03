@@ -46,7 +46,7 @@ public class PerformanceReviewService : IPerformanceReviewService
 
     // Returns rating metrics for all employees (with atleast 1 rating)
     // EmployeeId, FullName, AverageRating, NumberOfRatings, MostRecentRating
-    public async Task<List<EmpUserRatingMetricsDTO>> GetEmpUserRatingMetrics()
+    public async Task<List<EmpUserRatingMetricsDTO>> GetAllEmpUserRatingMetrics()
     {
         // Fetch all the data
         var reviews = await _context.PerformanceReviews
@@ -88,5 +88,39 @@ public class PerformanceReviewService : IPerformanceReviewService
             .ToList();
 
         return results;
+    }
+
+    public async Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId)
+    {
+        // Fetch reviews for the specific employee
+        var reviews = await _context.PerformanceReviews
+            .Include(pr => pr.Employee)
+            .ThenInclude(e => e.User)
+            .Where(pr => pr.EmployeeId == employeeId && pr.Rating != null)
+            .ToListAsync();
+
+        // If no reviews are found
+        if (reviews.Count == 0)
+        {
+            return null;
+        }
+
+        // Get the employee's name
+        var employeeName = reviews.First().Employee.User.FullName;
+
+        // Calculate metrics
+        var metrics = new EmpUserRatingMetricsDTO
+        {
+            EmployeeId = employeeId,
+            FullName = employeeName,
+            AverageRating = Math.Round(reviews.Average(pr => pr.Rating!.Value), 2),
+            NumberOfRatings = reviews.Count,
+            MostRecentRating = reviews
+                .OrderByDescending(pr => pr.StartDate)
+                .First()
+                .Rating!.Value
+        };
+
+        return metrics;
     }
 }

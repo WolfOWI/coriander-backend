@@ -10,6 +10,8 @@ public interface IPerformanceReviewService
 
     Task<IEnumerable<PerformanceReview>> GetPrmByEmpId(int employeeId);
 
-    Task<List<EmpUserRatingMetricsDTO>> GetEmpUserRatingMetrics();
+    Task<List<EmpUserRatingMetricsDTO>> GetAllEmpUserRatingMetrics();
+
+    Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId);
 }
 

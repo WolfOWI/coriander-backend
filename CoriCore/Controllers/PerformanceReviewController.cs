@@ -110,12 +110,25 @@ namespace CoriCore.Controllers
             return Ok(reviewDTOs);
         }
 
-
         // Get EmpUserRatingMetrics
         [HttpGet("EmpUserRatingMetrics")]
-        public async Task<IActionResult> GetEmpUserRatingMetrics()
+        public async Task<IActionResult> GetAllEmpUserRatingMetrics()
         {
-            var metrics = await _PerformanceReviewService.GetEmpUserRatingMetrics();
+            var metrics = await _PerformanceReviewService.GetAllEmpUserRatingMetrics();
+            return Ok(metrics);
+        }
+
+        // Get EmpUserRatingMetrics by Employee ID
+        [HttpGet("EmpUserRatingMetrics/{employeeId}")]
+        public async Task<IActionResult> GetEmpUserRatingMetricsByEmpId(int employeeId)
+        {
+            var metrics = await _PerformanceReviewService.GetEmpUserRatingMetricsByEmpId(employeeId);
+            
+            if (metrics == null)
+            {
+                return NotFound($"No rating metrics found for Employee ID {employeeId}.");
+            }
+
             return Ok(metrics);
         }
 
