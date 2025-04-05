@@ -13,5 +13,13 @@ public interface IPerformanceReviewService
     Task<List<EmpUserRatingMetricsDTO>> GetAllEmpUserRatingMetrics();
 
     Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId);
+
+    Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review);
+
+    Task<PerformanceReview> UpdatePerformanceReview(int id, PerformanceReview review);
+
+    Task<bool> DeletePerformanceReview(int id);
+
+    Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm();
 }
 

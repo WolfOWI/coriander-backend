@@ -123,4 +123,49 @@ public class PerformanceReviewService : IPerformanceReviewService
 
         return metrics;
     }
+
+    //Create Performance Review
+    //Set status to 1 (Upcoming) when creating a new review
+    //Use PerformanceReviewDTO to create a new review
+    public async Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review)
+    {
+        review.Status = Status.Upcoming; // Set status to Upcoming (1)
+        await _context.PerformanceReviews.AddAsync(review);
+        await _context.SaveChangesAsync();
+        return review;
+    }
+
+    // Update Performance Review
+    public async Task<PerformanceReview> UpdatePerformanceReview(int id, PerformanceReview review)
+    {
+        _context.PerformanceReviews.Update(review);
+        await _context.SaveChangesAsync();
+        return review;
+    }
+
+    //Get All Performance Review when - status 1 (Upcoming)
+
+
+    public Task<bool> DeletePerformanceReview(int id)
+    {
+        var review = _context.PerformanceReviews.Find(id);
+        if (review == null)
+        {
+            return Task.FromResult(false); // Review not found
+        }
+
+        _context.PerformanceReviews.Remove(review);
+        _context.SaveChangesAsync();
+        return Task.FromResult(true); // Review deleted successfully
+    }
+
+    //Get All Performance Review when - status 1 (Upcoming)
+    public async Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm()
+    {
+        return await _context.PerformanceReviews
+            .Include(pr => pr.Admin.User) // Include related Admin User data
+            .Include(pr => pr.Employee.User) // Include related Employee User data
+            .Where(pr => pr.Status == Status.Upcoming) // Filter by status 'Upcoming'
+            .ToListAsync();
+    }
 }

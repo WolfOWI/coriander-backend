@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoriCore.DTOs;
 
 namespace CoriCore.Models;
 
@@ -64,4 +65,13 @@ public class PerformanceReview
 
         public Status Status { get; set; } = Status.Pending;// Default 'Pending'
 
+    internal bool Any()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal object Select(Func<object, ReviewDTO.PerformanceReviewDTO> value)
+    {
+        throw new NotImplementedException();
+    }
 }
