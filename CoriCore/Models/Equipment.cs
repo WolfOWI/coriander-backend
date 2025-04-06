@@ -47,7 +47,7 @@ public class Equipment
     // AssignedDate
     // ----------------------------------------
     [Required]
-    public DateTime AssignedDate { get; set; }
+    public DateOnly AssignedDate { get; set; }
     // ----------------------------------------
 
     // Condition
