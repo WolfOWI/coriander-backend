@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.Models;
 using CoriCore.Interfaces;
-using static CoriCore.DTOs.ReviewDTO;
 using CoriCore.DTOs;
 
 namespace CoriCore.Controllers
@@ -75,7 +74,7 @@ namespace CoriCore.Controllers
                 Rating = pr.Rating,
                 Comment = pr.Comment,
                 DocUrl = pr.DocUrl,
-                Status = (DTOs.ReviewStatusDTO)pr.Status
+                Status = (ReviewStatus)pr.Status
             });
 
             return Ok(reviewDTOs);
@@ -107,7 +106,7 @@ namespace CoriCore.Controllers
                 Rating = pr.Rating,
                 Comment = pr.Comment,
                 DocUrl = pr.DocUrl,
-                Status = (DTOs.ReviewStatusDTO)pr.Status
+                Status = (ReviewStatus)pr.Status
             });
 
             return Ok(reviewDTOs);
@@ -228,7 +227,7 @@ namespace CoriCore.Controllers
                 Rating = review.Rating,
                 Comment = review.Comment,
                 DocUrl = review.DocUrl,
-                Status = (DTOs.ReviewStatusDTO)review.Status
+                Status = (ReviewStatus)review.Status
             });
 
             return Ok(reviewDTOs);

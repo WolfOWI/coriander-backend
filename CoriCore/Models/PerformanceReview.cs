@@ -70,7 +70,7 @@ public class PerformanceReview
         throw new NotImplementedException();
     }
 
-    internal object Select(Func<object, ReviewDTO.PerformanceReviewDTO> value)
+    internal object Select(Func<object, PerformanceReviewDTO> value)
     {
         throw new NotImplementedException();
     }

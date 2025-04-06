@@ -1,3 +1,5 @@
+using System;
+
 namespace CoriCore.DTOs;
 
 public class PostPerformanceReviewDTO
@@ -12,5 +14,5 @@ public class PostPerformanceReviewDTO
     public int? Rating { get; set; }
     public string? Comment { get; set; }
     public string? DocUrl { get; set; }
-    public ReviewStatusDTO Status { get; set; } = ReviewStatusDTO.Upcoming;
+    public ReviewStatus Status { get; set; } = ReviewStatus.Upcoming;
 }

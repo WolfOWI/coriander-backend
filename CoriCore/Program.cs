@@ -35,6 +35,8 @@ builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>(
 builder.Services.AddScoped<IEmailService, EmailService>();
 // Equipment Service
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
+// Page Service (For whole front-end pages)
+builder.Services.AddScoped<IPageService, PageService>();
 // ========================================
 
 // CORS

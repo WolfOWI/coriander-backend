@@ -2,16 +2,14 @@ using System;
 
 namespace CoriCore.DTOs;
 
-public enum ReviewStatusDTO
+public enum ReviewStatus
 {
     Pending = 0,
     Upcoming = 1,
     Completed = 2
 }
 
-public class ReviewDTO
-{
-    public class PerformanceReviewDTO
+public class PerformanceReviewDTO
 {
     public int ReviewId { get; set; }
     public int AdminId { get; set; }
@@ -28,8 +26,5 @@ public class ReviewDTO
     public int? Rating { get; set; }
     public string? Comment { get; set; }
     public string? DocUrl { get; set; }
-    public ReviewStatusDTO Status { get; set; }
-}
-
-
-}
+    public ReviewStatus Status { get; set; }
+} 
