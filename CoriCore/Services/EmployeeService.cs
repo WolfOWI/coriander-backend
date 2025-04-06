@@ -87,8 +87,8 @@ namespace CoriCore.Services
         public async Task<(int Code, string Message)> RegisterEmployeeAsync(EmployeeDto dto)
         {
             var userCheck = await _userService.EmployeeAdminExistsAsync(dto.UserId);
-            if (userCheck != 400)
-                return (400, $"User with UserId {dto.UserId} is already registered");
+            if (userCheck == 400)
+                return (400, $"User with UserId {dto.UserId} is assigned as an Admin or Employee");
 
             var validation = await ValidateEmployeeInfoAsync(dto);
             if (validation.Code != 201)

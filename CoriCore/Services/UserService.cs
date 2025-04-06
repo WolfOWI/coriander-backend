@@ -18,12 +18,14 @@ namespace CoriCore.Services
         /// <inheritdoc />
         public async Task<int> EmployeeAdminExistsAsync(int userId)
         {
-            var user = await _context.Users
-                .Include(u => u.Employee)
-                .Include(u => u.Admin)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var user = await _context.Users.FindAsync(userId);
 
-            if (user == null || (user.Employee == null && user.Admin == null))
+            if (user == null)
+            {
+                return 400; // UserId does not exist
+            }
+
+            if (user.Role == UserRole.Unassigned)
             {
                 return 201; // User available for registration
             }
