@@ -54,17 +54,6 @@ namespace CoriCore.Interfaces
         /// </returns>
         Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId);
 
-        /// <summary>
-        /// Updates employee details
-        /// </summary>
-        /// <param name="id">The ID of the employee to update</param>
-        /// <param name="updateDto">DTO containing the fields to update</param>
-        /// <returns>
-        /// Tuple result: (int Code, string Message)
-        /// 200 - Successfully updated
-        /// 404 - Employee not found
-        /// 400 - Invalid data with corresponding error message
-        /// </returns>
-        Task<(int Code, string Message)> UpdateEmployeeDetailsByIdAsync(int id, EmployeeUpdateDTO updateDto);
+       
     }
 }

@@ -124,37 +124,6 @@ namespace CoriCore.Services
             return (200, "Employee suspension status updated to " + (emp.IsSuspended ? "suspended" : "unsuspended"));
         }
 
-        public async Task<(int Code, string Message)> UpdateEmployeeDetailsByIdAsync(int id, EmployeeUpdateDTO updateDto)
-        {
-            // Find the employee
-            var employee = await _context.Employees.FindAsync(id);
-            if (employee == null)
-            {
-                return (404, "Employee not found");
-            }
-
-            // Update only the fields that are provided (not null)
-            if (updateDto.Gender.HasValue) employee.Gender = updateDto.Gender.Value;
-            if (updateDto.DateOfBirth.HasValue) employee.DateOfBirth = updateDto.DateOfBirth.Value;
-            if (updateDto.PhoneNumber != null) employee.PhoneNumber = updateDto.PhoneNumber;
-            if (updateDto.JobTitle != null) employee.JobTitle = updateDto.JobTitle;
-            if (updateDto.Department != null) employee.Department = updateDto.Department;
-            if (updateDto.SalaryAmount.HasValue) employee.SalaryAmount = updateDto.SalaryAmount.Value;
-            if (updateDto.PayCycle.HasValue) employee.PayCycle = updateDto.PayCycle.Value;
-            if (updateDto.LastPaidDate.HasValue) employee.LastPaidDate = updateDto.LastPaidDate.Value;
-            if (updateDto.EmployType.HasValue) employee.EmployType = updateDto.EmployType.Value;
-            if (updateDto.EmployDate.HasValue) employee.EmployDate = updateDto.EmployDate.Value;
-            if (updateDto.IsSuspended.HasValue) employee.IsSuspended = updateDto.IsSuspended.Value;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return (200, "Employee details updated successfully");
-            }
-            catch (DbUpdateException ex)
-            {
-                return (400, $"Error updating employee: {ex.Message}");
-            }
-        }
+        
     }
 }

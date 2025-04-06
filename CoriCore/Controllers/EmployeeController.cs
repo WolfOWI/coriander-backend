@@ -63,13 +63,7 @@ namespace CoriCore.Controllers
             return employee;
         }
 
-        // PUT: api/Employee/edit-by-id/{id}
-        [HttpPut("edit-by-id/{id}")]
-        public async Task<IActionResult> EditEmployeeDetailsById(int id, [FromBody] EmployeeUpdateDTO updateDto)
-        {
-            var result = await _employeeService.UpdateEmployeeDetailsByIdAsync(id, updateDto);
-            return StatusCode(result.Code, new { result.Message });
-        }
+        
 
         // POST: api/Employee
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

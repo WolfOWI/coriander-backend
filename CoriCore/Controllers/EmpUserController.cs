@@ -51,5 +51,13 @@ namespace CoriCore.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        // PUT: api/EmpUser/edit-by-id/{id}
+        [HttpPut("edit-by-id/{id}")]
+        public async Task<IActionResult> EditEmpUserDetailsById(int id, [FromBody] EmployeeUpdateDTO updateDto)
+        {
+            var result = await _empUserService.UpdateEmpUserDetailsByIdAsync(id, updateDto);
+            return StatusCode(result.Code, new { result.Message });
+        }
     }
 }
