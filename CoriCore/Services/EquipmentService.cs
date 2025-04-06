@@ -29,6 +29,7 @@ public class EquipmentService : IEquipmentService
                 EmployeeId = e.EmployeeId,
                 EquipmentCatId = e.EquipmentCatId,
                 EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
+                EquipmentName = e.EquipmentName,
                 AssignedDate = e.AssignedDate,
                 Condition = e.Condition
             })
