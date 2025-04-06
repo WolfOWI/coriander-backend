@@ -25,6 +25,7 @@ public class EmpUserService : IEmpUserService
                     UserId = e.UserId,
                     FullName = e.User.FullName,
                     Email = e.User.Email,
+                    GoogleId = e.User.GoogleId,
                     ProfilePicture = e.User.ProfilePicture,
                     Role = e.User.Role,
 
