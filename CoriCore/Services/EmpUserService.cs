@@ -86,7 +86,9 @@ public class EmpUserService : IEmpUserService
             IsSuspended = empUser.IsSuspended,
         };
     }
-public async Task<(int Code, string Message)> UpdateEmpUserDetailsByIdAsync(int id, EmployeeUpdateDTO updateDto)
+    
+    // Update EmpUser details by ID
+    public async Task<(int Code, string Message)> UpdateEmpUserDetailsByIdAsync(int id, EmployeeUpdateDTO updateDto)
         {
             // Find the employee and include the user
             var employee = await _context.Employees

@@ -1,5 +1,6 @@
 using System;
 using CoriCore.Data;
+using CoriCore.DTOs;
 using CoriCore.Models;
 using CoriCore.Services;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,7 @@ public class EmpUserServiceTests
         _service = new EmpUserService(_context);
     }
 
-    // TESTS
+    // GET ALL EMP USERS TESTS
     // ================================================================================================================
     // GetAllEmpUsers & returns list of EmpUsers
     [Fact]
@@ -173,6 +174,215 @@ public class EmpUserServiceTests
         
         // Make sure we got an empty list back
         Assert.Empty(result);  // Check that we got an empty list
+        // ------------------------------------------------------------
+    }
+    // ================================================================================================================
+
+
+    // GET EMP USER BY ID TESTS
+    // ================================================================================================================
+    // GetEmpUserById & returns EmpUser
+    [Fact]
+    public async Task GetEmpUserById_ReturnsEmpUser()
+    {
+        // Arrange
+        // ------------------------------------------------------------
+        // Create a test user
+        var user = new User
+        {
+            UserId = 1,
+            FullName = "John Doe",
+            Email = "john@example.com",
+            Role = UserRole.Employee
+        };
+
+        // Create a test employee
+        var employee = new Employee
+        {
+            EmployeeId = 1,
+            User = user,
+            UserId = user.UserId,
+            Gender = Gender.Male,
+            DateOfBirth = new DateOnly(1990, 1, 1),
+            PhoneNumber = "1234567890",
+            JobTitle = "Dev",
+            Department = "Engineering",
+            SalaryAmount = 50000,
+            PayCycle = PayCycle.Monthly,
+            EmployDate = new DateOnly(2020, 1, 1),
+            EmployType = EmployType.FullTime,
+            IsSuspended = false
+        };
+
+        // Add test data to database
+        _context.Users.Add(user);
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+        // ------------------------------------------------------------
+
+        // Act
+        // ------------------------------------------------------------
+        // Call our service to get the employee
+        var result = await _service.GetEmpUserByEmpId(employee.EmployeeId);
+        // ------------------------------------------------------------
+
+        // Assert (Check if it worked)
+        // ------------------------------------------------------------
+        // Make sure we got something back (not null)
+        Assert.NotNull(result);  // Check that we got a result (not null)
+        
+        // Make sure we got the correct employee back
+        Assert.Equal(employee.EmployeeId, result.EmployeeId);
+        Assert.Equal(employee.User.FullName, result.FullName);
+        
+        // User info check
+        Assert.Equal(user.UserId, result.UserId);
+        Assert.Equal(user.FullName, result.FullName);
+        Assert.Equal(user.Email, result.Email);
+        Assert.Equal(user.Role, result.Role);
+        
+        // Employee info check
+        Assert.Equal(employee.Gender, result.Gender);
+        Assert.Equal(employee.DateOfBirth, result.DateOfBirth);
+        Assert.Equal(employee.PhoneNumber, result.PhoneNumber);
+        Assert.Equal(employee.JobTitle, result.JobTitle);
+        Assert.Equal(employee.Department, result.Department);
+        Assert.Equal(employee.SalaryAmount, result.SalaryAmount);
+        Assert.Equal(employee.PayCycle, result.PayCycle);
+        Assert.Equal(employee.EmployDate, result.EmployDate);
+        Assert.Equal(employee.EmployType, result.EmployType);
+        Assert.Equal(employee.IsSuspended, result.IsSuspended);
+        // ------------------------------------------------------------
+    }
+
+    // GetEmpUserById & throws exception when employee does not exist
+    [Fact]
+    public async Task GetEmpUserById_ThrowsException_WhenEmployeeDoesNotExist()
+    {
+        // Arrange 
+        // ------------------------------------------------------------
+        // No employee in the database
+        // ------------------------------------------------------------
+
+        // Act & Assert
+        // ------------------------------------------------------------
+        // Call our service to get the employee and expect an exception
+        var exception = await Assert.ThrowsAsync<Exception>(() => _service.GetEmpUserByEmpId(1));
+        Assert.Equal("Employee-User not found", exception.Message);
+        // ------------------------------------------------------------
+    }
+    // ================================================================================================================
+    
+
+    // UPDATE EMP USER DETAILS BY ID TESTS
+    // ================================================================================================================
+    // UpdateEmpUserDetailsByIdAsync & returns updated EmpUser
+    [Fact]
+    public async Task UpdateEmpUserDetailsByIdAsync_ReturnsUpdatedEmpUser()
+    {
+        // Arrange
+        // ------------------------------------------------------------
+        // Create a test user
+        var user = new User
+        {
+            UserId = 1, 
+            FullName = "John Doe",
+            Email = "john@example.com",
+            Role = UserRole.Employee
+        };
+
+        // Create a test employee
+        var employee = new Employee
+        {
+            EmployeeId = 1,
+            User = user,
+            UserId = user.UserId,
+            Gender = Gender.Male,
+            DateOfBirth = new DateOnly(1990, 1, 1),
+            PhoneNumber = "1234567890",
+            JobTitle = "Dev",
+            Department = "Engineering",
+            SalaryAmount = 50000,
+            PayCycle = PayCycle.Monthly,
+            EmployDate = new DateOnly(2020, 1, 1),
+            EmployType = EmployType.FullTime,
+            IsSuspended = false
+        };
+
+        // Add test data to database
+        _context.Users.Add(user);
+        _context.Employees.Add(employee);
+        await _context.SaveChangesAsync();
+        // ------------------------------------------------------------
+
+        // Act
+        // ------------------------------------------------------------
+        // Call our service to update the employee
+        var updatedUser = new EmployeeUpdateDTO
+        {
+            FullName = "Jane Smith",
+            Gender = Gender.Female,
+            DateOfBirth = new DateOnly(1992, 3, 15),
+            PhoneNumber = "0987654321",
+            JobTitle = "QA",
+            Department = "Testing",
+            SalaryAmount = 45000,
+            PayCycle = PayCycle.Weekly,
+            EmployDate = new DateOnly(2021, 2, 2),
+            EmployType = EmployType.PartTime,
+            IsSuspended = true
+        };
+
+        var result = await _service.UpdateEmpUserDetailsByIdAsync(employee.EmployeeId, updatedUser);
+        // ------------------------------------------------------------
+
+        // Assert (Check if it worked) 
+        // ------------------------------------------------------------
+        // Make sure we got a success code and message
+        Assert.Equal(200, result.Code);
+        Assert.Equal("Employee user details updated successfully", result.Message);
+
+        // Make sure the employee was updated correctly in the database
+        var updatedEmployee = await _context.Employees
+            .Include(e => e.User)
+            .FirstOrDefaultAsync(e => e.EmployeeId == employee.EmployeeId);
+        Assert.NotNull(updatedEmployee);
+
+        // Check if all fields were updated correctly
+        Assert.Equal(updatedUser.FullName, updatedEmployee.User.FullName);
+        Assert.Equal(updatedUser.Gender, updatedEmployee.Gender);
+        Assert.Equal(updatedUser.DateOfBirth, updatedEmployee.DateOfBirth);
+        Assert.Equal(updatedUser.PhoneNumber, updatedEmployee.PhoneNumber);
+        Assert.Equal(updatedUser.JobTitle, updatedEmployee.JobTitle);
+        Assert.Equal(updatedUser.Department, updatedEmployee.Department);
+        Assert.Equal(updatedUser.SalaryAmount, updatedEmployee.SalaryAmount);
+        Assert.Equal(updatedUser.PayCycle, updatedEmployee.PayCycle);
+        Assert.Equal(updatedUser.EmployDate, updatedEmployee.EmployDate);
+        Assert.Equal(updatedUser.EmployType, updatedEmployee.EmployType);
+        Assert.Equal(updatedUser.IsSuspended, updatedEmployee.IsSuspended);
+        // ------------------------------------------------------------
+    }
+
+    // UpdateEmpUserDetailsByIdAsync & returns 404 when employee does not exist
+    [Fact]
+    public async Task UpdateEmpUserDetailsByIdAsync_Returns404_WhenEmployeeDoesNotExist()
+    {
+        // Arrange
+        // ------------------------------------------------------------
+        // No employee in the database
+        // ------------------------------------------------------------
+
+        // Act & Assert
+        // ------------------------------------------------------------
+        // Call our service to update the employee
+        var result = await _service.UpdateEmpUserDetailsByIdAsync(1, new EmployeeUpdateDTO());
+        // ------------------------------------------------------------
+
+        // Assert (Check if it worked)
+        // ------------------------------------------------------------
+        // Make sure we got a 404 code and message
+        Assert.Equal(404, result.Code);
+        Assert.Equal("Employee not found", result.Message);
         // ------------------------------------------------------------
     }
     // ================================================================================================================
