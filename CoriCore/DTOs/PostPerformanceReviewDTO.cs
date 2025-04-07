@@ -1,4 +1,5 @@
 using System;
+using CoriCore.Models;
 
 namespace CoriCore.DTOs;
 
