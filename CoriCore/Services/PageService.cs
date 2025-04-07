@@ -63,4 +63,25 @@ public class PageService : IPageService
                 .ToList()
         };
     }
+
+    public async Task<List<AdminEmpManagePageListItemDTO>> GetAdminEmpManagementPageInfo()
+    {
+        // Execute database operations sequentially to avoid DbContext threading issues
+        var empUsers = await _empUserService.GetAllEmpUsers();
+        var empManagementPageDTOs = new List<AdminEmpManagePageListItemDTO>();
+        foreach (var empUser in empUsers)
+        {
+                var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(empUser.EmployeeId);
+                var totalLeaveBalanceSum = await _leaveBalanceService.GetTotalLeaveBalanceSum(empUser.EmployeeId);
+            empManagementPageDTOs.Add(new AdminEmpManagePageListItemDTO
+            {
+                EmpUser = empUser,
+                EmpUserRatingMetrics = ratingMetrics,
+                TotalLeaveBalanceSum = totalLeaveBalanceSum
+            });
+        }
+        
+        return empManagementPageDTOs;
+    }
+        
 } 

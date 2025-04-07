@@ -36,5 +36,24 @@ namespace CoriCore.Controllers
                 return NotFound($"Error retrieving admin employee details: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Gets all the information needed for the Admin Employee Management page
+        /// </summary>
+        /// <returns>A list of AdminEmpManagePageListItemDTO containing all necessary information</returns>
+        [HttpGet("admin-emp-management")]
+        public async Task<ActionResult<List<AdminEmpManagePageListItemDTO>>> GetAdminEmpManagementPage()
+        {
+            try
+            {
+                var pageInfo = await _pageService.GetAdminEmpManagementPageInfo();
+                return Ok(pageInfo);
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Error retrieving admin employee management page: {ex.Message}");
+            }
+        }
+        
     }
 } 
