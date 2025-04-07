@@ -120,7 +120,7 @@ public class PerformanceReviewServiceTests
             AdminId = admin.AdminId,
             EmployeeId = employee.EmployeeId,
             StartDate = DateTime.Now.AddDays(1),
-            Status = Status.Upcoming
+            Status = ReviewStatus.Upcoming
         };
 
         var reviewUpcoming2 = new PerformanceReview
@@ -131,7 +131,7 @@ public class PerformanceReviewServiceTests
             AdminId = admin.AdminId,
             EmployeeId = employee.EmployeeId,
             StartDate = DateTime.Now.AddDays(2),
-            Status = Status.Upcoming
+            Status = ReviewStatus.Upcoming
         };
 
         var reviewCompleted = new PerformanceReview
@@ -142,7 +142,7 @@ public class PerformanceReviewServiceTests
             AdminId = admin.AdminId,
             EmployeeId = employee.EmployeeId,
             StartDate = DateTime.Now.AddDays(-1),
-            Status = Status.Completed
+            Status = ReviewStatus.Completed
         };
 
         _context.Users.AddRange(adminUser, empUser);
@@ -157,7 +157,7 @@ public class PerformanceReviewServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count()); // Only 2 upcoming reviews should be returned
-        Assert.All(result, r => Assert.Equal(Status.Upcoming, r.Status));
+        Assert.All(result, r => Assert.Equal(ReviewStatus.Upcoming, r.Status));
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class PerformanceReviewServiceTests
             AdminId = admin.AdminId,
             EmployeeId = employee.EmployeeId,
             StartDate = DateTime.Now.AddDays(-3),
-            Status = Status.Completed
+            Status = ReviewStatus.Completed
         };
 
         var cancelledReview = new PerformanceReview
@@ -188,7 +188,7 @@ public class PerformanceReviewServiceTests
             AdminId = admin.AdminId,
             EmployeeId = employee.EmployeeId,
             StartDate = DateTime.Now.AddDays(-5),
-            Status = Status.Completed
+            Status = ReviewStatus.Completed
         };
 
         _context.Users.AddRange(adminUser, empUser);
@@ -231,7 +231,7 @@ public class PerformanceReviewServiceTests
             MeetLocation = "Office A",
             Rating = 3,
             Comment = "Initial comment",
-            Status = Status.Upcoming
+            Status = ReviewStatus.Upcoming
         };
 
         _context.Users.AddRange(adminUser, empUser);
