@@ -67,6 +67,22 @@ public class User
     [Required]
     public UserRole Role { get; set; } = UserRole.Unassigned;
     // ----------------------------------------
+
+    // IsVerified (Required)
+    // ----------------------------------------
+    [Required]
+    public bool IsVerified { get; set; } = false;
+    // ----------------------------------------
+
+    // VerificationCode (Can be null)
+    // ----------------------------------------
+    public string? VerificationCode { get; set; }
+    // ----------------------------------------
+
+    // CodeGeneratedAt (Can be null)
+    // ----------------------------------------
+    public DateTime? CodeGeneratedAt { get; set; }
+    // ----------------------------------------
     // ========================================
 
 

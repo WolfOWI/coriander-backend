@@ -74,7 +74,7 @@ namespace CoriCore.Controllers
                 Rating = pr.Rating,
                 Comment = pr.Comment,
                 DocUrl = pr.DocUrl,
-                Status = (ReviewStatus)pr.Status
+                Status = pr.Status
             });
 
             return Ok(reviewDTOs);
@@ -106,7 +106,7 @@ namespace CoriCore.Controllers
                 Rating = pr.Rating,
                 Comment = pr.Comment,
                 DocUrl = pr.DocUrl,
-                Status = (ReviewStatus)pr.Status
+                Status = pr.Status
             });
 
             return Ok(reviewDTOs);
@@ -157,7 +157,7 @@ namespace CoriCore.Controllers
                 Rating = reviewDTO.Rating,
                 Comment = reviewDTO.Comment,
                 DocUrl = reviewDTO.DocUrl,
-                Status = Status.Upcoming // Set status to Upcoming (1)
+                Status = ReviewStatus.Upcoming // Set status to Upcoming (1)
             };
 
             // Create the performance review in the database
@@ -190,7 +190,7 @@ namespace CoriCore.Controllers
                 Rating = reviewDTO.Rating,
                 Comment = reviewDTO.Comment,
                 DocUrl = reviewDTO.DocUrl,
-                Status = Status.Upcoming // Set status to Upcoming (1) or keep the existing status
+                Status = ReviewStatus.Upcoming // Set status to Upcoming (1) or keep the existing status
             };
 
             // Update the performance review in the database
@@ -227,7 +227,7 @@ namespace CoriCore.Controllers
                 Rating = review.Rating,
                 Comment = review.Comment,
                 DocUrl = review.DocUrl,
-                Status = (ReviewStatus)review.Status
+                Status = review.Status
             });
 
             return Ok(reviewDTOs);

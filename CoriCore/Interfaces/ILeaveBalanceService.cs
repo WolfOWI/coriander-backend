@@ -11,4 +11,7 @@ public interface ILeaveBalanceService
 
      // Create all default leave balances for a new employee
     Task<bool> CreateDefaultLeaveBalances(int employeeId);
+
+    // Get the total remaining days and total leave days for an employee by Id
+    Task<LeaveBalanceSumDTO> GetTotalLeaveBalanceSum(int employeeId);
 }

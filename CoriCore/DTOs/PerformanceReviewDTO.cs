@@ -1,13 +1,8 @@
 using System;
+using CoriCore.Models;
 
 namespace CoriCore.DTOs;
 
-public enum ReviewStatus
-{
-    Pending = 0,
-    Upcoming = 1,
-    Completed = 2
-}
 
 public class PerformanceReviewDTO
 {

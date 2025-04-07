@@ -129,8 +129,8 @@ public class PerformanceReviewService : IPerformanceReviewService
     //Use PerformanceReviewDTO to create a new review
     public async Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review)
     {
-        review.Status = Status.Upcoming; // Set status to Upcoming (1)
-        await _context.PerformanceReviews.AddAsync(review);
+        review.Status = ReviewStatus.Upcoming; // Set initial status
+        _context.PerformanceReviews.Add(review);
         await _context.SaveChangesAsync();
         return review;
     }
@@ -138,9 +138,27 @@ public class PerformanceReviewService : IPerformanceReviewService
     // Update Performance Review
     public async Task<PerformanceReview> UpdatePerformanceReview(int id, PerformanceReview review)
     {
-        _context.PerformanceReviews.Update(review);
+        var existingReview = await _context.PerformanceReviews.FindAsync(id);
+        if (existingReview == null)
+        {
+            throw new Exception("Performance review not found");
+        }
+
+        // Update properties
+        existingReview.AdminId = review.AdminId;
+        existingReview.EmployeeId = review.EmployeeId;
+        existingReview.IsOnline = review.IsOnline;
+        existingReview.MeetLocation = review.MeetLocation;
+        existingReview.MeetLink = review.MeetLink;
+        existingReview.StartDate = review.StartDate;
+        existingReview.EndDate = review.EndDate;
+        existingReview.Rating = review.Rating;
+        existingReview.Comment = review.Comment;
+        existingReview.DocUrl = review.DocUrl;
+        existingReview.Status = review.Status;
+
         await _context.SaveChangesAsync();
-        return review;
+        return existingReview;
     }
 
     //Get All Performance Review when - status 1 (Upcoming)
@@ -163,9 +181,11 @@ public class PerformanceReviewService : IPerformanceReviewService
     public async Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm()
     {
         return await _context.PerformanceReviews
-            .Include(pr => pr.Admin.User) // Include related Admin User data
-            .Include(pr => pr.Employee.User) // Include related Employee User data
-            .Where(pr => pr.Status == Status.Upcoming) // Filter by status 'Upcoming'
+            .Include(pr => pr.Admin) 
+                .ThenInclude(a => a.User) // Include related Admin User data
+            .Include(pr => pr.Employee)
+                .ThenInclude(e => e.User) // Include related Employee User data
+            .Where(pr => pr.Status == ReviewStatus.Upcoming) // Filter by status 'Upcoming'
             .ToListAsync();
     }
 }

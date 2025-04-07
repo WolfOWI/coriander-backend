@@ -4,6 +4,7 @@ using System.Linq;
 using CoriCore.DTOs.Page_Specific;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
+using CoriCore.Models;
 
 namespace CoriCore.Services;
 
@@ -63,4 +64,42 @@ public class PageService : IPageService
                 .ToList()
         };
     }
+
+    public async Task<List<AdminEmpManagePageListItemDTO>> GetAdminEmpManagementPageInfo()
+    {
+        // Execute database operations sequentially to avoid DbContext threading issues
+        var empUsers = await _empUserService.GetAllEmpUsers();
+        var empManagementPageDTOs = new List<AdminEmpManagePageListItemDTO>();
+        foreach (var empUser in empUsers)
+        {
+                var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(empUser.EmployeeId);
+                var totalLeaveBalanceSum = await _leaveBalanceService.GetTotalLeaveBalanceSum(empUser.EmployeeId);
+            empManagementPageDTOs.Add(new AdminEmpManagePageListItemDTO
+            {
+                EmpUser = empUser,
+                EmpUserRatingMetrics = ratingMetrics,
+                TotalLeaveBalanceSum = totalLeaveBalanceSum
+            });
+        }
+        
+        return empManagementPageDTOs;
+    }
+        
+    public async Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId)
+    {
+        // Execute database operations sequentially to avoid DbContext threading issues
+        var empUser = await _empUserService.GetEmpUserByEmpId(employeeId);
+        var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
+        var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(employeeId);
+
+        // Create the DTO with all the gathered information
+        return new EmployeeProfilePageDTO
+        {
+            EmpUser = empUser,
+            Equipment = equipment,
+            EmpUserRatingMetrics = ratingMetrics,
+        };
+        
+    }
+    
 } 
