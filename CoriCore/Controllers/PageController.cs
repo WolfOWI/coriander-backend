@@ -55,5 +55,23 @@ namespace CoriCore.Controllers
             }
         }
         
+        /// <summary>
+        /// Gets all the information needed for the Employee Profile page
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <returns>An EmployeeProfilePageDTO containing all necessary information</returns>
+        [HttpGet("employee-profile/{employeeId}")]
+        public async Task<ActionResult<EmployeeProfilePageDTO>> GetEmployeeProfilePage(int employeeId)
+        {
+            try
+            {
+                var pageInfo = await _pageService.GetEmployeeProfilePageInfo(employeeId);
+                return Ok(pageInfo);
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Error retrieving employee profile page: {ex.Message}");
+            }
+        }
     }
 } 

@@ -84,4 +84,21 @@ public class PageService : IPageService
         return empManagementPageDTOs;
     }
         
+    public async Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId)
+    {
+        // Execute database operations sequentially to avoid DbContext threading issues
+        var empUser = await _empUserService.GetEmpUserByEmpId(employeeId);
+        var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
+        var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(employeeId);
+
+        // Create the DTO with all the gathered information
+        return new EmployeeProfilePageDTO
+        {
+            EmpUser = empUser,
+            Equipment = equipment,
+            EmpUserRatingMetrics = ratingMetrics,
+        };
+        
+    }
+    
 } 
