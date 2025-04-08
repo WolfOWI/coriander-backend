@@ -1,6 +1,7 @@
 // Wolf Botha
 
 using System;
+using System.Security.Claims;
 using CoriCore.DTOs;
 using CoriCore.Models;
 
@@ -31,6 +32,9 @@ public interface IAuthService
     // SESSION MANAGEMENT
     // ============================
     
+    // Generate JWT token
+    Task<string> GenerateJwt(User user);
+    
     // Revoke a JWT token (invalidate the session)
     Task<bool> RevokeToken(string token);
 
@@ -42,6 +46,9 @@ public interface IAuthService
 
     // Check if a user is authenticated
     Task<bool> IsUserAuthenticated();
+
+    // Get current user info after login - frontend
+    Task<CurrentUserDTO?> GetCurrentUserDetails(ClaimsPrincipal user);
 
     // ============================
     // GOOGLE SIGN UP & LOGIN

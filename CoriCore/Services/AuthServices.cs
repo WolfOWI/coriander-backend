@@ -7,6 +7,10 @@ using CoriCore.Interfaces;
 using CoriCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Google.Apis.Auth;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CoriCore.Services;
 
@@ -27,6 +31,40 @@ public class AuthServices : IAuthService
         _context = context;
         _userService = userService;
     }
+    // ========================================
+
+    // JWT token generator
+    // ========================================
+    public Task<string> GenerateJwt(User user)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes("asjdfhaksljdfhsakjdhfsakjdfhaksldjfhalksjdfhaskjdhfkajdshfklasdfhalsdjkfhasdjkfhksadljhfkjsdhfaskjdhflasdfk2h321b7c3289c120b74c1290b12790.b123789"); // Replace with env var
+
+        var claims = new List<Claim>
+        {
+            new Claim("userId", user.UserId.ToString()),
+            new Claim("email", user.Email),
+            new Claim("role", user.Role.ToString())
+        };
+
+        if (user.Employee != null)
+            claims.Add(new Claim("employeeId", user.Employee.EmployeeId.ToString()));
+
+        if (user.Admin != null)
+            claims.Add(new Claim("adminId", user.Admin.AdminId.ToString()));
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddDays(7),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        string jwt = tokenHandler.WriteToken(token);
+        return Task.FromResult(jwt);
+    }
+
     // ========================================
     
 
@@ -101,36 +139,56 @@ public class AuthServices : IAuthService
 
     // User Login & Authentication
     // ========================================
-    // Login a user (with email & password)
+    // Login a user (with email & password) - whitout jwt
+    // public async Task<string> LoginWithEmail(string email, string password)
+    // {
+    //     // Check if the user exists
+    //     User? user = await _userService.GetUserByEmailAsync(email);
+
+    //     // If the user does not exist
+    //     if (user == null)
+    //     {
+    //         throw new Exception($"User with email {email} not found");
+    //     }
+
+    //     // Check if the password is valid
+    //     bool isPasswordValid = await VerifyPassword(user, password);
+
+    //     // If the password is invalid
+    //     if (!isPasswordValid)
+    //     {
+    //         throw new Exception("Invalid password");
+    //     }
+
+    //     // Return a success message
+    //     return "Login successful";
+    // }
+    // Login a user (with email & password) - with JWT
     public async Task<string> LoginWithEmail(string email, string password)
     {
-        // Check if the user exists
-        User? user = await _userService.GetUserByEmailAsync(email);
+        var user = await _context.Users
+            .Include(u => u.Employee)
+            .Include(u => u.Admin)
+            .FirstOrDefaultAsync(u => u.Email == email);
 
-        // If the user does not exist
         if (user == null)
-        {
             throw new Exception($"User with email {email} not found");
-        }
 
-        // Check if the password is valid
-        bool isPasswordValid = await VerifyPassword(user, password);
-
-        // If the password is invalid
-        if (!isPasswordValid)
-        {
+        if (!await VerifyPassword(user, password))
             throw new Exception("Invalid password");
-        }
 
-        // Return a success message
-        return "Login successful";
+        return await GenerateJwt(user);
     }
+
 
     public async Task<string> LoginWithGoogle(string googleToken)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == payload.Subject || u.Email == payload.Email);
+        var user = await _context.Users
+            .Include(u => u.Employee)
+            .Include(u => u.Admin)
+            .FirstOrDefaultAsync(u => u.GoogleId == payload.Subject || u.Email == payload.Email);
 
         if (user == null)
         {
@@ -140,16 +198,16 @@ public class AuthServices : IAuthService
                 Email = payload.Email,
                 GoogleId = payload.Subject,
                 ProfilePicture = payload.Picture,
-                Role = UserRole.Unassigned // (Changed this from employee to unassigned - Wolf)
+                Role = UserRole.Unassigned
             };
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
 
-        // TODO: Replace with your actual JWT generation logic
-        return $"JWT_FOR_{user.Email}";
+        return await GenerateJwt(user);
     }
+
 
     // Verify a User's password against a hashed password
     public Task<bool> VerifyPassword(User user, string password)
@@ -181,6 +239,35 @@ public class AuthServices : IAuthService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<CurrentUserDTO?> GetCurrentUserDetails(ClaimsPrincipal user)
+    {
+        var userIdClaim = user.FindFirst("userId")?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim)) return null;
+
+        int userId = int.Parse(userIdClaim);
+        var u = await _context.Users
+            .Include(u => u.Employee)
+            .Include(u => u.Admin)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (u == null) return null;
+
+        return new CurrentUserDTO
+        {
+            UserId = u.UserId,
+            FullName = u.FullName,
+            Email = u.Email,
+            Role = u.Role.ToString(),
+            ProfilePicture = u.ProfilePicture,
+            EmployeeId = u.Employee?.EmployeeId,
+            AdminId = u.Admin?.AdminId,
+            IsLinked = (u.Role == UserRole.Admin && u.Admin != null) ||
+                    (u.Role == UserRole.Employee && u.Employee != null)
+        };
+    }
+
     // ========================================
 
 

@@ -6,6 +6,9 @@ using CoriCore.Interfaces;
 using CoriCore.Services; // Library for loading environment variables from a .env file
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 // Load environment variables (from .env file)
@@ -40,7 +43,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        // Ek het port 5121 bygesit omdat myne op daai een run - Ruan
+        policy.WithOrigins(
+            "http://localhost:5173",   // your React dev server
+            "https://localhost:5121",  // Swagger UI runs here
+            "http://localhost:5121",    // fallback
+            "localhost:5121"    // fallback
+        )
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
@@ -56,8 +65,11 @@ builder.Services.AddControllers()
     });// Prevent object loops (e.g: employee -> equipment -> employee ...)
 // ========================================
 
-// Google Authentication and Cookies
+// Google Authentication, Cookies and JWT management
 // ========================================
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+             ?? "super_mega_ultra_secret_jwt_key_123456"; // fallback for dev
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -68,6 +80,38 @@ builder.Services.AddAuthentication(options =>
 {
     options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
     options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+})
+.AddJwtBearer(options =>
+{
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var headerToken = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            if (!string.IsNullOrEmpty(headerToken))
+            {
+                context.Token = headerToken;
+            }
+            else
+            {
+                var cookieToken = context.Request.Cookies["token"];
+                if (!string.IsNullOrEmpty(cookieToken))
+                {
+                    context.Token = cookieToken;
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+    };
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSecret)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
 });
 // ========================================
 
@@ -136,7 +180,8 @@ app.UseCors("AllowLocalhost");
 app.UseHttpsRedirection();
 
 // Middleware for Google Authentication
-app.UseAuthentication();
+app.UseAuthentication(); // ✅ Must come before UseAuthorization
+app.UseAuthorization();
 
 app.MapControllers();
 

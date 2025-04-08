@@ -1,6 +1,7 @@
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,17 +80,34 @@ namespace CoriCore.Controllers
         /// <param name="email">The email of the user to login</param>
         /// <param name="password">The password of the user to login</param>
         /// <returns>A message indicating the success or failure of the login attempt</returns>
+        // [HttpPost("login")]
+        // public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
+        // {
+        //     string loginResult = await _authService.LoginWithEmail(user.Email, user.Password);
+
+        //     if (loginResult != "Login successful")
+        //     {
+        //         return BadRequest(loginResult);
+        //     }
+
+        //     return Ok(loginResult);
+        // }
+
+        // Regular email & password login with JWT
         [HttpPost("login")]
         public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
         {
-            string loginResult = await _authService.LoginWithEmail(user.Email, user.Password);
+            string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
 
-            if (loginResult != "Login successful")
+            Response.Cookies.Append("token", jwt, new CookieOptions
             {
-                return BadRequest(loginResult);
-            }
+                HttpOnly = false, // change to true when website is in production or when working with the frontend
+                Secure = false, // same like above
+                SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
 
-            return Ok(loginResult);
+            return Ok("Login successful");
         }
         
         [HttpPost("google-login")]
@@ -102,7 +120,15 @@ namespace CoriCore.Controllers
                 return Unauthorized("Invalid Google login.");
             }
 
-            return Ok(new { token });
+            Response.Cookies.Append("token", token, new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = false,
+                SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
+
+            return Ok("Login successful");
         }
 
         [HttpPost("google-register")]
@@ -116,6 +142,18 @@ namespace CoriCore.Controllers
             }
 
             return Ok("Google registration successful.");
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userData = await _authService.GetCurrentUserDetails(User);
+
+            if (userData == null)
+                return Unauthorized("Invalid user session");
+
+            return Ok(userData);
         }
     }
 }
