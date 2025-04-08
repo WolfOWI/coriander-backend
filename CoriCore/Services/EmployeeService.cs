@@ -3,6 +3,8 @@ using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services 
 {
@@ -67,7 +69,7 @@ namespace CoriCore.Services
                 LastPaidDate = dto.LastPaidDate,
                 EmployType = dto.EmployType,
                 EmployDate = dto.EmployDate,
-                IsSuspended = dto.IsSuspended
+                IsSuspended = false // default to false
             };
 
             _context.Employees.Add(employee);
@@ -85,8 +87,8 @@ namespace CoriCore.Services
         public async Task<(int Code, string Message)> RegisterEmployeeAsync(EmployeeDto dto)
         {
             var userCheck = await _userService.EmployeeAdminExistsAsync(dto.UserId);
-            if (userCheck != 201)
-                return (400, $"User with UserId {dto.UserId} is already registered");
+            if (userCheck == 400)
+                return (400, $"User with UserId {dto.UserId} is assigned as an Admin or Employee");
 
             var validation = await ValidateEmployeeInfoAsync(dto);
             if (validation.Code != 201)
@@ -102,5 +104,26 @@ namespace CoriCore.Services
             var createResult = await CreateEmployeeAsync(dto);
             return createResult;
         }
+
+        public async Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId)
+        {
+            // Find the employee
+            var emp = await _context.Employees.FindAsync(employeeId);
+
+            // If employee not found
+            if (emp == null)
+                {
+                    return (404, "Employee not found");
+                }
+
+            // (Found) Toggle the suspension status
+            emp.IsSuspended = !emp.IsSuspended;
+            await _context.SaveChangesAsync();
+
+            // Return the result
+            return (200, "Employee suspension status updated to " + (emp.IsSuspended ? "suspended" : "unsuspended"));
+        }
+
+        
     }
 }

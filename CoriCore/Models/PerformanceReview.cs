@@ -4,12 +4,12 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CoriCore.DTOs;
 
 namespace CoriCore.Models;
 
-public enum Status
+public enum ReviewStatus
 {
-    Pending = 0,
     Upcoming = 1,
     Completed = 2
 }
@@ -62,6 +62,15 @@ public class PerformanceReview
         [Required]
         [Column(TypeName = "varchar(20)")]  // To match ENUM behavior
 
-        public Status Status { get; set; } = Status.Pending;// Default 'Pending'
+        public ReviewStatus Status { get; set; } = ReviewStatus.Upcoming;// Default 'Upcoming'
 
+    internal bool Any()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal object Select(Func<object, PerformanceReviewDTO> value)
+    {
+        throw new NotImplementedException();
+    }
 }

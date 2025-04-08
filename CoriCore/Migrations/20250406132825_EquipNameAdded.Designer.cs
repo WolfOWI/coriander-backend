@@ -3,6 +3,7 @@ using System;
 using CoriCore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CoriCore.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250406132825_EquipNameAdded")]
+    partial class EquipNameAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -294,9 +297,6 @@ namespace CoriCore.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
-                    b.Property<DateTime?>("CodeGeneratedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -308,9 +308,6 @@ namespace CoriCore.Migrations
                     b.Property<string>("GoogleId")
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Password")
                         .HasColumnType("text");
 
@@ -319,9 +316,6 @@ namespace CoriCore.Migrations
 
                     b.Property<int>("Role")
                         .HasColumnType("integer");
-
-                    b.Property<string>("VerificationCode")
-                        .HasColumnType("text");
 
                     b.HasKey("UserId");
 

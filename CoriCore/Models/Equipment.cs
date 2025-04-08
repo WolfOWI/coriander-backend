@@ -35,6 +35,12 @@ public class Equipment
     public virtual Employee Employee { get; set; } = null!;
     // ----------------------------------------
 
+    // EquipmentName
+    // ----------------------------------------
+    [Required]
+    public string EquipmentName { get; set; } = string.Empty;
+    // ----------------------------------------
+
     // EquipmentCatId (Foreign Key)
     // ----------------------------------------
     [Required]
@@ -47,7 +53,7 @@ public class Equipment
     // AssignedDate
     // ----------------------------------------
     [Required]
-    public DateTime AssignedDate { get; set; }
+    public DateOnly AssignedDate { get; set; }
     // ----------------------------------------
 
     // Condition

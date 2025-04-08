@@ -9,6 +9,7 @@ public class EmpUserDTO
     public int UserId { get; set; }
     public string FullName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string? GoogleId { get; set; }
     public string? ProfilePicture { get; set; }
     public UserRole Role { get; set; }
 
