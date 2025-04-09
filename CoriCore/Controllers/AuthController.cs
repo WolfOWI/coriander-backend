@@ -155,5 +155,21 @@ namespace CoriCore.Controllers
 
             return Ok(userData);
         }
+
+        // Two-Step verification end points:
+        [HttpPost("request-verification")]
+        public async Task<IActionResult> RequestVerification([FromBody] RequestEmailVerificationDTO dto)
+        {
+            await _authService.SendVerificationCodeAsync(dto);
+            return Ok("Verification code sent");
+        }
+
+        [HttpPost("verify-email-code")]
+        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailCodeDTO dto)
+        {
+            var result = await _authService.VerifyEmailCodeAsync(dto);
+            if (!result) return BadRequest("Invalid or expired code");
+            return Ok("Email verified successfully");
+        }
     }
 }

@@ -24,12 +24,14 @@ public class AuthServices : IAuthService
     // ========================================
     private readonly AppDbContext _context;
     private readonly IUserService _userService;
+    private readonly IEmailService _emailService;
 
     // Constructor: Allows this service to interact with the database.
-    public AuthServices(AppDbContext context, IUserService userService)
+    public AuthServices(AppDbContext context, IUserService userService, IEmailService emailService)
     {
         _context = context;
         _userService = userService;
+        _emailService = emailService;
     }
     // ========================================
 
@@ -134,6 +136,57 @@ public class AuthServices : IAuthService
         string HashedPassword = BCrypt.Net.BCrypt.HashPassword(password, 13);
         return Task.FromResult(HashedPassword);
     }
+
+    // ========================================
+
+    // Two factor authentication
+    // ========================================
+    // Send and generate a verification code for user
+    public async Task SendVerificationCodeAsync(RequestEmailVerificationDTO dto)
+    {
+        var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        if (existing != null && existing.IsVerified)
+            throw new Exception("Email already verified and registered.");
+
+        var code = new Random().Next(100000, 999999).ToString();
+
+        if (existing == null)
+        {
+            existing = new User
+            {
+                Email = dto.Email,
+                FullName = dto.FullName,
+                IsVerified = false
+            };
+            await _context.Users.AddAsync(existing);
+        }
+
+        existing.VerificationCode = code;
+        existing.CodeGeneratedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+
+        await _emailService.SendVerificationCodeEmail(dto.Email, code, dto.FullName);
+    }
+
+    // Verify code send via email
+    public async Task<bool> VerifyEmailCodeAsync(VerifyEmailCodeDTO dto)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (user == null || user.VerificationCode != dto.Code)
+            return false;
+
+        if (user.CodeGeneratedAt == null || DateTime.UtcNow - user.CodeGeneratedAt > TimeSpan.FromMinutes(10))
+            return false;
+
+        user.IsVerified = true;
+        user.VerificationCode = null;
+        user.CodeGeneratedAt = null;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     // ========================================
     
 
