@@ -153,8 +153,6 @@ public class PerformanceReviewService : IPerformanceReviewService
         }
 
         // Update properties
-        existingReview.AdminId = review.AdminId;
-        existingReview.EmployeeId = review.EmployeeId;
         existingReview.IsOnline = review.IsOnline;
         existingReview.MeetLocation = review.MeetLocation;
         existingReview.MeetLink = review.MeetLink;
@@ -213,5 +211,38 @@ public class PerformanceReviewService : IPerformanceReviewService
         _context.PerformanceReviews.RemoveRange(reviews);
         _context.SaveChangesAsync();
         return Task.FromResult(true); // Reviews deleted successfully
+    }
+
+    /// <summary>
+    /// Get the Top rated employess
+    /// </summary>
+    public async Task<List<EmpUserRatingMetricsDTO>> GetTopRatedEmployees()
+    {
+        // Fetch all employee rating metrics
+        var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
+
+        // Sort employees by AverageRating in descending order and take top 3
+        var topRatedEmployees = allEmployeeMetrics
+            .OrderByDescending(emp => emp.AverageRating)
+            .Take(3)
+            .ToList();
+
+        return topRatedEmployees;
+    }
+
+    //Toggle status from 1 to 2 (Completed)
+    public async Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus)
+    {
+        var review = await _context.PerformanceReviews.FindAsync(reviewId);
+
+        if (review == null)
+        {
+            throw new Exception("Performance review not found");
+        }
+
+        review.Status = newStatus;
+        await _context.SaveChangesAsync();
+
+        return review;
     }
 }

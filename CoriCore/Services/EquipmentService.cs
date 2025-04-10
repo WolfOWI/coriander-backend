@@ -37,4 +37,64 @@ public class EquipmentService : IEquipmentService
 
         return equipment;
     }
-} 
+
+    //CreateEquipmentItems but give is as a list
+    //CreateEquipmentItems([{equipment 1}, {equipment 2}, {equipments 3}])
+    public async Task<IEnumerable<Equipment>> CreateEquipmentItemsAsync(List<EquipmentDTO> equipmentDTOs)
+    {
+        // Map EquipmentDTOs to Equipment entities
+        var equipmentItems = equipmentDTOs.Select(dto => new Equipment
+        {
+            EmployeeId = dto.EmployeeId,
+            EquipmentCatId = dto.EquipmentCatId,
+            EquipmentName = dto.EquipmentName,
+            AssignedDate = dto.AssignedDate,
+            Condition = dto.Condition
+        }).ToList();
+
+        // Add the equipment items to the context
+        _context.Equipments.AddRange(equipmentItems);
+        
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        // Return the created equipment items
+        return equipmentItems;
+    }
+
+    //Edit and update the equipment items by id
+    public async Task<Equipment> EditEquipmentItemAsync(int equipmentId, EquipmentDTO equipmentDTO)
+    {
+        var equipment = await _context.Equipments.FindAsync(equipmentId);
+        if (equipment == null)
+        {
+            throw new KeyNotFoundException($"Equipment with ID {equipmentId} not found.");
+        }
+
+        // Update the properties of the equipment item
+        equipment.EmployeeId = equipmentDTO.EmployeeId;
+        equipment.EquipmentName = equipmentDTO.EquipmentName;
+        equipment.AssignedDate = equipmentDTO.AssignedDate;
+        equipment.Condition = equipmentDTO.Condition;
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        return equipment;
+    }
+
+    //Delete equipment item by id
+    public async Task<bool> DeleteEquipmentItemAsync(int equipmentId)
+    {
+        var equipment = await _context.Equipments.FindAsync(equipmentId);
+        if (equipment == null)
+        {
+            return false; // Equipment not found
+        }
+
+        _context.Equipments.Remove(equipment);
+        await _context.SaveChangesAsync();
+        return true; // Equipment deleted successfully
+    }
+
+}

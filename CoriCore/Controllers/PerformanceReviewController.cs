@@ -9,6 +9,7 @@ using CoriCore.Data;
 using CoriCore.Models;
 using CoriCore.Interfaces;
 using CoriCore.DTOs;
+using CoriCore.Services;
 
 namespace CoriCore.Controllers
 {   
@@ -233,7 +234,31 @@ namespace CoriCore.Controllers
 
             return Ok(reviewDTOs);
         }
+
+        [HttpGet("top-rated")]
+        public async Task<ActionResult<List<EmpUserRatingMetricsDTO>>> GetTopRatedEmployees()
+        {
+            var topRatedEmployees = await _PerformanceReviewService.GetTopRatedEmployees();
+            if (topRatedEmployees == null || !topRatedEmployees.Any())
+            {
+                return NotFound("No top-rated employees found.");
+            }
+            return Ok(topRatedEmployees);
+        }
         
+        [HttpPut("update-status/{id}")]
+        public async Task<ActionResult<PerformanceReview>> UpdateReviewStatus(int id, [FromQuery] ReviewStatus status)
+        {
+            try
+            {
+                var updatedReview = await _PerformanceReviewService.UpdateReviewStatus(id, status);
+                return Ok(updatedReview);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
         
 
         [HttpDelete("DeletePerformanceReview/{id}")]

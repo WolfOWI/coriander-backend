@@ -46,6 +46,68 @@ namespace CoriCore.Controllers
             return equipment;
         }
 
+        // POST
+        [HttpPost("CreateEquipmentItems")]
+        public async Task<ActionResult<IEnumerable<EquipmentDTO>>> CreateEquipmentItems([FromBody] List<EquipmentDTO> equipmentDtos)
+        {
+            if (equipmentDtos == null || !equipmentDtos.Any())
+            {
+                return BadRequest("No equipment provided.");
+            }
+
+            // Call service to create the equipment items
+            var equipmentItems = await _equipmentService.CreateEquipmentItemsAsync(equipmentDtos);
+
+            // Map back to EquipmentDTO to return the created items
+            var equipmentDtosCreated = equipmentItems.Select(e => new EquipmentDTO
+            {
+                EquipmentId = e.EquipmentId,
+                EmployeeId = e.EmployeeId,
+                EquipmentCatId = e.EquipmentCatId,
+                EquipmentCategoryName = e.EquipmentCategory?.EquipmentCatName, // Fixed property name
+                EquipmentName = e.EquipmentName,
+                AssignedDate = e.AssignedDate,
+                Condition = e.Condition
+            }).ToList();
+
+            // Return the created equipment items as a response
+            return CreatedAtAction(nameof(GetEquipments), new { count = equipmentDtosCreated.Count }, equipmentDtosCreated);
+        }
+
+        // PUT: api/Equipment/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] EquipmentDTO equipmentDto)
+        {
+            if (id != equipmentDto.EquipmentId)
+            {
+                return BadRequest("Equipment ID mismatch.");
+            }
+
+            // Call service to edit the equipment item
+            var updatedEquipment = await _equipmentService.EditEquipmentItemAsync(id, equipmentDto);
+
+            if (updatedEquipment == null)
+            {
+                return NotFound("Equipment not found.");
+            }
+
+            return Ok(updatedEquipment);
+        }
+
+        //Delete
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEquipmentItem(int id)
+        {
+            var deleted = await _equipmentService.DeleteEquipmentItemAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound("Equipment not found.");
+            }
+
+            return NoContent();
+        }
+
         // PUT: api/Equipment/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         // [HttpPut("{id}")]
