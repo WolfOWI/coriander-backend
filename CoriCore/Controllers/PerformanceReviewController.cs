@@ -11,7 +11,8 @@ using CoriCore.Interfaces;
 using CoriCore.DTOs;
 
 namespace CoriCore.Controllers
-{
+{   
+    //Makes it a RESTful API controller
     [Route("api/[controller]")]
     [ApiController]
     public class PerformanceReviewController : ControllerBase
@@ -242,6 +243,18 @@ namespace CoriCore.Controllers
             if (!deleted)
             {
                 return NotFound($"Successful - Performance review with ID {id} not found.");
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("DeletePrmByEmpId/{employeeId}")]
+        public async Task<IActionResult> DeletePrmByEmpId(int employeeId)
+        {
+            var deleted = await _PerformanceReviewService.DeletePrmByEmpId(employeeId);
+            if (!deleted)
+            {
+                return NotFound($"No Performance reviews for Employee ID {employeeId} not found.");
             }
 
             return NoContent();

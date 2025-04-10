@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
+//Provides the methods to perform CRUD operations on Performance Reviews
 public class PerformanceReviewService : IPerformanceReviewService
 {
     // ========================================
@@ -33,6 +34,9 @@ public class PerformanceReviewService : IPerformanceReviewService
             .ToListAsync();
     }
 
+    // ========================================
+    // GET PERFORMANCE REVIEW BY EMP ID
+    // ========================================
     public async Task<IEnumerable<PerformanceReview>> GetPrmByEmpId(int employeeId)
     {
         return await _context.PerformanceReviews
@@ -124,9 +128,11 @@ public class PerformanceReviewService : IPerformanceReviewService
         return metrics;
     }
 
-    //Create Performance Review
-    //Set status to 1 (Upcoming) when creating a new review
-    //Use PerformanceReviewDTO to create a new review
+    // ========================================
+    // CREATE PRM 
+    // SET STATUS TO 1 (UPCOMING)
+    // USE PERFORMANCE REVIEW DTO TO CREATE A NEW REVIEW
+    // ========================================
     public async Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review)
     {
         review.Status = ReviewStatus.Upcoming; // Set initial status
@@ -135,7 +141,9 @@ public class PerformanceReviewService : IPerformanceReviewService
         return review;
     }
 
-    // Update Performance Review
+    // ========================================
+    // UPDATE PERFORMANCE REVIEW
+    // ========================================
     public async Task<PerformanceReview> UpdatePerformanceReview(int id, PerformanceReview review)
     {
         var existingReview = await _context.PerformanceReviews.FindAsync(id);
@@ -161,9 +169,9 @@ public class PerformanceReviewService : IPerformanceReviewService
         return existingReview;
     }
 
-    //Get All Performance Review when - status 1 (Upcoming)
-
-
+    // ========================================
+    // DELETE PERFORMANCE REVIEW
+    // ========================================
     public Task<bool> DeletePerformanceReview(int id)
     {
         var review = _context.PerformanceReviews.Find(id);
@@ -177,7 +185,9 @@ public class PerformanceReviewService : IPerformanceReviewService
         return Task.FromResult(true); // Review deleted successfully
     }
 
-    //Get All Performance Review when - status 1 (Upcoming)
+    // ========================================
+    // GET ALL PERFORMANCE REVIEWS WITH STATUS 1 (Upcoming)
+    // ========================================
     public async Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm()
     {
         return await _context.PerformanceReviews
@@ -187,5 +197,21 @@ public class PerformanceReviewService : IPerformanceReviewService
                 .ThenInclude(e => e.User) // Include related Employee User data
             .Where(pr => pr.Status == ReviewStatus.Upcoming) // Filter by status 'Upcoming'
             .ToListAsync();
+    }
+
+/// <summary>
+/// support method to delete performance review by employee id
+/// </summary>
+    public Task<bool> DeletePrmByEmpId(int employeeId)
+    {
+        var reviews = _context.PerformanceReviews.Where(r => r.EmployeeId == employeeId).ToList();
+        if (reviews.Count == 0)
+        {
+            return Task.FromResult(false); // No reviews found for the employee
+        }
+
+        _context.PerformanceReviews.RemoveRange(reviews);
+        _context.SaveChangesAsync();
+        return Task.FromResult(true); // Reviews deleted successfully
     }
 }

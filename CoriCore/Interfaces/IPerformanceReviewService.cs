@@ -21,5 +21,7 @@ public interface IPerformanceReviewService
     Task<bool> DeletePerformanceReview(int id);
 
     Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm();
+
+    Task<bool> DeletePrmByEmpId(int employeeId);
 }
 
