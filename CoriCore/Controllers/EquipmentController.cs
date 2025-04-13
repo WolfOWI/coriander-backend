@@ -108,6 +108,15 @@ namespace CoriCore.Controllers
             return NoContent();
         }
 
+
+        // Delete all equipment items by employee id
+        [HttpDelete("delete-by-empId/{employeeId}")]
+        public async Task<IActionResult> DeleteEquipmentsByEmployeeId(int employeeId)
+        {
+            var deleted = await _equipmentService.DeleteEquipmentsByEmployeeIdAsync(employeeId);
+            return Ok(deleted);
+        }
+
         // PUT: api/Equipment/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         // [HttpPut("{id}")]

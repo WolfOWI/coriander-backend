@@ -97,4 +97,30 @@ public class EquipmentService : IEquipmentService
         return true; // Equipment deleted successfully
     }
 
+    // Delete all equipment items by employee id
+    public async Task<string> DeleteEquipmentsByEmployeeIdAsync(int employeeId)
+    {
+
+        // Check if the employee exists
+        var employee = await _context.Employees.FindAsync(employeeId);
+        if (employee == null)
+        {
+            return "Employee not found";
+        }
+
+        var equipments = await _context.Equipments.Where(e => e.EmployeeId == employeeId).ToListAsync();
+        if (equipments.Count == 0)
+        {
+            return "No equipment items found";
+        }
+
+        // Delete the equipment items
+        _context.Equipments.RemoveRange(equipments);
+
+        // Save changes to the database
+        await _context.SaveChangesAsync();
+
+        return "Equipment items deleted successfully";
+    }
+
 }
