@@ -108,7 +108,7 @@ namespace CoriCore.Controllers
             return NoContent();
         }
 
-
+        // TODO: Remove this endpoint (will form part of EmpUser Deletion)
         // Delete all equipment items by employee id
         [HttpDelete("delete-by-empId/{employeeId}")]
         public async Task<IActionResult> DeleteEquipmentsByEmployeeId(int employeeId)

@@ -63,6 +63,16 @@ namespace CoriCore.Controllers
             return employee;
         }
 
+
+        // TODO: Remove this endpoint (will form part of EmpUser Deletion)
+        // DELETE: api/Employee/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEmployee(int id)
+        {
+            var result = await _employeeService.DeleteEmployeeByIdAsync(id);
+            return StatusCode(result.Code, new { result.Message });
+        }
+
         
 
         // POST: api/Employee

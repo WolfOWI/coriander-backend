@@ -36,20 +36,6 @@ namespace CoriCore.Services
             return (201, "Validation successful");
         }
 
-        // public async Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle)
-        // {
-        //     var today = DateOnly.FromDateTime(DateTime.Today);
-        //     DateOnly nextPayDay = payCycle switch
-        //     {
-        //         (int)PayCycle.Monthly => new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month)),
-        //         (int)PayCycle.Weekly => today.AddDays(7 - (int)today.DayOfWeek),
-        //         (int)PayCycle.BiWeekly => today.AddDays(14 - (int)today.DayOfWeek),
-        //         _ => today
-        //     };
-
-        //     return (201, "Next payday calculated successfully", nextPayDay);
-        // }
-
         public async Task<(int Code, string Message)> CreateEmployeeAsync(EmployeeDto dto)
         {
             var validationResult = await ValidateEmployeeInfoAsync(dto);
@@ -124,6 +110,26 @@ namespace CoriCore.Services
             return (200, "Employee suspension status updated to " + (emp.IsSuspended ? "suspended" : "unsuspended"));
         }
 
-        
+        /// <summary>
+        /// Delete employee by id
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee to delete.</param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message)
+        public async Task<(int Code, string Message)> DeleteEmployeeByIdAsync(int employeeId)
+        {
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if (employee == null)
+            {
+                return (404, "Employee not found");
+            }
+
+            // Delete the employee
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+
+            // Return the result
+            return (200, "Employee deleted successfully");
+        }
     }
 }
