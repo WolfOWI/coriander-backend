@@ -73,6 +73,19 @@ namespace CoriCore.Controllers
             return StatusCode(result.Code, new { result.Message });
         }
 
+
+        // GET: api/Employee/status-totals
+        /// <summary>
+        /// Get the total number of employees, and the totals of each employement status (including suspended)
+        /// </summary>
+        /// <returns>The total number of employees, and the totals of each employement status</returns>
+        [HttpGet("status-totals")]
+        public async Task<ActionResult<EmpTotalStatsDTO>> GetEmployeeStatusTotals()
+        {
+            var result = await _employeeService.GetEmployeeStatusTotals();
+            return Ok(result);
+        }
+
         
 
         // POST: api/Employee

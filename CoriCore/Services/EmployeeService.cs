@@ -91,6 +91,7 @@ namespace CoriCore.Services
             return createResult;
         }
 
+        /// <inheritdoc/>
         public async Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId)
         {
             // Find the employee
@@ -110,12 +111,7 @@ namespace CoriCore.Services
             return (200, "Employee suspension status updated to " + (emp.IsSuspended ? "suspended" : "unsuspended"));
         }
 
-        /// <summary>
-        /// Delete employee by id
-        /// </summary>
-        /// <param name="employeeId">The ID of the employee to delete.</param>
-        /// <returns>
-        /// Tuple result: (int Code, string Message)
+        /// <inheritdoc/>
         public async Task<(int Code, string Message)> DeleteEmployeeByIdAsync(int employeeId)
         {
             var employee = await _context.Employees.FindAsync(employeeId);
@@ -131,5 +127,38 @@ namespace CoriCore.Services
             // Return the result
             return (200, "Employee deleted successfully");
         }
+
+        /// <inheritdoc/>
+        public async Task<EmpTotalStatsDTO> GetEmployeeStatusTotals()
+        {
+            // Count the employees
+            var totalEmployees = await _context.Employees.CountAsync();
+
+            // Count the suspended employees
+            var totalSuspendedEmployees = await _context.Employees.CountAsync(e => e.IsSuspended);
+
+            // Get the non-suspended employees and use them to count the employees by employement type
+            var nonSuspendedEmployees = await _context.Employees.Where(e => !e.IsSuspended).ToListAsync();
+
+            var totalFullTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.FullTime);
+            var totalPartTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.PartTime); 
+            var totalContractEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.Contract);
+            var totalInternEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.Intern);
+
+            // Create the DTO
+            var stats = new EmpTotalStatsDTO
+            {
+                TotalEmployees = totalEmployees,
+                TotalFullTimeEmployees = totalFullTimeEmployees,
+                TotalPartTimeEmployees = totalPartTimeEmployees,
+                TotalContractEmployees = totalContractEmployees,
+                TotalInternEmployees = totalInternEmployees,
+                TotalSuspendedEmployees = totalSuspendedEmployees
+            };
+
+            // Return the DTO
+            return stats;
+        }
     }
+
 }

@@ -15,6 +15,7 @@ public class EmpUserService : IEmpUserService
     }
     
     // Get all EmpUsers
+    /// <inheritdoc/>
     public async Task<List<EmpUserDTO>> GetAllEmpUsers()
     {
             var empUsers = await _context.Employees
@@ -49,6 +50,7 @@ public class EmpUserService : IEmpUserService
 
 
     // Get EmpUser by ID
+    /// <inheritdoc/>
     public async Task<EmpUserDTO> GetEmpUserByEmpId(int id)
     {
         var empUser = await _context.Employees
@@ -88,6 +90,7 @@ public class EmpUserService : IEmpUserService
     }
     
     // Update EmpUser details by ID
+    /// <inheritdoc/>
     public async Task<(int Code, string Message)> UpdateEmpUserDetailsByIdAsync(int id, EmployeeUpdateDTO updateDto)
         {
             // Find the employee and include the user
@@ -124,4 +127,7 @@ public class EmpUserService : IEmpUserService
                 return (400, $"Error updating employee user: {ex.Message}");
             }
         }
+
+    // TODO: Delete EmpUser by ID (which deletes several records relating to empuser)
+
 }

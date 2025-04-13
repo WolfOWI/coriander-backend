@@ -66,6 +66,10 @@ namespace CoriCore.Interfaces
         /// </returns>
         Task<(int Code, string Message)> DeleteEmployeeByIdAsync(int employeeId);
 
-       
+       /// <summary>
+       /// Get total number of employees, and the totals of each employement status (including suspended)
+       /// </summary>
+       /// <returns>The total number of employees, and the totals of each employement status</returns>
+       Task<EmpTotalStatsDTO> GetEmployeeStatusTotals();
     }
 }
