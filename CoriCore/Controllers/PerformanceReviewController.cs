@@ -122,6 +122,21 @@ namespace CoriCore.Controllers
             return Ok(metrics);
         }
 
+        // Get random EmpUserRatingMetrics
+        [HttpGet("RandomEmpUserRatingMetrics/{numberOfEmps}")]
+        public async Task<IActionResult> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
+        {
+            try
+            {
+                var metrics = await _PerformanceReviewService.GetRandomEmpUserRatingMetricsByNum(numberOfEmps);
+                return Ok(metrics);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         // Get EmpUserRatingMetrics by Employee ID
         [HttpGet("EmpUserRatingMetrics/{employeeId}")]
         public async Task<IActionResult> GetEmpUserRatingMetricsByEmpId(int employeeId)

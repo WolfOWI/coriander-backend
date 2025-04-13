@@ -94,6 +94,35 @@ public class PerformanceReviewService : IPerformanceReviewService
         return results;
     }
 
+    /// <inheritdoc/>
+    public async Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
+    {
+
+        // Get all employee rating metrics
+        var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
+
+
+        // Check if the number of employees is valid
+        if (numberOfEmps <= 0)
+        {
+            throw new ArgumentException("Number of employees must be greater than 0");
+        }
+
+        // Check if the number of employees is greater than the total number of employees
+        if (numberOfEmps > allEmployeeMetrics.Count)
+        {
+            throw new ArgumentException("Number of employees must be less than the total number of employee ratings available which is currently " + allEmployeeMetrics.Count);
+        }
+
+        // Get random employees
+        var randomEmployees = allEmployeeMetrics
+            .OrderBy(emp => Guid.NewGuid()) // Randomly orders employees by generating a unique random GUID for each one
+            .Take(numberOfEmps) // Take the number of employees
+            .ToList();
+
+        return randomEmployees;
+    }
+
     public async Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId)
     {
         // Fetch reviews for the specific employee
