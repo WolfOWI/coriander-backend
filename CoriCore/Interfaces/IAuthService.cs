@@ -28,9 +28,15 @@ public interface IAuthService
     // Login a user (via email method)
     Task<string> LoginWithEmail(string email, string password);
 
+    // ============================
+    // 2FA - two factor authentication
+    // ============================
+
     // Two Factor Authentication
     Task SendVerificationCodeAsync(RequestEmailVerificationDTO dto);
     Task<bool> VerifyEmailCodeAsync(VerifyEmailCodeDTO dto);
+    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterVerifiedAsync(RegisterVerifiedDTO dto);
+
 
 
     // ============================

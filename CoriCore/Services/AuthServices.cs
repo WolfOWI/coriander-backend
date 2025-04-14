@@ -187,6 +187,44 @@ public class AuthServices : IAuthService
         return true;
     }
 
+    public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterVerifiedAsync(RegisterVerifiedDTO dto)
+    {
+        var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (existing == null)
+        {
+            return (404, "Email not found. Please request a verification code first.", false, false);
+        }
+
+        if (existing.IsVerified)
+        {
+            return (409, "Email already verified. Try logging in instead.", false, true);
+        }
+
+        if (existing.VerificationCode != dto.Code)
+        {
+            return (401, "Invalid verification code.", false, false);
+        }
+
+        if (existing.CodeGeneratedAt == null || DateTime.UtcNow - existing.CodeGeneratedAt > TimeSpan.FromMinutes(10))
+        {
+            return (410, "Verification code expired. Request a new one.", false, false);
+        }
+
+        existing.FullName = dto.FullName;
+        existing.Password = await HashPassword(dto.Password);
+        existing.ProfilePicture = dto.ProfilePicture;
+        existing.Role = dto.Role;
+        existing.IsVerified = true;
+        existing.VerificationCode = null;
+        existing.CodeGeneratedAt = null;
+
+        await _context.SaveChangesAsync();
+        await _emailService.SendAccountPendingEmail(existing.Email, existing.FullName);
+
+        return (200, "Account created successfully.", true, true);
+    }
+
     // ========================================
     
 

@@ -171,5 +171,19 @@ namespace CoriCore.Controllers
             if (!result) return BadRequest("Invalid or expired code");
             return Ok("Email verified successfully");
         }
+
+        [HttpPost("register-verified")]
+        public async Task<IActionResult> RegisterVerified([FromBody] RegisterVerifiedDTO dto)
+        {
+            var (code, message, isCreated, canSignIn) = await _authService.RegisterVerifiedAsync(dto);
+
+            return StatusCode(code, new
+            {
+                message,
+                isCreated,
+                canSignIn
+            });
+        }
+
     }
 }
