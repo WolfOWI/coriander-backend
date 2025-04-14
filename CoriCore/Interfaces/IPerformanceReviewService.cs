@@ -22,6 +22,11 @@ public interface IPerformanceReviewService
     /// <returns>A list of employee rating metrics</returns>
     Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps);
 
+    /// <summary>
+    /// Get employee rating metrics by employee id
+    /// </summary>
+    /// <param name="employeeId">The id of the employee</param>
+    /// <returns>The employee rating metrics</returns>
     Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId);
 
     Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review);

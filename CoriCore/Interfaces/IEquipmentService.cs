@@ -24,6 +24,11 @@ public interface IEquipmentService
 
     Task<bool> DeleteEquipmentItemAsync(int equipmentId);
 
+    /// <summary>
+    /// Deletes all equipment items assigned to an employee
+    /// </summary>
+    /// <param name="employeeId">The ID of the employee</param>
+    /// <returns>A message indicating the success of the operation</returns>
     Task<string> DeleteEquipmentsByEmployeeIdAsync(int employeeId);
 
 } 
