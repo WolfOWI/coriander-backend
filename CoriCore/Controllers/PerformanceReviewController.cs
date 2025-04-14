@@ -117,7 +117,10 @@ namespace CoriCore.Controllers
             return Ok(reviewDTOs);
         }
 
-        // Get EmpUserRatingMetrics
+        /// <summary>
+        /// Get all employee rating metrics
+        /// </summary>
+        /// <returns>A list of employee rating metrics</returns>
         [HttpGet("EmpUserRatingMetrics")]
         public async Task<IActionResult> GetAllEmpUserRatingMetrics()
         {
@@ -125,7 +128,11 @@ namespace CoriCore.Controllers
             return Ok(metrics);
         }
 
-        // Get random EmpUserRatingMetrics
+        /// <summary>
+        /// Get random employee rating metrics by number of employees
+        /// </summary>
+        /// <param name="numberOfEmps">The number of employees to get</param>
+        /// <returns>A list of employee rating metrics</returns>
         [HttpGet("RandomEmpUserRatingMetrics/{numberOfEmps}")]
         public async Task<IActionResult> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
         {
@@ -140,7 +147,11 @@ namespace CoriCore.Controllers
             }
         }
 
-        // Get EmpUserRatingMetrics by Employee ID
+        /// <summary>
+        /// Get EmpUserRatingMetrics by Employee ID
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <returns>The employee rating metrics</returns>
         [HttpGet("EmpUserRatingMetrics/{employeeId}")]
         public async Task<IActionResult> GetEmpUserRatingMetricsByEmpId(int employeeId)
         {

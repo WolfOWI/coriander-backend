@@ -28,6 +28,18 @@ namespace CoriCore.Controllers
             _equipmentService = equipmentService;
         }
 
+        /// <summary>
+        /// Gets all equipment assigned to a specific employee
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <returns>A list of equipment assigned to the employee</returns>
+        [HttpGet("by-empId/{employeeId}")]
+        public async Task<ActionResult<List<EquipmentDTO>>> GetEquipmentByEmployeeId(int employeeId)
+        {
+            var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
+            return Ok(equipment);
+        }
+
         // GET: api/Equipment
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Equipment>>> GetEquipments()
@@ -183,16 +195,6 @@ namespace CoriCore.Controllers
             return _context.Equipments.Any(e => e.EquipmentId == id);
         }
 
-        /// <summary>
-        /// Gets all equipment assigned to a specific employee
-        /// </summary>
-        /// <param name="employeeId">The ID of the employee</param>
-        /// <returns>A list of equipment assigned to the employee</returns>
-        [HttpGet("by-empId/{employeeId}")]
-        public async Task<ActionResult<List<EquipmentDTO>>> GetEquipmentByEmployeeId(int employeeId)
-        {
-            var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
-            return Ok(equipment);
-        }
+        
     }
 }
