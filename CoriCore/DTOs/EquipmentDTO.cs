@@ -1,3 +1,6 @@
+// Equipment DTO
+// ========================================
+
 using System;
 using CoriCore.Models;
 

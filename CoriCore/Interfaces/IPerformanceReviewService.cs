@@ -1,3 +1,6 @@
+// Performance Review Service Interface
+// ========================================
+
 using System;
 using CoriCore.DTOs;
 using CoriCore.Models;
@@ -12,6 +15,18 @@ public interface IPerformanceReviewService
 
     Task<List<EmpUserRatingMetricsDTO>> GetAllEmpUserRatingMetrics();
 
+    /// <summary>
+    /// Get random employee rating metrics by number of employees
+    /// </summary>
+    /// <param name="numberOfEmps">The number of employees to get</param>
+    /// <returns>A list of employee rating metrics</returns>
+    Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps);
+
+    /// <summary>
+    /// Get employee rating metrics by employee id
+    /// </summary>
+    /// <param name="employeeId">The id of the employee</param>
+    /// <returns>The employee rating metrics</returns>
     Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId);
 
     Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review);
@@ -21,5 +36,11 @@ public interface IPerformanceReviewService
     Task<bool> DeletePerformanceReview(int id);
 
     Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm();
+
+    Task<List<EmpUserRatingMetricsDTO>> GetTopRatedEmployees();
+
+    Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus);
+
+    Task<bool> DeletePrmByEmpId(int employeeId);
 }
 

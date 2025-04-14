@@ -1,3 +1,6 @@
+// Email Service Interface
+// ========================================
+
 using System;
 
 namespace CoriCore.Interfaces

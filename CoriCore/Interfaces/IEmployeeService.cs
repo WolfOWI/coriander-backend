@@ -1,3 +1,6 @@
+// Employee Service Interface
+// ========================================
+
 using System;
 using CoriCore.DTOs;
 using CoriCore.Models;
@@ -54,6 +57,22 @@ namespace CoriCore.Interfaces
         /// </returns>
         Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId);
 
-       
+
+        /// <summary>
+        /// Delete employee by id
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee to delete.</param>
+        /// <returns>
+        /// Tuple result: (int Code, string Message)
+        /// 200 - Successfully deleted
+        /// 404 - Employee not found
+        /// </returns>
+        Task<(int Code, string Message)> DeleteEmployeeByIdAsync(int employeeId);
+
+       /// <summary>
+       /// Get total number of employees, and the totals of each employement status (including suspended)
+       /// </summary>
+       /// <returns>The total number of employees, and the totals of each employement status</returns>
+       Task<EmpTotalStatsDTO> GetEmployeeStatusTotals();
     }
 }

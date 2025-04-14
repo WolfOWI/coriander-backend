@@ -1,3 +1,6 @@
+// Email Login DTO
+// ========================================
+
 using System;
 
 namespace CoriCore.DTOs;

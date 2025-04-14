@@ -1,3 +1,4 @@
+// EmpUser Controller
 using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
@@ -53,6 +54,12 @@ namespace CoriCore.Controllers
         }
 
         // PUT: api/EmpUser/edit-by-id/{id}
+        /// <summary>
+        /// Edit an employee's details by their ID (any number of details)
+        /// </summary>
+        /// <param name="id">The ID of the employee</param>
+        /// <param name="updateDto">The updated employee details</param>
+        /// <returns>The result of the operation</returns>
         [HttpPut("edit-by-id/{id}")]
         public async Task<IActionResult> EditEmpUserDetailsById(int id, [FromBody] EmployeeUpdateDTO updateDto)
         {

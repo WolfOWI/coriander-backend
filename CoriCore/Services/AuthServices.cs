@@ -1,3 +1,5 @@
+// Auth Services
+// ========================================
 // Wolf Botha & Ruan Klopper
 
 using System;
@@ -72,7 +74,7 @@ public class AuthServices : IAuthService
 
     // User Registration & Role Assignment
     // ========================================
-    // Register a new user (via email method)
+    /// <inheritdoc/>
     public async Task<User> RegisterWithEmail(UserEmailRegisterDTO user)
     {
         // Check if the user already exists
@@ -130,7 +132,7 @@ public class AuthServices : IAuthService
         return true;
     }
 
-    // Hash a password using BCrypt
+    /// <inheritdoc/>
     public Task<string> HashPassword(string password)
     {
         string HashedPassword = BCrypt.Net.BCrypt.HashPassword(password, 13);
@@ -230,31 +232,7 @@ public class AuthServices : IAuthService
 
     // User Login & Authentication
     // ========================================
-    // Login a user (with email & password) - whitout jwt
-    // public async Task<string> LoginWithEmail(string email, string password)
-    // {
-    //     // Check if the user exists
-    //     User? user = await _userService.GetUserByEmailAsync(email);
-
-    //     // If the user does not exist
-    //     if (user == null)
-    //     {
-    //         throw new Exception($"User with email {email} not found");
-    //     }
-
-    //     // Check if the password is valid
-    //     bool isPasswordValid = await VerifyPassword(user, password);
-
-    //     // If the password is invalid
-    //     if (!isPasswordValid)
-    //     {
-    //         throw new Exception("Invalid password");
-    //     }
-
-    //     // Return a success message
-    //     return "Login successful";
-    // }
-    // Login a user (with email & password) - with JWT
+    /// <inheritdoc/>
     public async Task<string> LoginWithEmail(string email, string password)
     {
         var user = await _context.Users

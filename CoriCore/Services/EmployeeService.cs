@@ -1,3 +1,6 @@
+// Employee Service
+// ========================================
+
 using System;
 using CoriCore.Data;
 using CoriCore.DTOs;
@@ -35,20 +38,6 @@ namespace CoriCore.Services
 
             return (201, "Validation successful");
         }
-
-        // public async Task<(int Code, string Message, DateOnly NextPayDay)> CalculateNextPayDayAsync(int payCycle)
-        // {
-        //     var today = DateOnly.FromDateTime(DateTime.Today);
-        //     DateOnly nextPayDay = payCycle switch
-        //     {
-        //         (int)PayCycle.Monthly => new DateOnly(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month)),
-        //         (int)PayCycle.Weekly => today.AddDays(7 - (int)today.DayOfWeek),
-        //         (int)PayCycle.BiWeekly => today.AddDays(14 - (int)today.DayOfWeek),
-        //         _ => today
-        //     };
-
-        //     return (201, "Next payday calculated successfully", nextPayDay);
-        // }
 
         public async Task<(int Code, string Message)> CreateEmployeeAsync(EmployeeDto dto)
         {
@@ -105,6 +94,7 @@ namespace CoriCore.Services
             return createResult;
         }
 
+        /// <inheritdoc/>
         public async Task<(int Code, string Message)> ToggleEmpSuspensionAsync(int employeeId)
         {
             // Find the employee
@@ -124,6 +114,54 @@ namespace CoriCore.Services
             return (200, "Employee suspension status updated to " + (emp.IsSuspended ? "suspended" : "unsuspended"));
         }
 
-        
+        /// <inheritdoc/>
+        public async Task<(int Code, string Message)> DeleteEmployeeByIdAsync(int employeeId)
+        {
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if (employee == null)
+            {
+                return (404, "Employee not found");
+            }
+
+            // Delete the employee
+            _context.Employees.Remove(employee);
+            await _context.SaveChangesAsync();
+
+            // Return the result
+            return (200, "Employee deleted successfully");
+        }
+
+        /// <inheritdoc/>
+        public async Task<EmpTotalStatsDTO> GetEmployeeStatusTotals()
+        {
+            // Count the employees
+            var totalEmployees = await _context.Employees.CountAsync();
+
+            // Count the suspended employees
+            var totalSuspendedEmployees = await _context.Employees.CountAsync(e => e.IsSuspended);
+
+            // Get the non-suspended employees and use them to count the employees by employement type
+            var nonSuspendedEmployees = await _context.Employees.Where(e => !e.IsSuspended).ToListAsync();
+
+            var totalFullTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.FullTime);
+            var totalPartTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.PartTime); 
+            var totalContractEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.Contract);
+            var totalInternEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.Intern);
+
+            // Create the DTO
+            var stats = new EmpTotalStatsDTO
+            {
+                TotalEmployees = totalEmployees,
+                TotalFullTimeEmployees = totalFullTimeEmployees,
+                TotalPartTimeEmployees = totalPartTimeEmployees,
+                TotalContractEmployees = totalContractEmployees,
+                TotalInternEmployees = totalInternEmployees,
+                TotalSuspendedEmployees = totalSuspendedEmployees
+            };
+
+            // Return the DTO
+            return stats;
+        }
     }
+
 }

@@ -1,3 +1,7 @@
+// Employee Profile Page (Employee) DTO
+// ========================================
+// Wolf Botha
+
 using System;
 
 namespace CoriCore.DTOs.Page_Specific;

@@ -1,3 +1,6 @@
+// User Service
+// ========================================
+
 using System;
 using CoriCore.Data;
 using CoriCore.Interfaces;
@@ -54,6 +57,7 @@ namespace CoriCore.Services
             return 201; // Successfully set user role
         }
 
+        /// <inheritdoc/>
         public async Task<UserRole> GetUserRoleAsync(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
@@ -66,6 +70,7 @@ namespace CoriCore.Services
             return user.Role;
         }
 
+        /// <inheritdoc/>
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);

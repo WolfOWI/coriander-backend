@@ -1,3 +1,6 @@
+// Equipment Controller
+// ========================================
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +28,18 @@ namespace CoriCore.Controllers
             _equipmentService = equipmentService;
         }
 
+        /// <summary>
+        /// Gets all equipment assigned to a specific employee
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <returns>A list of equipment assigned to the employee</returns>
+        [HttpGet("by-empId/{employeeId}")]
+        public async Task<ActionResult<List<EquipmentDTO>>> GetEquipmentByEmployeeId(int employeeId)
+        {
+            var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
+            return Ok(equipment);
+        }
+
         // GET: api/Equipment
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Equipment>>> GetEquipments()
@@ -44,6 +59,77 @@ namespace CoriCore.Controllers
             }
 
             return equipment;
+        }
+
+        // POST
+        [HttpPost("CreateEquipmentItems")]
+        public async Task<ActionResult<IEnumerable<EquipmentDTO>>> CreateEquipmentItems([FromBody] List<EquipmentDTO> equipmentDtos)
+        {
+            if (equipmentDtos == null || !equipmentDtos.Any())
+            {
+                return BadRequest("No equipment provided.");
+            }
+
+            // Call service to create the equipment items
+            var equipmentItems = await _equipmentService.CreateEquipmentItemsAsync(equipmentDtos);
+
+            // Map back to EquipmentDTO to return the created items
+            var equipmentDtosCreated = equipmentItems.Select(e => new EquipmentDTO
+            {
+                EquipmentId = e.EquipmentId,
+                EmployeeId = e.EmployeeId,
+                EquipmentCatId = e.EquipmentCatId,
+                EquipmentCategoryName = e.EquipmentCategory?.EquipmentCatName, // Fixed property name
+                EquipmentName = e.EquipmentName,
+                AssignedDate = e.AssignedDate,
+                Condition = e.Condition
+            }).ToList();
+
+            // Return the created equipment items as a response
+            return CreatedAtAction(nameof(GetEquipments), new { count = equipmentDtosCreated.Count }, equipmentDtosCreated);
+        }
+
+        // PUT: api/Equipment/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] EquipmentDTO equipmentDto)
+        {
+            if (id != equipmentDto.EquipmentId)
+            {
+                return BadRequest("Equipment ID mismatch.");
+            }
+
+            // Call service to edit the equipment item
+            var updatedEquipment = await _equipmentService.EditEquipmentItemAsync(id, equipmentDto);
+
+            if (updatedEquipment == null)
+            {
+                return NotFound("Equipment not found.");
+            }
+
+            return Ok(updatedEquipment);
+        }
+
+        //Delete
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEquipmentItem(int id)
+        {
+            var deleted = await _equipmentService.DeleteEquipmentItemAsync(id);
+
+            if (!deleted)
+            {
+                return NotFound("Equipment not found.");
+            }
+
+            return NoContent();
+        }
+
+        // TODO: Remove this endpoint (will form part of EmpUser Deletion)
+        // Delete all equipment items by employee id
+        [HttpDelete("delete-by-empId/{employeeId}")]
+        public async Task<IActionResult> DeleteEquipmentsByEmployeeId(int employeeId)
+        {
+            var deleted = await _equipmentService.DeleteEquipmentsByEmployeeIdAsync(employeeId);
+            return Ok(deleted);
         }
 
         // PUT: api/Equipment/5
@@ -109,16 +195,6 @@ namespace CoriCore.Controllers
             return _context.Equipments.Any(e => e.EquipmentId == id);
         }
 
-        /// <summary>
-        /// Gets all equipment assigned to a specific employee
-        /// </summary>
-        /// <param name="employeeId">The ID of the employee</param>
-        /// <returns>A list of equipment assigned to the employee</returns>
-        [HttpGet("by-empId/{employeeId}")]
-        public async Task<ActionResult<List<EquipmentDTO>>> GetEquipmentByEmployeeId(int employeeId)
-        {
-            var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
-            return Ok(equipment);
-        }
+        
     }
 }

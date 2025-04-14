@@ -32,6 +32,8 @@ builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 builder.Services.AddScoped<IEmpUserService, EmpUserService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
+// Apply For Leave Service
+builder.Services.AddScoped<IApplyForLeaveService, ApplyForLeaveService>();
 // Performance Review Service
 builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
 // Email Service

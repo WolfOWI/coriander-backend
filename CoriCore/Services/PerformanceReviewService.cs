@@ -1,3 +1,6 @@
+// Performance Review Service
+// ========================================
+
 using System;
 using CoriCore.Data;
 using CoriCore.DTOs;
@@ -7,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
+//Provides the methods to perform CRUD operations on Performance Reviews
 public class PerformanceReviewService : IPerformanceReviewService
 {
     // ========================================
@@ -33,6 +37,9 @@ public class PerformanceReviewService : IPerformanceReviewService
             .ToListAsync();
     }
 
+    // ========================================
+    // GET PERFORMANCE REVIEW BY EMP ID
+    // ========================================
     public async Task<IEnumerable<PerformanceReview>> GetPrmByEmpId(int employeeId)
     {
         return await _context.PerformanceReviews
@@ -90,6 +97,35 @@ public class PerformanceReviewService : IPerformanceReviewService
         return results;
     }
 
+    /// <inheritdoc/>
+    public async Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
+    {
+
+        // Get all employee rating metrics
+        var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
+
+
+        // Check if the number of employees is valid
+        if (numberOfEmps <= 0)
+        {
+            throw new ArgumentException("Number of employees must be greater than 0");
+        }
+
+        // Check if the number of employees is greater than the total number of employees
+        if (numberOfEmps > allEmployeeMetrics.Count)
+        {
+            throw new ArgumentException("Number of employees must be less than the total number of employee ratings available which is currently " + allEmployeeMetrics.Count);
+        }
+
+        // Get random employees
+        var randomEmployees = allEmployeeMetrics
+            .OrderBy(emp => Guid.NewGuid()) // Randomly orders employees by generating a unique random GUID for each one
+            .Take(numberOfEmps) // Take the number of employees
+            .ToList();
+
+        return randomEmployees;
+    }
+
     public async Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId)
     {
         // Fetch reviews for the specific employee
@@ -124,9 +160,11 @@ public class PerformanceReviewService : IPerformanceReviewService
         return metrics;
     }
 
-    //Create Performance Review
-    //Set status to 1 (Upcoming) when creating a new review
-    //Use PerformanceReviewDTO to create a new review
+    // ========================================
+    // CREATE PRM 
+    // SET STATUS TO 1 (UPCOMING)
+    // USE PERFORMANCE REVIEW DTO TO CREATE A NEW REVIEW
+    // ========================================
     public async Task<PerformanceReview> CreatePerformanceReview(PerformanceReview review)
     {
         review.Status = ReviewStatus.Upcoming; // Set initial status
@@ -135,7 +173,9 @@ public class PerformanceReviewService : IPerformanceReviewService
         return review;
     }
 
-    // Update Performance Review
+    // ========================================
+    // UPDATE PERFORMANCE REVIEW
+    // ========================================
     public async Task<PerformanceReview> UpdatePerformanceReview(int id, PerformanceReview review)
     {
         var existingReview = await _context.PerformanceReviews.FindAsync(id);
@@ -145,8 +185,6 @@ public class PerformanceReviewService : IPerformanceReviewService
         }
 
         // Update properties
-        existingReview.AdminId = review.AdminId;
-        existingReview.EmployeeId = review.EmployeeId;
         existingReview.IsOnline = review.IsOnline;
         existingReview.MeetLocation = review.MeetLocation;
         existingReview.MeetLink = review.MeetLink;
@@ -161,9 +199,9 @@ public class PerformanceReviewService : IPerformanceReviewService
         return existingReview;
     }
 
-    //Get All Performance Review when - status 1 (Upcoming)
-
-
+    // ========================================
+    // DELETE PERFORMANCE REVIEW
+    // ========================================
     public Task<bool> DeletePerformanceReview(int id)
     {
         var review = _context.PerformanceReviews.Find(id);
@@ -177,7 +215,9 @@ public class PerformanceReviewService : IPerformanceReviewService
         return Task.FromResult(true); // Review deleted successfully
     }
 
-    //Get All Performance Review when - status 1 (Upcoming)
+    // ========================================
+    // GET ALL PERFORMANCE REVIEWS WITH STATUS 1 (Upcoming)
+    // ========================================
     public async Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm()
     {
         return await _context.PerformanceReviews
@@ -187,5 +227,54 @@ public class PerformanceReviewService : IPerformanceReviewService
                 .ThenInclude(e => e.User) // Include related Employee User data
             .Where(pr => pr.Status == ReviewStatus.Upcoming) // Filter by status 'Upcoming'
             .ToListAsync();
+    }
+
+/// <summary>
+/// support method to delete performance review by employee id
+/// </summary>
+    public Task<bool> DeletePrmByEmpId(int employeeId)
+    {
+        var reviews = _context.PerformanceReviews.Where(r => r.EmployeeId == employeeId).ToList();
+        if (reviews.Count == 0)
+        {
+            return Task.FromResult(false); // No reviews found for the employee
+        }
+
+        _context.PerformanceReviews.RemoveRange(reviews);
+        _context.SaveChangesAsync();
+        return Task.FromResult(true); // Reviews deleted successfully
+    }
+
+    /// <summary>
+    /// Get the Top rated employess
+    /// </summary>
+    public async Task<List<EmpUserRatingMetricsDTO>> GetTopRatedEmployees()
+    {
+        // Fetch all employee rating metrics
+        var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
+
+        // Sort employees by AverageRating in descending order and take top 3
+        var topRatedEmployees = allEmployeeMetrics
+            .OrderByDescending(emp => emp.AverageRating)
+            .Take(3)
+            .ToList();
+
+        return topRatedEmployees;
+    }
+
+    //Toggle status from 1 to 2 (Completed)
+    public async Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus)
+    {
+        var review = await _context.PerformanceReviews.FindAsync(reviewId);
+
+        if (review == null)
+        {
+            throw new Exception("Performance review not found");
+        }
+
+        review.Status = newStatus;
+        await _context.SaveChangesAsync();
+
+        return review;
     }
 }

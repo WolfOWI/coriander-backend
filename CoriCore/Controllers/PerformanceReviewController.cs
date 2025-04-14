@@ -1,3 +1,6 @@
+// Performance Review Controller
+// ========================================
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +12,11 @@ using CoriCore.Data;
 using CoriCore.Models;
 using CoriCore.Interfaces;
 using CoriCore.DTOs;
+using CoriCore.Services;
 
 namespace CoriCore.Controllers
-{
+{   
+    //Makes it a RESTful API controller
     [Route("api/[controller]")]
     [ApiController]
     public class PerformanceReviewController : ControllerBase
@@ -112,7 +117,10 @@ namespace CoriCore.Controllers
             return Ok(reviewDTOs);
         }
 
-        // Get EmpUserRatingMetrics
+        /// <summary>
+        /// Get all employee rating metrics
+        /// </summary>
+        /// <returns>A list of employee rating metrics</returns>
         [HttpGet("EmpUserRatingMetrics")]
         public async Task<IActionResult> GetAllEmpUserRatingMetrics()
         {
@@ -120,7 +128,30 @@ namespace CoriCore.Controllers
             return Ok(metrics);
         }
 
-        // Get EmpUserRatingMetrics by Employee ID
+        /// <summary>
+        /// Get random employee rating metrics by number of employees
+        /// </summary>
+        /// <param name="numberOfEmps">The number of employees to get</param>
+        /// <returns>A list of employee rating metrics</returns>
+        [HttpGet("RandomEmpUserRatingMetrics/{numberOfEmps}")]
+        public async Task<IActionResult> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
+        {
+            try
+            {
+                var metrics = await _PerformanceReviewService.GetRandomEmpUserRatingMetricsByNum(numberOfEmps);
+                return Ok(metrics);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get EmpUserRatingMetrics by Employee ID
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <returns>The employee rating metrics</returns>
         [HttpGet("EmpUserRatingMetrics/{employeeId}")]
         public async Task<IActionResult> GetEmpUserRatingMetricsByEmpId(int employeeId)
         {
@@ -232,7 +263,31 @@ namespace CoriCore.Controllers
 
             return Ok(reviewDTOs);
         }
+
+        [HttpGet("top-rated")]
+        public async Task<ActionResult<List<EmpUserRatingMetricsDTO>>> GetTopRatedEmployees()
+        {
+            var topRatedEmployees = await _PerformanceReviewService.GetTopRatedEmployees();
+            if (topRatedEmployees == null || !topRatedEmployees.Any())
+            {
+                return NotFound("No top-rated employees found.");
+            }
+            return Ok(topRatedEmployees);
+        }
         
+        [HttpPut("update-status/{id}")]
+        public async Task<ActionResult<PerformanceReview>> UpdateReviewStatus(int id, [FromQuery] ReviewStatus status)
+        {
+            try
+            {
+                var updatedReview = await _PerformanceReviewService.UpdateReviewStatus(id, status);
+                return Ok(updatedReview);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
         
 
         [HttpDelete("DeletePerformanceReview/{id}")]
@@ -242,6 +297,18 @@ namespace CoriCore.Controllers
             if (!deleted)
             {
                 return NotFound($"Successful - Performance review with ID {id} not found.");
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("DeletePrmByEmpId/{employeeId}")]
+        public async Task<IActionResult> DeletePrmByEmpId(int employeeId)
+        {
+            var deleted = await _PerformanceReviewService.DeletePrmByEmpId(employeeId);
+            if (!deleted)
+            {
+                return NotFound($"No Performance reviews for Employee ID {employeeId} not found.");
             }
 
             return NoContent();

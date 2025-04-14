@@ -1,3 +1,6 @@
+// User Email Register DTO
+// ========================================
+
 using System;
 using CoriCore.Models;
 

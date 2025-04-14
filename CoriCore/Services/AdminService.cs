@@ -1,3 +1,6 @@
+// Admin Service
+// ========================================
+
 using System;
 using CoriCore.Data;
 using CoriCore.DTOs;
@@ -18,7 +21,7 @@ public class AdminService : IAdminService
         _userService = userService;
     }
 
-    // Create a new admin (from a linked user)
+    /// <inheritdoc/>
     public async Task<string> CreateAdmin(AdminDTO adminDTO)
     {
         // Make sure a user does exist (to link to being an admin)
