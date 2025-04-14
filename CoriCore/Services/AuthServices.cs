@@ -34,7 +34,7 @@ public class AuthServices : IAuthService
 
     // User Registration & Role Assignment
     // ========================================
-    // Register a new user (via email method)
+    /// <inheritdoc/>
     public async Task<User> RegisterWithEmail(UserEmailRegisterDTO user)
     {
         // Check if the user already exists
@@ -92,7 +92,7 @@ public class AuthServices : IAuthService
         return true;
     }
 
-    // Hash a password using BCrypt
+    /// <inheritdoc/>
     public Task<string> HashPassword(string password)
     {
         string HashedPassword = BCrypt.Net.BCrypt.HashPassword(password, 13);
@@ -103,7 +103,7 @@ public class AuthServices : IAuthService
 
     // User Login & Authentication
     // ========================================
-    // Login a user (with email & password)
+    /// <inheritdoc/>
     public async Task<string> LoginWithEmail(string email, string password)
     {
         // Check if the user exists

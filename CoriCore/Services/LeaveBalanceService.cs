@@ -21,6 +21,7 @@ public class LeaveBalanceService : ILeaveBalanceService
     }
 
     // Get all leave balances (with their types) by employee id
+    /// <inheritdoc/>
     public async Task<List<LeaveBalanceDTO>> GetAllLeaveBalancesByEmployeeId(int employeeId)
     {
         var leaveBalances = await _context.LeaveBalances.Include(lb => lb.LeaveType).Where(lb => lb.EmployeeId == employeeId).ToListAsync();
@@ -35,6 +36,7 @@ public class LeaveBalanceService : ILeaveBalanceService
     }
 
     // Create all default leave balances for a new employee
+    /// <inheritdoc/>
     public async Task<bool> CreateDefaultLeaveBalances(int employeeId)
     {
 
@@ -71,6 +73,7 @@ public class LeaveBalanceService : ILeaveBalanceService
     }
 
     // Get the total remaining days and total leave days for an employee by Id
+    /// <inheritdoc/>
     public async Task<LeaveBalanceSumDTO> GetTotalLeaveBalanceSum(int employeeId)
     {
         var leaveBalances = await GetAllLeaveBalancesByEmployeeId(employeeId);

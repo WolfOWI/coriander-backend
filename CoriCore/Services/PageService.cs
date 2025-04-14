@@ -30,6 +30,7 @@ public class PageService : IPageService
         _performanceReviewService = performanceReviewService;
     }
 
+    /// <inheritdoc/>
     public async Task<AdminEmpDetailsPageDTO> GetAdminEmpDetailsPageInfo(int employeeId)
     {
         // Execute database operations sequentially to avoid DbContext threading issues
@@ -68,6 +69,7 @@ public class PageService : IPageService
         };
     }
 
+    /// <inheritdoc/>
     public async Task<List<AdminEmpManagePageListItemDTO>> GetAdminEmpManagementPageInfo()
     {
         // Execute database operations sequentially to avoid DbContext threading issues
@@ -88,6 +90,7 @@ public class PageService : IPageService
         return empManagementPageDTOs;
     }
         
+    /// <inheritdoc/>
     public async Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId)
     {
         // Execute database operations sequentially to avoid DbContext threading issues

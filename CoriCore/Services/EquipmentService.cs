@@ -21,6 +21,7 @@ public class EquipmentService : IEquipmentService
         _context = context;
     }
 
+    /// <inheritdoc/>
     public async Task<List<EquipmentDTO>> GetEquipmentByEmployeeId(int employeeId)
     {
         var equipment = await _context.Equipments
