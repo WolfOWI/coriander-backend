@@ -23,11 +23,13 @@ namespace CoriCore.Controllers
         private readonly AppDbContext _context;
 
         private readonly ILeaveRequestService _leaveRequestService;
+        private readonly IApplyForLeaveService _applyForLeaveService;
 
-        public LeaveRequestController(AppDbContext context, ILeaveRequestService leaveRequestService)
+        public LeaveRequestController(AppDbContext context, ILeaveRequestService leaveRequestService, IApplyForLeaveService applyForLeaveService)
         {
             _leaveRequestService = leaveRequestService;
             _context = context;
+            _applyForLeaveService = applyForLeaveService;
         }
 
         // GET: api/LeaveRequest/EmployeeId
@@ -106,6 +108,23 @@ namespace CoriCore.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetLeaveRequest", new { id = leaveRequest.LeaveRequestId }, leaveRequest);
+        }
+
+        // POST: api/LeaveRequest/SubmitLeaveRequest
+        [HttpPost("SubmitLeaveRequest")]
+        public async Task<ActionResult<ApplyForLeaveDTO>> SubmitLeaveRequest([FromBody] ApplyForLeaveDTO leaveRequest)
+        {
+            // Check if the leaveRequest is null or invalid
+            if (leaveRequest == null)
+            {
+                return BadRequest("Leave request cannot be null");
+            }
+
+            // Call the service to submit the leave request and get confirmation or the created leave request
+            var result = await _applyForLeaveService.ApplyForLeave(leaveRequest);
+
+            // Return a created response with the leave request details
+            return CreatedAtAction(nameof(SubmitLeaveRequest), new { id = result.LeaveRequestId }, result);
         }
 
         // DELETE: api/LeaveRequest/5
