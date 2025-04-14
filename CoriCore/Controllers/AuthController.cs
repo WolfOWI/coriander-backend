@@ -1,3 +1,6 @@
+// Auth Controller
+// ========================================
+
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;

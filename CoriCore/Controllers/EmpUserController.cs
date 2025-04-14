@@ -1,3 +1,4 @@
+// EmpUser Controller
 using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;

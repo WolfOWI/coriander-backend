@@ -1,3 +1,6 @@
+// Email Controller
+// ========================================
+
 using System;
 using CoriCore.Interfaces;
 using Microsoft.AspNetCore.Mvc;

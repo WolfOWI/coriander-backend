@@ -1,3 +1,6 @@
+// User Service
+// ========================================
+
 using System;
 using CoriCore.Data;
 using CoriCore.Interfaces;
