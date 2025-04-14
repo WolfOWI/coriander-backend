@@ -16,6 +16,6 @@ public class EmployeeDto
     public DateOnly? LastPaidDate { get; set; }
     public EmployType EmployType { get; set; }
     public DateOnly EmployDate { get; set; }
-    public bool IsSuspended { get; set; }
+    public bool IsSuspended { get; set; } = false; // Default to False
 }
 

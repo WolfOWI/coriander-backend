@@ -1,3 +1,6 @@
+// Admin Service Interface
+// ========================================
+
 using System;
 using CoriCore.DTOs;
 

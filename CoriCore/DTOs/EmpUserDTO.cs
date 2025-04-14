@@ -1,3 +1,6 @@
+// EmpUser DTO
+// ========================================
+
 using System;
 using CoriCore.Models;
 

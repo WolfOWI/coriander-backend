@@ -1,3 +1,7 @@
+// Individual Employee Details Page (Admin) DTO
+// ========================================
+// Wolf Botha
+
 using System;
 using CoriCore.DTOs;
 

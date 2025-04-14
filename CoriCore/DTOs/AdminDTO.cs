@@ -1,3 +1,6 @@
+// Admin DTO
+// ========================================
+
 using System;
 
 namespace CoriCore.DTOs;

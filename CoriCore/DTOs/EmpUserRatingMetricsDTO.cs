@@ -1,3 +1,6 @@
+// EmpUser Rating Metrics DTO
+// ========================================
+
 using System;
 
 namespace CoriCore.DTOs;

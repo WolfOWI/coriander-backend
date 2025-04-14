@@ -1,3 +1,6 @@
+// Employee Total Stats DTO
+// ========================================
+
 using System;
 
 namespace CoriCore.DTOs;

@@ -1,4 +1,5 @@
-// Wolf Botha
+// Auth Service Interface (Login & Register)
+// ========================================
 
 using System;
 using CoriCore.DTOs;
