@@ -33,7 +33,7 @@ public class PageService : IPageService
     /// <inheritdoc/>
     public async Task<AdminEmpDetailsPageDTO> GetAdminEmpDetailsPageInfo(int employeeId)
     {
-        // Execute database operations sequentially to avoid DbContext threading issues
+        // Execute database operations step by step (DbContext threading issues)
         var empUser = await _empUserService.GetEmpUserByEmpId(employeeId);
         var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
         var leaveBalances = await _leaveBalanceService.GetAllLeaveBalancesByEmployeeId(employeeId);
@@ -72,14 +72,18 @@ public class PageService : IPageService
     /// <inheritdoc/>
     public async Task<List<AdminEmpManagePageListItemDTO>> GetAdminEmpManagementPageInfo()
     {
-        // Execute database operations sequentially to avoid DbContext threading issues
+        // Execute database operations step by step (DbContext threading issues)
         var empUsers = await _empUserService.GetAllEmpUsers();
-        var empManagementPageDTOs = new List<AdminEmpManagePageListItemDTO>();
+        var empManageList = new List<AdminEmpManagePageListItemDTO>();
+
+        // For each employee, get the rating metrics and total leave balance sum
         foreach (var empUser in empUsers)
         {
-                var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(empUser.EmployeeId);
-                var totalLeaveBalanceSum = await _leaveBalanceService.GetTotalLeaveBalanceSum(empUser.EmployeeId);
-            empManagementPageDTOs.Add(new AdminEmpManagePageListItemDTO
+            var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(empUser.EmployeeId);
+            var totalLeaveBalanceSum = await _leaveBalanceService.GetTotalLeaveBalanceSum(empUser.EmployeeId);
+
+            // Add the employee details and metrics to the list
+            empManageList.Add(new AdminEmpManagePageListItemDTO
             {
                 EmpUser = empUser,
                 EmpUserRatingMetrics = ratingMetrics,
@@ -87,13 +91,13 @@ public class PageService : IPageService
             });
         }
         
-        return empManagementPageDTOs;
+        return empManageList;
     }
         
     /// <inheritdoc/>
     public async Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId)
     {
-        // Execute database operations sequentially to avoid DbContext threading issues
+        // Execute database operations step by step (DbContext threading issues)
         var empUser = await _empUserService.GetEmpUserByEmpId(employeeId);
         var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
         var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(employeeId);
