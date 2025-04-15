@@ -26,6 +26,11 @@ namespace CoriCore.Controllers
         }
         // ========================================
 
+
+        // ========================================
+        // Default registration
+        // ========================================
+
         /// <summary>
         /// Registers a new user (unassigned role).
         /// </summary>
@@ -44,11 +49,12 @@ namespace CoriCore.Controllers
             return Ok("User registered successfully");
         }
 
-        /// <summary>
-        /// Registers a new admin user. Creating both a user (with admin role) and a linked admin.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+
+        // ========================================
+        // 🔴 Admins - Production registration & 2 factor authentication "Sign up" : Google & Email
+        // ========================================
+
+        // Register admin with Email - after 2FA code is correct
         [HttpPost("register-admin")]
         public async Task<IActionResult> RegisterAdmin(UserEmailRegisterDTO user)
         {
@@ -77,42 +83,93 @@ namespace CoriCore.Controllers
             return Ok("Admin registered successfully");
         }
 
-        /// <summary>
-        /// Log in a user using the standard email and password method.
-        /// </summary>
-        /// <param name="email">The email of the user to login</param>
-        /// <param name="password">The password of the user to login</param>
-        /// <returns>A message indicating the success or failure of the login attempt</returns>
-        // [HttpPost("login")]
-        // public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
-        // {
-        //     string loginResult = await _authService.LoginWithEmail(user.Email, user.Password);
-
-        //     if (loginResult != "Login successful")
-        //     {
-        //         return BadRequest(loginResult);
-        //     }
-
-        //     return Ok(loginResult);
-        // }
-
-        // Regular email & password login with JWT
-        [HttpPost("login")]
-        public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
+        // Register admin with Google
+        [HttpPost("google-register-admin")]
+        public async Task<IActionResult> GoogleRegisterAdmin([FromBody] GoogleRegisterDTO dto)
         {
-            string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
+            var (code, message, isCreated, canSignIn) = await _authService.RegisterAdminWithGoogleAsync(dto.IdToken);
 
-            Response.Cookies.Append("token", jwt, new CookieOptions
+            return StatusCode(code, new
             {
-                HttpOnly = false, // change to true when website is in production or when working with the frontend
-                Secure = false, // same like above
-                SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
-                Expires = DateTime.UtcNow.AddDays(7)
+                message,
+                isCreated,
+                canSignIn
             });
-
-            return Ok("Login successful");
         }
-        
+
+        [HttpPost("register-admin-verified")]
+        public async Task<IActionResult> RegisterAdminVerified([FromBody] RegisterVerifiedDTO dto)
+        {
+            var (code, message, isCreated, canSignIn) = await _authService.RegisterAdminVerifiedAsync(dto);
+
+            return StatusCode(code, new
+            {
+                message,
+                isCreated,
+                canSignIn
+            });
+        }
+
+
+        // ========================================
+        // 🔵 Employees - Production registration & 2 factor authentication "Sign up" : Google & Email
+        // ========================================
+
+        // Register employee with Google
+        [HttpPost("google-register")]
+        public async Task<IActionResult> GoogleRegister([FromBody] GoogleRegisterDTO dto)
+        {
+            bool isRegistered = await _authService.RegisterWithGoogle(dto.IdToken);
+
+            if (!isRegistered)
+            {
+                return BadRequest("User already exists or registration failed.");
+            }
+
+            return Ok("Google registration successful.");
+        }
+
+        // Register employee with Email - after 2FA code is correct
+        [HttpPost("register-verified")]
+        public async Task<IActionResult> RegisterVerified([FromBody] RegisterVerifiedDTO dto)
+        {
+            var (code, message, isCreated, canSignIn) = await _authService.RegisterVerifiedAsync(dto);
+
+            return StatusCode(code, new
+            {
+                message,
+                isCreated,
+                canSignIn
+            });
+        }
+
+
+        // ========================================
+        // 🟢 All users - 2FA
+        // ========================================
+
+        // 2FA - only applicable for email registration
+        [HttpPost("request-verification")]
+        public async Task<IActionResult> RequestVerification([FromBody] RequestEmailVerificationDTO dto)
+        {
+            await _authService.SendVerificationCodeAsync(dto);
+            return Ok("Verification code sent");
+        }
+
+        [HttpPost("verify-email-code")]
+        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailCodeDTO dto)
+        {
+            var result = await _authService.VerifyEmailCodeAsync(dto);
+            if (!result) return BadRequest("Invalid or expired code");
+            return Ok("Email verified successfully");
+        }
+
+
+        // ========================================
+        // 🟢 All users - Production authentication "loggin in" : Google & Email
+        // ========================================
+
+        // Google login - returns JWT
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO dto)
         {
@@ -134,19 +191,29 @@ namespace CoriCore.Controllers
             return Ok("Login successful");
         }
 
-        [HttpPost("google-register")]
-        public async Task<IActionResult> GoogleRegister([FromBody] GoogleRegisterDTO dto)
+        // Email login - returns JWT
+        [HttpPost("login")]
+        public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
         {
-            bool isRegistered = await _authService.RegisterWithGoogle(dto.IdToken);
+            string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
 
-            if (!isRegistered)
+            Response.Cookies.Append("token", jwt, new CookieOptions
             {
-                return BadRequest("User already exists or registration failed.");
-            }
+                HttpOnly = false, // change to true when website is in production or when working with the frontend
+                Secure = false, // same like above
+                SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
 
-            return Ok("Google registration successful.");
+            return Ok("Login successful");
         }
 
+
+        // ========================================
+        // 🟢 All users - JWTs / session management
+        // ========================================
+
+        // See if user is logged in and Get current user details when logged in
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> GetCurrentUser()
@@ -159,34 +226,24 @@ namespace CoriCore.Controllers
             return Ok(userData);
         }
 
-        // Two-Step verification end points:
-        [HttpPost("request-verification")]
-        public async Task<IActionResult> RequestVerification([FromBody] RequestEmailVerificationDTO dto)
+        // Remove function when website is in production state
+        [HttpGet("decode-token")]
+        public async Task<IActionResult> DecodeToken([FromQuery] string token)
         {
-            await _authService.SendVerificationCodeAsync(dto);
-            return Ok("Verification code sent");
+            var userData = await _authService.GetUserFromRawToken(token);
+
+            if (userData == null)
+                return Unauthorized("Invalid token or user does not exist.");
+
+            return Ok(userData);
         }
 
-        [HttpPost("verify-email-code")]
-        public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailCodeDTO dto)
+        // Removes the JWT token if a user signs out
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
         {
-            var result = await _authService.VerifyEmailCodeAsync(dto);
-            if (!result) return BadRequest("Invalid or expired code");
-            return Ok("Email verified successfully");
+            await _authService.Logout(HttpContext);
+            return Ok(new { message = "Logged out successfully" });
         }
-
-        [HttpPost("register-verified")]
-        public async Task<IActionResult> RegisterVerified([FromBody] RegisterVerifiedDTO dto)
-        {
-            var (code, message, isCreated, canSignIn) = await _authService.RegisterVerifiedAsync(dto);
-
-            return StatusCode(code, new
-            {
-                message,
-                isCreated,
-                canSignIn
-            });
-        }
-
     }
 }

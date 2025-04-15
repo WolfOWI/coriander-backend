@@ -21,7 +21,7 @@ namespace CoriCore.Services;
 /// </summary>
 public class AuthServices : IAuthService
 {
-    
+
     // DEPENDENCY INJECTION
     // ========================================
     private readonly AppDbContext _context;
@@ -70,7 +70,7 @@ public class AuthServices : IAuthService
     }
 
     // ========================================
-    
+
 
     // User Registration & Role Assignment
     // ========================================
@@ -132,6 +132,89 @@ public class AuthServices : IAuthService
         return true;
     }
 
+    // Register a new admin (via Google method)
+    public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminWithGoogleAsync(string googleToken)
+    {
+        var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
+
+        // Check if user already exists
+        var existing = await _context.Users
+            .Include(u => u.Admin)
+            .FirstOrDefaultAsync(u => u.Email == payload.Email || u.GoogleId == payload.Subject);
+
+        if (existing != null)
+        {
+            if (existing.IsVerified && existing.Role == UserRole.Admin && existing.Admin != null)
+                return (409, "Admin account already exists. Try logging in.", false, true);
+
+            return (409, "Email already registered under a different role or not verified.", false, false);
+        }
+
+        // Create and verify user
+        var user = new User
+        {
+            FullName = payload.Name,
+            Email = payload.Email,
+            GoogleId = payload.Subject,
+            ProfilePicture = payload.Picture,
+            Role = UserRole.Admin,
+            IsVerified = true
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        // Link admin
+        var admin = new Admin
+        {
+            UserId = user.UserId
+        };
+
+        await _context.Admins.AddAsync(admin);
+        await _context.SaveChangesAsync();
+
+        return (200, "Admin account created and linked via Google.", true, true);
+    }
+
+    // Register a new admin (via Email method) & 2FA
+    public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminVerifiedAsync(RegisterVerifiedDTO dto)
+    {
+        var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+        if (existing == null)
+            return (404, "Email not found. Please request a verification code first.", false, false);
+
+        if (existing.IsVerified)
+            return (409, "Email already verified. Try logging in instead.", false, true);
+
+        if (existing.VerificationCode != dto.Code)
+            return (401, "Invalid verification code.", false, false);
+
+        if (existing.CodeGeneratedAt == null || DateTime.UtcNow - existing.CodeGeneratedAt > TimeSpan.FromMinutes(10))
+            return (410, "Verification code expired. Request a new one.", false, false);
+
+        // ✅ Update the user
+        existing.FullName = dto.FullName;
+        existing.Password = await HashPassword(dto.Password);
+        existing.ProfilePicture = dto.ProfilePicture;
+        existing.Role = UserRole.Admin;
+        existing.IsVerified = true;
+        existing.VerificationCode = null;
+        existing.CodeGeneratedAt = null;
+
+        await _context.SaveChangesAsync();
+
+        // ✅ Create and assign Admin entity
+        var admin = new Admin
+        {
+            UserId = existing.UserId
+        };
+        await _context.Admins.AddAsync(admin);
+        await _context.SaveChangesAsync();
+
+        return (200, "Admin account created and linked successfully.", true, true);
+    }
+
     /// <inheritdoc/>
     public Task<string> HashPassword(string password)
     {
@@ -189,6 +272,8 @@ public class AuthServices : IAuthService
         return true;
     }
 
+    // Function to do a full user registration after the 2FA has been sent
+    // It will register user
     public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterVerifiedAsync(RegisterVerifiedDTO dto)
     {
         var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
@@ -228,7 +313,7 @@ public class AuthServices : IAuthService
     }
 
     // ========================================
-    
+
 
     // User Login & Authentication
     // ========================================
@@ -248,7 +333,6 @@ public class AuthServices : IAuthService
 
         return await GenerateJwt(user);
     }
-
 
     public async Task<string> LoginWithGoogle(string googleToken)
     {
@@ -277,7 +361,6 @@ public class AuthServices : IAuthService
         return await GenerateJwt(user);
     }
 
-
     // Verify a User's password against a hashed password
     public Task<bool> VerifyPassword(User user, string password)
     {
@@ -286,7 +369,7 @@ public class AuthServices : IAuthService
     }
     // ========================================
 
-    
+
     // Session Management
     // ========================================
     // Check if a user with the given email exists in the database
@@ -294,7 +377,7 @@ public class AuthServices : IAuthService
     {
         // Get the user from the database
         User? userfromDb = await _userService.GetUserByEmailAsync(email);
-        
+
         if (userfromDb == null) return false;
 
         return true;
@@ -304,9 +387,10 @@ public class AuthServices : IAuthService
         throw new NotImplementedException();
     }
 
-    public Task<bool> LogoutUser()
+    public Task Logout(HttpContext context)
     {
-        throw new NotImplementedException();
+        context.Response.Cookies.Delete("jwt");
+        return Task.CompletedTask;
     }
 
     public async Task<CurrentUserDTO?> GetCurrentUserDetails(ClaimsPrincipal user)
@@ -330,10 +414,11 @@ public class AuthServices : IAuthService
             Email = u.Email,
             Role = u.Role.ToString(),
             ProfilePicture = u.ProfilePicture,
+            IsVerified = u.IsVerified,
             EmployeeId = u.Employee?.EmployeeId,
             AdminId = u.Admin?.AdminId,
             IsLinked = (u.Role == UserRole.Admin && u.Admin != null) ||
-                    (u.Role == UserRole.Employee && u.Employee != null)
+                        (u.Role == UserRole.Employee && u.Employee != null)
         };
     }
 
@@ -351,6 +436,51 @@ public class AuthServices : IAuthService
     {
         throw new NotImplementedException();
     }
+
+    public async Task<CurrentUserDTO?> GetUserFromRawToken(string token)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            if (userIdClaim == null)
+                return null;
+
+            if (!int.TryParse(userIdClaim.Value, out var userId))
+                return null;
+
+            var user = await _context.Users
+                .Include(u => u.Employee)
+                .Include(u => u.Admin)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+                return null;
+
+            return new CurrentUserDTO
+            {
+                UserId = user.UserId,
+                Email = user.Email,
+                FullName = user.FullName,
+                Role = user.Role.ToString(),
+                ProfilePicture = user.ProfilePicture,
+                IsVerified = user.IsVerified,
+                EmployeeId = user.Employee?.EmployeeId,
+                AdminId = user.Admin?.AdminId,
+                IsLinked = (user.Role == UserRole.Admin && user.Admin != null) ||
+                            (user.Role == UserRole.Employee && user.Employee != null)
+            };
+
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+
     // ========================================
 
 }

@@ -12,4 +12,6 @@ public class CurrentUserDTO
     public int? EmployeeId { get; set; }
     public int? AdminId { get; set; }
     public string? ProfilePicture { get; set; }
+    public bool IsVerified { get; set; }
+
 }

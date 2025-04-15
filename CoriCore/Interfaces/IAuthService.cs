@@ -16,7 +16,7 @@ public interface IAuthService
     // ============================
     // USER MANAGEMENT
     // ============================
-    
+
     /// <summary>
     /// Register a new user (via email method)
     /// </summary>
@@ -47,6 +47,8 @@ public interface IAuthService
     /// <returns>The logged in user</returns>
     Task<string> LoginWithEmail(string email, string password);
 
+    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminVerifiedAsync(RegisterVerifiedDTO dto);
+
     // ============================
     // 2FA - two factor authentication
     // ============================
@@ -61,18 +63,23 @@ public interface IAuthService
     // ============================
     // SESSION MANAGEMENT
     // ============================
-    
+
     // Generate JWT token
     Task<string> GenerateJwt(User user);
-    
+
     // Revoke a JWT token (invalidate the session)
     Task<bool> RevokeToken(string token);
 
     // Logout a user (clear session data)
-    Task<bool> LogoutUser();
+    Task Logout(HttpContext context);
+
 
     // Get the current authenticated user
     Task<User?> GetCurrentAuthenticatedUser();
+
+    // Temporary function - remove when website is in production state
+    Task<CurrentUserDTO?> GetUserFromRawToken(string token);
+
 
     // Check if a user is authenticated
     Task<bool> IsUserAuthenticated();
@@ -83,10 +90,14 @@ public interface IAuthService
     // ============================
     // GOOGLE SIGN UP & LOGIN
     // ============================
-    
-    // Login with Google (accepts OAuth token)
+
+    // All users - Login with Google (accepts OAuth token)
     Task<string> LoginWithGoogle(string googleToken);
 
-    // Register with Google (creates a new user or links existing one)
+    // Employees - Register with Google (creates a new user or links existing one)
     Task<bool> RegisterWithGoogle(string googleToken);
+
+    // Admin register with Google
+    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminWithGoogleAsync(string googleToken);
+
 }
