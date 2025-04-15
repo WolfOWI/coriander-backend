@@ -112,7 +112,7 @@ namespace CoriCore.Controllers
 
         // POST: api/LeaveRequest/SubmitLeaveRequest
         [HttpPost("SubmitLeaveRequest")]
-        public async Task<ActionResult<ApplyForLeaveDTO>> SubmitLeaveRequest([FromBody] ApplyForLeaveDTO leaveRequest)
+        public async Task<ActionResult<LeaveRequestDTO>> SubmitLeaveRequest([FromBody] ApplyForLeaveDTO leaveRequest)
         {
             // Check if the leaveRequest is null or invalid
             if (leaveRequest == null)

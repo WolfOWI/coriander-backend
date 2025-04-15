@@ -229,21 +229,6 @@ public class PerformanceReviewService : IPerformanceReviewService
             .ToListAsync();
     }
 
-/// <summary>
-/// support method to delete performance review by employee id
-/// </summary>
-    public Task<bool> DeletePrmByEmpId(int employeeId)
-    {
-        var reviews = _context.PerformanceReviews.Where(r => r.EmployeeId == employeeId).ToList();
-        if (reviews.Count == 0)
-        {
-            return Task.FromResult(false); // No reviews found for the employee
-        }
-
-        _context.PerformanceReviews.RemoveRange(reviews);
-        _context.SaveChangesAsync();
-        return Task.FromResult(true); // Reviews deleted successfully
-    }
 
     /// <summary>
     /// Get the Top rated employess

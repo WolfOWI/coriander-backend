@@ -41,6 +41,5 @@ public interface IPerformanceReviewService
 
     Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus);
 
-    Task<bool> DeletePrmByEmpId(int employeeId);
 }
 
