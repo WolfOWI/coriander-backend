@@ -12,8 +12,6 @@ public class EmpUserServiceTests
     private readonly AppDbContext _context;        // Test database
     private readonly EmpUserService _service;      // EmpUserService (to test)
 
-
-    // TODO: THIS IS INTEGRATION TESTS, NOT UNIT TESTS
     // WE NEED TO MOCK THE DATABASE USING MOQ
     // CURRENTLY WE ARE TESTING WITH A REAL COPY OF THE DATABASE
 

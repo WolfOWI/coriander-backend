@@ -131,6 +131,5 @@ public class EmpUserService : IEmpUserService
             }
         }
 
-    // TODO: Delete EmpUser by ID (which deletes several records relating to empuser)
 
 }
