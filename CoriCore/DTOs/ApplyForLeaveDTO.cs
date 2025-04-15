@@ -15,6 +15,6 @@ public class ApplyForLeaveDTO
     public DateOnly EndDate { get; set; }
     public string? Comment { get; set; }
     public LeaveStatus Status { get; set; }  // e.g., Approved, Pending, Rejected
-    public DateTime CreatedAt { get; set; }  // Date when the request was created
-    // public int Duration { get; set; }  // Duration of the leave in days
+    // public DateTime CreatedAt { get; set; }  // Date when the request was created
+
 }

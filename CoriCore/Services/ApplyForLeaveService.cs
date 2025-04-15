@@ -31,7 +31,7 @@ public class ApplyForLeaveService : IApplyForLeaveService
             EndDate = leaveRequest.EndDate,
             Comment = leaveRequest.Comment,
             Status = LeaveStatus.Pending, // Initial status, can be updated later
-            CreatedAt = leaveRequest.CreatedAt
+            CreatedAt = DateTime.UtcNow // Set to current date and time (UTC Format)
         };
 
         // Add the new leave request to the database context
