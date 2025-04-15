@@ -14,12 +14,10 @@ namespace CoriCore.Controllers
     {
 
         // Dependency Injection
-        private readonly AppDbContext _context;
         private readonly IEmpUserService _empUserService;
 
-        public EmpUserController(AppDbContext context, IEmpUserService empUserService)
+        public EmpUserController(IEmpUserService empUserService)
         {
-            _context = context;
             _empUserService = empUserService;
         }
 
