@@ -6,6 +6,7 @@ using CoriCore.Interfaces;
 using CoriCore.DTOs;
 using CoriCore.Models;
 using CoriCore.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
@@ -19,7 +20,7 @@ public class ApplyForLeaveService : IApplyForLeaveService
     }
 
     // Create and store a new leave request in the database
-    public async Task<ApplyForLeaveDTO> ApplyForLeave(ApplyForLeaveDTO leaveRequest)
+    public async Task<LeaveRequestDTO> ApplyForLeave(ApplyForLeaveDTO leaveRequest)
     {
         // Map the ApplyForLeaveDTO to the database entity LeaveRequest
         var newLeaveRequest = new LeaveRequest
@@ -39,9 +40,31 @@ public class ApplyForLeaveService : IApplyForLeaveService
         // Save changes to the database asynchronously
         await _context.SaveChangesAsync();
 
-        // Return the DTO with the ID of the newly created leave request
-        leaveRequest.LeaveRequestId = newLeaveRequest.LeaveRequestId;
+        // Load the created leave request with its type
+        var createdLeaveRequest = await _context.LeaveRequests
+            .Include(lr => lr.LeaveType)
+            .FirstOrDefaultAsync(lr => lr.LeaveRequestId == newLeaveRequest.LeaveRequestId);
 
-        return leaveRequest;
+        // Make sure it was created and loaded correctly
+        if (createdLeaveRequest == null || createdLeaveRequest.LeaveType == null)
+        {
+            throw new Exception("Failed to create leave request or load it's data");
+        }
+
+        // Map the created LeaveRequest to the LeaveRequestDTO and return all the details
+        return new LeaveRequestDTO
+        {
+            LeaveRequestId = createdLeaveRequest.LeaveRequestId,
+            EmployeeId = createdLeaveRequest.EmployeeId,
+            LeaveTypeId = createdLeaveRequest.LeaveTypeId,
+            StartDate = createdLeaveRequest.StartDate,
+            EndDate = createdLeaveRequest.EndDate,
+            Comment = createdLeaveRequest.Comment,
+            Status = createdLeaveRequest.Status,
+            CreatedAt = createdLeaveRequest.CreatedAt,
+            LeaveTypeName = createdLeaveRequest.LeaveType.LeaveTypeName,
+            Description = createdLeaveRequest.LeaveType.Description,
+            DefaultDays = createdLeaveRequest.LeaveType.DefaultDays
+        };
     }
 }

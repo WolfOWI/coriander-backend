@@ -9,7 +9,6 @@ namespace CoriCore.DTOs;
 public class ApplyForLeaveDTO
 {
     // LeaveRequest Table
-    public int LeaveRequestId { get; set; }  // Primary Key
     public int EmployeeId { get; set; }  // Foreign Key
     public int LeaveTypeId { get; set; }  // Foreign Key
     public DateOnly StartDate { get; set; }

@@ -44,7 +44,7 @@ public class EquipmentService : IEquipmentService
 
     //CreateEquipmentItems but give is as a list
     //CreateEquipmentItems([{equipment 1}, {equipment 2}, {equipments 3}])
-    public async Task<IEnumerable<Equipment>> CreateEquipmentItemsAsync(List<EquipmentDTO> equipmentDTOs)
+    public async Task<IEnumerable<Equipment>> CreateEquipmentItemsAsync(List<CreateEquipmentDTO> equipmentDTOs)
     {
         // Map EquipmentDTOs to Equipment entities
         var equipmentItems = equipmentDTOs.Select(dto => new Equipment
@@ -99,32 +99,6 @@ public class EquipmentService : IEquipmentService
         _context.Equipments.Remove(equipment);
         await _context.SaveChangesAsync();
         return true; // Equipment deleted successfully
-    }
-
-    // Delete all equipment items by employee id
-    public async Task<string> DeleteEquipmentsByEmployeeIdAsync(int employeeId)
-    {
-
-        // Check if the employee exists
-        var employee = await _context.Employees.FindAsync(employeeId);
-        if (employee == null)
-        {
-            return "Employee not found";
-        }
-
-        var equipments = await _context.Equipments.Where(e => e.EmployeeId == employeeId).ToListAsync();
-        if (equipments.Count == 0)
-        {
-            return "No equipment items found";
-        }
-
-        // Delete the equipment items
-        _context.Equipments.RemoveRange(equipments);
-
-        // Save changes to the database
-        await _context.SaveChangesAsync();
-
-        return "Equipment items deleted successfully";
     }
 
 }

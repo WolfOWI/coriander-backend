@@ -63,7 +63,7 @@ namespace CoriCore.Controllers
 
         // POST
         [HttpPost("CreateEquipmentItems")]
-        public async Task<ActionResult<IEnumerable<EquipmentDTO>>> CreateEquipmentItems([FromBody] List<EquipmentDTO> equipmentDtos)
+        public async Task<ActionResult<IEnumerable<EquipmentDTO>>> CreateEquipmentItems([FromBody] List<CreateEquipmentDTO> equipmentDtos)
         {
             if (equipmentDtos == null || !equipmentDtos.Any())
             {
@@ -73,13 +73,19 @@ namespace CoriCore.Controllers
             // Call service to create the equipment items
             var equipmentItems = await _equipmentService.CreateEquipmentItemsAsync(equipmentDtos);
 
+            // Load the equipment categories for the created items
+            var equipmentItemsWithCategories = await _context.Equipments
+            .Include(e => e.EquipmentCategory) // Include the equipment category
+            .Where(e => equipmentItems.Select(ei => ei.EquipmentId).Contains(e.EquipmentId)) // Filter by the created items
+            .ToListAsync();
+
             // Map back to EquipmentDTO to return the created items
-            var equipmentDtosCreated = equipmentItems.Select(e => new EquipmentDTO
+            var equipmentDtosCreated = equipmentItemsWithCategories.Select(e => new EquipmentDTO
             {
                 EquipmentId = e.EquipmentId,
                 EmployeeId = e.EmployeeId,
                 EquipmentCatId = e.EquipmentCatId,
-                EquipmentCategoryName = e.EquipmentCategory?.EquipmentCatName, // Fixed property name
+                EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName, // Fixed property name
                 EquipmentName = e.EquipmentName,
                 AssignedDate = e.AssignedDate,
                 Condition = e.Condition
@@ -121,15 +127,6 @@ namespace CoriCore.Controllers
             }
 
             return NoContent();
-        }
-
-        // TODO: Remove this endpoint (will form part of EmpUser Deletion)
-        // Delete all equipment items by employee id
-        [HttpDelete("delete-by-empId/{employeeId}")]
-        public async Task<IActionResult> DeleteEquipmentsByEmployeeId(int employeeId)
-        {
-            var deleted = await _equipmentService.DeleteEquipmentsByEmployeeIdAsync(employeeId);
-            return Ok(deleted);
         }
 
         // PUT: api/Equipment/5
