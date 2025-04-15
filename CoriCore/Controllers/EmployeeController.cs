@@ -21,11 +21,13 @@ namespace CoriCore.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IEmployeeService _employeeService;
+        private readonly IUserService _userService;
 
-        public EmployeeController(AppDbContext context, IEmployeeService employeeService)
+        public EmployeeController(AppDbContext context, IEmployeeService employeeService, IUserService userService)
         {
             _context = context;
             _employeeService = employeeService;
+            _userService = userService;
         }
 
         // POST: api/Employee/setup-user-as-employee
@@ -66,12 +68,30 @@ namespace CoriCore.Controllers
             return Ok(result);
         }
 
-        // TODO: Remove this endpoint (will form part of EmpUser Deletion)
-        // DELETE: api/Employee/5
+        // DELETE: api/Employee/{id}
+        /// <summary>
+        /// Delete an employee and set the associated user to Unassigned.
+        /// </summary>
+        /// <param name="id">The ID of the employee to delete.</param>
+        /// <returns>The result of the operation.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
+            // Get the employee to delete
+            var employee = await _context.Employees.FindAsync(id);
+
+            // Check if the employee exists
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            // Set the associated User's role to 0 (Unassigned)
+            await _userService.SetUserRoleAsync(employee.UserId, (int)UserRole.Unassigned);
+
+            // Delete the employee
             var result = await _employeeService.DeleteEmployeeByIdAsync(id);
+            
             return StatusCode(result.Code, new { result.Message });
         }
 

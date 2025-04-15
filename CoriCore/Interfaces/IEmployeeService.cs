@@ -74,5 +74,6 @@ namespace CoriCore.Interfaces
        /// </summary>
        /// <returns>The total number of employees, and the totals of each employement status</returns>
        Task<EmpTotalStatsDTO> GetEmployeeStatusTotals();
+
     }
 }
