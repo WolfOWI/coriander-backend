@@ -48,5 +48,9 @@ namespace CoriCore.Interfaces
         /// <returns>
         /// </returns>
         Task<User?> GetUserByEmailAsync(string email);
+
+
+        Task<List<User>> GetUnlinkedUsersAsync();
+
     }
 }

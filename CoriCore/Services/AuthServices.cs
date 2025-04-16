@@ -129,6 +129,8 @@ public class AuthServices : IAuthService
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
+        await _emailService.SendAccountPendingEmail(user.Email, user.FullName);
+
         return true;
     }
 
@@ -382,6 +384,7 @@ public class AuthServices : IAuthService
 
         return true;
     }
+
     public Task<bool> RevokeToken(string token)
     {
         throw new NotImplementedException();

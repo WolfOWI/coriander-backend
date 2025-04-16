@@ -83,7 +83,7 @@ namespace CoriCore.Controllers
             var equipmentDtosCreated = equipmentItemsWithCategories.Select(e => new EquipmentDTO
             {
                 EquipmentId = e.EquipmentId,
-                EmployeeId = e.EmployeeId,
+                EmployeeId = e.EmployeeId ?? 0,
                 EquipmentCatId = e.EquipmentCatId,
                 EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName, // Fixed property name
                 EquipmentName = e.EquipmentName,
@@ -92,7 +92,12 @@ namespace CoriCore.Controllers
             }).ToList();
 
             // Return the created equipment items as a response
-            return CreatedAtAction(nameof(GetEquipments), new { count = equipmentDtosCreated.Count }, equipmentDtosCreated);
+            return Ok(new
+            {
+                Count = equipmentDtosCreated.Count,
+                Data = equipmentDtosCreated
+            });
+
         }
 
         // PUT: api/Equipment/5
@@ -192,6 +197,6 @@ namespace CoriCore.Controllers
             return _context.Equipments.Any(e => e.EquipmentId == id);
         }
 
-        
+
     }
 }

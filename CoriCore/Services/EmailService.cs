@@ -266,5 +266,92 @@ namespace CoriCore.Services
             await smtp.DisconnectAsync(true);
         }
 
+        public async Task SendAccountActivatedEmailAsync(string email, string name, List<string> equipmentTitles)
+        {
+            string equipmentSection = "";
+
+            if (equipmentTitles.Any())
+            {
+                string equipmentItems = string.Join("\n", equipmentTitles.Select(title =>
+                    $"<div class='equipment-item'>{System.Net.WebUtility.HtmlEncode(title)}</div>"));
+
+                equipmentSection = $@"
+                <div class='equipment-section'>
+                    <div class='equipment-title'>
+                        You have been assigned with the following<br />
+                        equipment items
+                    </div>
+                    {equipmentItems}
+                </div>";
+            }
+
+            var html = $@"
+            <!DOCTYPE html>
+            <html lang='en'>
+            <head>
+                <meta charset='UTF-8' />
+                <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+                <title>Account Ready</title>
+                <style>
+                    body {{ background-color: #e1e9d8; font-family: Arial, sans-serif; color: #000; margin: 0; padding: 0; }}
+                    .header {{ background-color: #9fb881; padding: 20px; text-align: left; }}
+                    .logo {{ font-size: 24px; color: #fff; font-weight: bold; }}
+                    .content {{ padding: 40px 20px; text-align: center; }}
+                    .title {{ font-size: 24px; margin-bottom: 10px; }}
+                    .highlight {{ font-weight: bold; color: #4a6a3d; }}
+                    .message {{ margin-top: 10px; font-size: 16px; }}
+                    .icon {{ margin: 40px auto 20px auto; }}
+                    .equipment-section {{
+                        background-color: #fff; margin: 40px auto; padding: 30px 20px;
+                        border-radius: 12px; max-width: 500px; text-align: center;
+                    }}
+                    .equipment-title {{ font-size: 16px; margin-bottom: 20px; }}
+                    .equipment-item {{
+                        background-color: #9fb881; color: #fff; padding: 12px 20px;
+                        margin: 8px auto; border-radius: 999px; width: 80%;
+                        max-width: 300px; font-weight: bold;
+                    }}
+                    .footer {{ margin-top: 60px; font-weight: bold; color: #9fb881; }}
+                </style>
+            </head>
+            <body>
+                <div class='header'><div class='logo'>Coriander</div></div>
+                <div class='content'>
+                    <div class='title'>
+                        Hey <span class='highlight'>{System.Net.WebUtility.HtmlEncode(name)}!</span><br />
+                        Your account is <span class='highlight'>ready!</span>
+                    </div>
+                    <div class='icon'>
+                        <!-- Add an SVG if you want -->
+                    </div>
+                    <div class='message'>
+                        The management team has successfully linked your<br />
+                        account and you can sign in now
+                    </div>
+                    {equipmentSection}
+                    <div class='footer'>
+                        Best regards<br />The Coriander Team
+                    </div>
+                </div>
+            </body>
+            </html>";
+
+            var message = new MimeMessage();
+            message.From.Add(MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM")));
+            message.To.Add(MailboxAddress.Parse(email));
+            message.Subject = "Your Coriander account is ready!";
+            message.Body = new TextPart(TextFormat.Html) { Text = html };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(
+                Environment.GetEnvironmentVariable("SMTP_HOST"),
+                int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587"),
+                SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(
+                Environment.GetEnvironmentVariable("EMAIL_USERNAME"),
+                Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+        }
     }
 }

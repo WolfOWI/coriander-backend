@@ -26,11 +26,11 @@ public class EquipmentService : IEquipmentService
     {
         var equipment = await _context.Equipments
             .Include(e => e.EquipmentCategory)
-            .Where(e => e.EmployeeId == employeeId)
+            .Where(e => e.EmployeeId.HasValue && e.EmployeeId.Value == employeeId)
             .Select(e => new EquipmentDTO
             {
                 EquipmentId = e.EquipmentId,
-                EmployeeId = e.EmployeeId,
+                EmployeeId = e.EmployeeId ?? 0,
                 EquipmentCatId = e.EquipmentCatId,
                 EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
                 EquipmentName = e.EquipmentName,
@@ -58,7 +58,7 @@ public class EquipmentService : IEquipmentService
 
         // Add the equipment items to the context
         _context.Equipments.AddRange(equipmentItems);
-        
+
         // Save changes to the database
         await _context.SaveChangesAsync();
 
@@ -99,6 +99,28 @@ public class EquipmentService : IEquipmentService
         _context.Equipments.Remove(equipment);
         await _context.SaveChangesAsync();
         return true; // Equipment deleted successfully
+    }
+
+    public async Task<(int Code, string Message)> AssignEquipmentAsync(int employeeId, List<int> equipmentIds)
+    {
+        foreach (var equipmentId in equipmentIds)
+        {
+            var equipment = await _context.Equipments.FindAsync(equipmentId);
+
+            if (equipment == null)
+                return (404, $"Equipment with ID {equipmentId} not found");
+
+            // If the equipment is already assigned to another employee
+            if (equipment.EmployeeId.HasValue && equipment.EmployeeId != employeeId)
+                return (400, $"Equipment ID {equipmentId} is already assigned to another employee");
+
+            // Safe to assign
+            equipment.EmployeeId = employeeId;
+            equipment.AssignedDate = DateOnly.FromDateTime(DateTime.Now);
+        }
+
+        await _context.SaveChangesAsync();
+        return (200, "Equipment assigned successfully");
     }
 
 }

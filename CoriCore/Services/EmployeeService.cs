@@ -9,18 +9,22 @@ using CoriCore.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoriCore.Services 
+namespace CoriCore.Services
 {
     public class EmployeeService : IEmployeeService
     {
         private readonly AppDbContext _context;
         private readonly IUserService _userService;
         private readonly ILeaveBalanceService _leaveBalanceService;
-        public EmployeeService(AppDbContext context, IUserService userService, ILeaveBalanceService leaveBalanceService)
+        private readonly IEquipmentService _equipmentService;
+        private readonly IEmailService _emailService;
+        public EmployeeService(AppDbContext context, IUserService userService, ILeaveBalanceService leaveBalanceService, IEquipmentService equipmentService, IEmailService emailService)
         {
             _context = context;
             _userService = userService;
             _leaveBalanceService = leaveBalanceService;
+            _equipmentService = equipmentService;
+            _emailService = emailService;
         }
 
         public async Task<(int Code, string Message)> ValidateEmployeeInfoAsync(EmployeeDto employeeDto)
@@ -66,8 +70,30 @@ namespace CoriCore.Services
 
             // Create the employee's default leave balances after the employee is saved
             var balsCreated = await _leaveBalanceService.CreateDefaultLeaveBalances(employee.EmployeeId);
-            if (!balsCreated) {
+            if (!balsCreated)
+            {
                 return (400, "Failed to create default leave balances");
+            }
+
+            if (dto.EquipmentIds != null && dto.EquipmentIds.Any())
+            {
+                var assignResult = await _equipmentService.AssignEquipmentAsync(employee.EmployeeId, dto.EquipmentIds);
+                if (assignResult.Code != 200)
+                {
+                    return (400, assignResult.Message);
+                }
+            }
+
+            var user = await _context.Users.FindAsync(dto.UserId);
+            if (user != null && user.IsVerified)
+            {
+                var equipmentTitles = await _context.Equipments
+                    .Where(e => e.EmployeeId == employee.EmployeeId)
+                    .Select(e => e.EquipmentName) // or e.Title depending on your schema
+                    .ToListAsync();
+
+                // Send activation email
+                await _emailService.SendAccountActivatedEmailAsync(user.Email, user.FullName, equipmentTitles);
             }
 
             return (201, "Employee successfully registered");
@@ -102,9 +128,9 @@ namespace CoriCore.Services
 
             // If employee not found
             if (emp == null)
-                {
-                    return (404, "Employee not found");
-                }
+            {
+                return (404, "Employee not found");
+            }
 
             // (Found) Toggle the suspension status
             emp.IsSuspended = !emp.IsSuspended;
@@ -144,7 +170,7 @@ namespace CoriCore.Services
             var nonSuspendedEmployees = await _context.Employees.Where(e => !e.IsSuspended).ToListAsync();
 
             var totalFullTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.FullTime);
-            var totalPartTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.PartTime); 
+            var totalPartTimeEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.PartTime);
             var totalContractEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.Contract);
             var totalInternEmployees = nonSuspendedEmployees.Count(e => e.EmployType == EmployType.Intern);
 

@@ -24,4 +24,6 @@ public interface IEquipmentService
 
     Task<bool> DeleteEquipmentItemAsync(int equipmentId);
 
-} 
+    Task<(int Code, string Message)> AssignEquipmentAsync(int employeeId, List<int> equipmentIds);
+
+}
