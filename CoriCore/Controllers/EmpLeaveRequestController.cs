@@ -2,6 +2,7 @@
 
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
+using CoriCore.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,9 @@ namespace CoriCore.Controllers
     [ApiController]
     public class EmpLeaveRequestController : ControllerBase
     {
-        private readonly ILeaveRequestService _leaveRequestService;
+        private readonly IEmpLeaveRequestService _leaveRequestService;
 
-        public EmpLeaveRequestController(ILeaveRequestService leaveRequestService)
+        public EmpLeaveRequestController(IEmpLeaveRequestService leaveRequestService)
         {
             _leaveRequestService = leaveRequestService;
         }

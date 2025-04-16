@@ -36,7 +36,9 @@ public class EmpLeaveRequestService : IEmpLeaveRequestService
                 Comment = lr.Comment,
                 Status = lr.Status,
                 CreatedAt = lr.CreatedAt,
-                RemainingDays = lr.Employee.LeaveBalances.RemainingDays
+                RemainingDays = lr.Employee.LeaveBalances.Where(lb => lb.LeaveTypeId == lr.LeaveType.LeaveTypeId)
+                    .Select(lb => lb.RemainingDays)
+                    .FirstOrDefault(),
                 FullName = lr.Employee.User.FullName,
                 IsVerified = lr.Employee.User.IsVerified,
                 VerificationCode = lr.Employee.User.VerificationCode
