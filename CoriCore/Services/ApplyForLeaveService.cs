@@ -1,5 +1,5 @@
 // Apply For Leave Service
-// ========================================
+// Iné Smith
 
 using System;
 using CoriCore.Interfaces;
@@ -10,10 +10,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
-public class ApplyForLeaveService : IApplyForLeaveService
+public class ApplyForLeaveService : IApplyForLeaveService // Inherits from IApplyForLeaveService
+// This service handles the business logic for applying for leave.
 {
     private readonly AppDbContext _context;
 
+    // Constructor for ApplyForLeaveService
+    // It takes an AppDbContext as a parameter and assigns it to the private field.
     public ApplyForLeaveService(AppDbContext context)
     {
         _context = context;
