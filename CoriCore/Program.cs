@@ -30,6 +30,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILeaveBalanceService, LeaveBalanceService>();
 // EmpUser Service
 builder.Services.AddScoped<IEmpUserService, EmpUserService>();
+// EmpLeaveRequest Service
+builder.Services.AddScoped<IEmpLeaveRequestService, EmpLeaveRequestService>();
 // Leave Request Service
 builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 // Apply For Leave Service
@@ -73,7 +75,7 @@ builder.Services.AddControllers()
 
 // Google Authentication, Cookies and JWT management
 // ========================================
-var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
              ?? "super_mega_ultra_secret_jwt_key_123456"; // fallback for dev
 
 builder.Services.AddAuthentication(options =>
