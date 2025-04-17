@@ -123,4 +123,25 @@ public class EquipmentService : IEquipmentService
         return (200, "Equipment assigned successfully");
     }
 
+    // public async Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems()
+    // {
+    //     // var empEquipItems = await _context.Equipments
+    //     //     .Include(e => e.Employee)
+    //     //     .Select(e => new EmpEquipItemDTO
+    //     //     {
+    //     //         Equipment = new EquipmentDTO
+    //     //         {
+    //     //             EquipmentId = e.EquipmentId,
+    //     //             EquipmentName = e.EquipmentName,
+    //     //             AssignedDate = e.AssignedDate,
+    //     //             Condition = e.Condition
+    //     //         },
+    //     //         FullName = e.Employee.FullName,
+    //     //         NumberOfItems = e.EmployeeId.HasValue ? 1 : 0
+    //     //     })
+    //     //     .ToListAsync();
+
+    //     // return empEquipItems;
+    // }
+
 }
