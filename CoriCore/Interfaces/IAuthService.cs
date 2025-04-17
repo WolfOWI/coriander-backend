@@ -47,7 +47,9 @@ public interface IAuthService
     /// <returns>The logged in user</returns>
     Task<string> LoginWithEmail(string email, string password);
 
-    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminVerifiedAsync(RegisterVerifiedDTO dto);
+    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminVerifiedAsync(
+        RegisterVerifiedDTO dto
+    );
 
     // ============================
     // 2FA - two factor authentication
@@ -56,9 +58,9 @@ public interface IAuthService
     // Two Factor Authentication
     Task SendVerificationCodeAsync(RequestEmailVerificationDTO dto);
     Task<bool> VerifyEmailCodeAsync(VerifyEmailCodeDTO dto);
-    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterVerifiedAsync(RegisterVerifiedDTO dto);
-
-
+    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterVerifiedAsync(
+        RegisterVerifiedDTO dto
+    );
 
     // ============================
     // SESSION MANAGEMENT
@@ -73,13 +75,11 @@ public interface IAuthService
     // Logout a user (clear session data)
     Task Logout(HttpContext context);
 
-
     // Get the current authenticated user
     Task<User?> GetCurrentAuthenticatedUser();
 
     // Temporary function - remove when website is in production state
     Task<CurrentUserDTO?> GetUserFromRawToken(string token);
-
 
     // Check if a user is authenticated
     Task<bool> IsUserAuthenticated();
@@ -98,6 +98,7 @@ public interface IAuthService
     Task<bool> RegisterWithGoogle(string googleToken);
 
     // Admin register with Google
-    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminWithGoogleAsync(string googleToken);
-
+    Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminWithGoogleAsync(
+        string googleToken
+    );
 }

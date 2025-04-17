@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 
 // Load environment variables (from .env file)
@@ -42,6 +43,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 // Page Service (For whole front-end pages)
 builder.Services.AddScoped<IPageService, PageService>();
+// Image service - Local store
+builder.Services.AddScoped<IImageService, ImageService>();
 // ========================================
 
 // CORS
@@ -73,7 +76,7 @@ builder.Services.AddControllers()
 
 // Google Authentication, Cookies and JWT management
 // ========================================
-var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
              ?? "super_mega_ultra_secret_jwt_key_123456"; // fallback for dev
 
 builder.Services.AddAuthentication(options =>
@@ -123,7 +126,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddOpenApi(); // Add OpenAPI support
 builder.Services.AddEndpointsApiExplorer(); // Add endpoints explorer
-builder.Services.AddSwaggerGen(); // Adding Swagger Package
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoriCore", Version = "v1" });
+    c.OperationFilter<SwaggerFileUploadOperationFilter>();
+});
+
 
 // Database connection configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
