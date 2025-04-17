@@ -123,25 +123,41 @@ public class EquipmentService : IEquipmentService
         return (200, "Equipment assigned successfully");
     }
 
-    // public async Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems()
-    // {
-    //     // var empEquipItems = await _context.Equipments
-    //     //     .Include(e => e.Employee)
-    //     //     .Select(e => new EmpEquipItemDTO
-    //     //     {
-    //     //         Equipment = new EquipmentDTO
-    //     //         {
-    //     //             EquipmentId = e.EquipmentId,
-    //     //             EquipmentName = e.EquipmentName,
-    //     //             AssignedDate = e.AssignedDate,
-    //     //             Condition = e.Condition
-    //     //         },
-    //     //         FullName = e.Employee.FullName,
-    //     //         NumberOfItems = e.EmployeeId.HasValue ? 1 : 0
-    //     //     })
-    //     //     .ToListAsync();
+    public async Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems()
+    {
+        // Get all equipment items (both assigned and unassigned) with their counts
+        var equipmentWithCounts = await _context.Equipments
+            .Include(e => e.EquipmentCategory)
+            .Include(e => e.Employee)
+            .Include(e => e.Employee.User)
+            .GroupBy(e => e.EmployeeId)
+            .Select(g => new
+            {
+                EquipmentItems = g.ToList(),
+                Count = g.Count()
+            })
+            .ToListAsync();
 
-    //     // return empEquipItems;
-    // }
+        // Map equipment items to EmpEquipItemDTO
+        var empEquipItems = equipmentWithCounts
+            .SelectMany(g => g.EquipmentItems.Select(e => new EmpEquipItemDTO
+            {
+                Equipment = new EquipmentDTO
+                {
+                    EquipmentId = e.EquipmentId,
+                    EmployeeId = e.EmployeeId,
+                    EquipmentCatId = e.EquipmentCatId,
+                    EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
+                    EquipmentName = e.EquipmentName,
+                    AssignedDate = e.AssignedDate,
+                    Condition = e.Condition
+                },
+                FullName = e.Employee?.User?.FullName, // Will be null if equipment is unassigned
+                NumberOfItems = g.Count
+            }))
+            .ToList();
+
+        return empEquipItems;
+    }
 
 }

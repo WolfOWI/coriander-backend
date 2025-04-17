@@ -29,6 +29,17 @@ namespace CoriCore.Controllers
         }
 
         /// <summary>
+        /// Gets all equipment items (both assigned and unassigned) with additional info about user/employee (if assigned)
+        /// </summary>
+        /// <returns>A list of equipment DTOs</returns>
+        [HttpGet("emp-equip-items")]
+        public async Task<ActionResult<List<EmpEquipItemDTO>>> GetAllEmpEquipItems()
+        {   
+            var equipmentItems = await _equipmentService.GetAllEmpEquipItems();
+            return Ok(equipmentItems);
+        }
+
+        /// <summary>
         /// Gets all equipment assigned to a specific employee
         /// </summary>
         /// <param name="employeeId">The ID of the employee</param>
@@ -41,25 +52,25 @@ namespace CoriCore.Controllers
         }
 
         // GET: api/Equipment
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Equipment>>> GetEquipments()
-        {
-            return await _context.Equipments.ToListAsync();
-        }
+        // [HttpGet]
+        // public async Task<ActionResult<IEnumerable<Equipment>>> GetEquipments()
+        // {
+        //     return await _context.Equipments.ToListAsync();
+        // }
 
         // GET: api/Equipment/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Equipment>> GetEquipment(int id)
-        {
-            var equipment = await _context.Equipments.FindAsync(id);
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<Equipment>> GetEquipment(int id)
+        // {
+        //     var equipment = await _context.Equipments.FindAsync(id);
 
-            if (equipment == null)
-            {
-                return NotFound();
-            }
+        //     if (equipment == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            return equipment;
-        }
+        //     return equipment;
+        // }
 
         // POST
         [HttpPost("CreateEquipmentItems")]

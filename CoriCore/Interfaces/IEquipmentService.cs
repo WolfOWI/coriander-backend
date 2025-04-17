@@ -26,6 +26,11 @@ public interface IEquipmentService
 
     Task<(int Code, string Message)> AssignEquipmentAsync(int employeeId, List<int> equipmentIds);
 
-    // Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems();
+
+    /// <summary>
+    /// Gets all equipment items (both assigned and unassigned) with additional info about user/employee (if assigned)
+    /// </summary>
+    /// <returns>A list of equipment DTOs</returns>
+    Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems();
 
 }
