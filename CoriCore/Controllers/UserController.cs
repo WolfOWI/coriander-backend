@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoriCore.Data;
+using CoriCore.Interfaces;
+using CoriCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CoriCore.Data;
-using CoriCore.Models;
-using CoriCore.Interfaces;
 
 namespace CoriCore.Controllers
 {
@@ -26,7 +26,6 @@ namespace CoriCore.Controllers
             _context = context;
             _userService = userService;
         }
-
 
         // GET: api/User
         [HttpGet]
@@ -119,6 +118,5 @@ namespace CoriCore.Controllers
             var users = await _userService.GetUnlinkedUsersAsync();
             return Ok(users);
         }
-
     }
 }

@@ -1,11 +1,11 @@
 // Email Service
 // ========================================
 
+using CoriCore.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
-using CoriCore.Interfaces;
 
 namespace CoriCore.Services
 {
@@ -18,7 +18,12 @@ namespace CoriCore.Services
             _config = config;
         }
 
-        public async Task SendEmailAsync(string recipientEmail, string subject, string messageTitle, string messageBody)
+        public async Task SendEmailAsync(
+            string recipientEmail,
+            string subject,
+            string messageTitle,
+            string messageBody
+        )
         {
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM")));
@@ -32,17 +37,20 @@ namespace CoriCore.Services
             await smtp.ConnectAsync(
                 Environment.GetEnvironmentVariable("SMTP_HOST"),
                 int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587"),
-                SecureSocketOptions.StartTls);
+                SecureSocketOptions.StartTls
+            );
             await smtp.AuthenticateAsync(
                 Environment.GetEnvironmentVariable("EMAIL_USERNAME"),
-                Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
+                Environment.GetEnvironmentVariable("EMAIL_PASSWORD")
+            );
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
 
         public async Task SendVerificationCodeEmail(string email, string code, string name)
         {
-            var html = $@"
+            var html =
+                $@"
             <!DOCTYPE html>
             <html lang='en'>
             <head>
@@ -143,7 +151,9 @@ namespace CoriCore.Services
             </html>";
 
             var message = new MimeMessage();
-            message.From.Add(MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM")));
+            message.From.Add(
+                MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM"))
+            );
             message.To.Add(MailboxAddress.Parse(email));
             message.Subject = "Verify your Coriander account";
             message.Body = new TextPart(TextFormat.Html) { Text = html };
@@ -152,17 +162,20 @@ namespace CoriCore.Services
             await smtp.ConnectAsync(
                 Environment.GetEnvironmentVariable("SMTP_HOST"),
                 int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587"),
-                SecureSocketOptions.StartTls);
+                SecureSocketOptions.StartTls
+            );
             await smtp.AuthenticateAsync(
                 Environment.GetEnvironmentVariable("EMAIL_USERNAME"),
-                Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
+                Environment.GetEnvironmentVariable("EMAIL_PASSWORD")
+            );
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
         }
 
         public async Task SendAccountPendingEmail(string email, string name)
         {
-            var html = $@"
+            var html =
+                $@"
             <!DOCTYPE html>
             <html lang='en'>
             <head>
@@ -249,7 +262,9 @@ namespace CoriCore.Services
             </html>";
 
             var message = new MimeMessage();
-            message.From.Add(MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM")));
+            message.From.Add(
+                MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM"))
+            );
             message.To.Add(MailboxAddress.Parse(email));
             message.Subject = "Your Coriander account is almost ready!";
             message.Body = new TextPart(TextFormat.Html) { Text = html };
@@ -258,24 +273,35 @@ namespace CoriCore.Services
             await smtp.ConnectAsync(
                 Environment.GetEnvironmentVariable("SMTP_HOST"),
                 int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587"),
-                SecureSocketOptions.StartTls);
+                SecureSocketOptions.StartTls
+            );
             await smtp.AuthenticateAsync(
                 Environment.GetEnvironmentVariable("EMAIL_USERNAME"),
-                Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
+                Environment.GetEnvironmentVariable("EMAIL_PASSWORD")
+            );
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
         }
 
-        public async Task SendAccountActivatedEmailAsync(string email, string name, List<string> equipmentTitles)
+        public async Task SendAccountActivatedEmailAsync(
+            string email,
+            string name,
+            List<string> equipmentTitles
+        )
         {
             string equipmentSection = "";
 
             if (equipmentTitles.Any())
             {
-                string equipmentItems = string.Join("\n", equipmentTitles.Select(title =>
-                    $"<div class='equipment-item'>{System.Net.WebUtility.HtmlEncode(title)}</div>"));
+                string equipmentItems = string.Join(
+                    "\n",
+                    equipmentTitles.Select(title =>
+                        $"<div class='equipment-item'>{System.Net.WebUtility.HtmlEncode(title)}</div>"
+                    )
+                );
 
-                equipmentSection = $@"
+                equipmentSection =
+                    $@"
                 <div class='equipment-section'>
                     <div class='equipment-title'>
                         You have been assigned with the following<br />
@@ -285,7 +311,8 @@ namespace CoriCore.Services
                 </div>";
             }
 
-            var html = $@"
+            var html =
+                $@"
             <!DOCTYPE html>
             <html lang='en'>
             <head>
@@ -337,7 +364,9 @@ namespace CoriCore.Services
             </html>";
 
             var message = new MimeMessage();
-            message.From.Add(MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM")));
+            message.From.Add(
+                MailboxAddress.Parse(Environment.GetEnvironmentVariable("EMAIL_FROM"))
+            );
             message.To.Add(MailboxAddress.Parse(email));
             message.Subject = "Your Coriander account is ready!";
             message.Body = new TextPart(TextFormat.Html) { Text = html };
@@ -346,10 +375,12 @@ namespace CoriCore.Services
             await smtp.ConnectAsync(
                 Environment.GetEnvironmentVariable("SMTP_HOST"),
                 int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587"),
-                SecureSocketOptions.StartTls);
+                SecureSocketOptions.StartTls
+            );
             await smtp.AuthenticateAsync(
                 Environment.GetEnvironmentVariable("EMAIL_USERNAME"),
-                Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
+                Environment.GetEnvironmentVariable("EMAIL_PASSWORD")
+            );
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
         }

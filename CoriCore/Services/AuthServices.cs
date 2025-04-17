@@ -26,13 +26,20 @@ public class AuthServices : IAuthService
     private readonly AppDbContext _context;
     private readonly IUserService _userService;
     private readonly IEmailService _emailService;
+    private readonly IImageService _imageService;
 
     // Constructor: Allows this service to interact with the database.
-    public AuthServices(AppDbContext context, IUserService userService, IEmailService emailService)
+    public AuthServices(
+        AppDbContext context,
+        IUserService userService,
+        IEmailService emailService,
+        IImageService imageService
+    )
     {
         _context = context;
         _userService = userService;
         _emailService = emailService;
+        _imageService = imageService;
     }
 
     // ========================================
@@ -230,6 +237,12 @@ public class AuthServices : IAuthService
         existing.VerificationCode = null;
         existing.CodeGeneratedAt = null;
 
+        if (dto.ProfileImage != null)
+        {
+            var imagePath = await _imageService.UploadImageAsync(dto.ProfileImage);
+            existing.ProfilePicture = imagePath;
+        }
+
         await _context.SaveChangesAsync();
 
         // ✅ Create and assign Admin entity
@@ -346,6 +359,12 @@ public class AuthServices : IAuthService
         existing.IsVerified = true;
         existing.VerificationCode = null;
         existing.CodeGeneratedAt = null;
+
+        if (dto.ProfileImage != null)
+        {
+            var imagePath = await _imageService.UploadImageAsync(dto.ProfileImage);
+            existing.ProfilePicture = imagePath;
+        }
 
         await _context.SaveChangesAsync();
         await _emailService.SendAccountPendingEmail(existing.Email, existing.FullName);

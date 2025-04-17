@@ -5,5 +5,5 @@ namespace CoriCore.Interfaces;
 
 public class ImageUploadDTO
 {
-    public IFormFile File { get; set; }
+    public required IFormFile File { get; set; }
 }

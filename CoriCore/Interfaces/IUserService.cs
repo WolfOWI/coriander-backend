@@ -41,7 +41,6 @@ namespace CoriCore.Interfaces
         /// </returns>
         Task<UserRole> GetUserRoleAsync(int userId);
 
-
         /// Get user by email
         /// </summary>
         /// <param name="email">Email of the user.</param>
@@ -49,8 +48,6 @@ namespace CoriCore.Interfaces
         /// </returns>
         Task<User?> GetUserByEmailAsync(string email);
 
-
         Task<List<User>> GetUnlinkedUsersAsync();
-
     }
 }

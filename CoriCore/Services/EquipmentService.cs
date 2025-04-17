@@ -4,11 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
@@ -24,8 +24,8 @@ public class EquipmentService : IEquipmentService
     /// <inheritdoc/>
     public async Task<List<EquipmentDTO>> GetEquipmentByEmployeeId(int employeeId)
     {
-        var equipment = await _context.Equipments
-            .Include(e => e.EquipmentCategory)
+        var equipment = await _context
+            .Equipments.Include(e => e.EquipmentCategory)
             .Where(e => e.EmployeeId.HasValue && e.EmployeeId.Value == employeeId)
             .Select(e => new EquipmentDTO
             {
@@ -35,7 +35,7 @@ public class EquipmentService : IEquipmentService
                 EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
                 EquipmentName = e.EquipmentName,
                 AssignedDate = e.AssignedDate,
-                Condition = e.Condition
+                Condition = e.Condition,
             })
             .ToListAsync();
 
@@ -44,17 +44,21 @@ public class EquipmentService : IEquipmentService
 
     //CreateEquipmentItems but give is as a list
     //CreateEquipmentItems([{equipment 1}, {equipment 2}, {equipments 3}])
-    public async Task<IEnumerable<Equipment>> CreateEquipmentItemsAsync(List<CreateEquipmentDTO> equipmentDTOs)
+    public async Task<IEnumerable<Equipment>> CreateEquipmentItemsAsync(
+        List<CreateEquipmentDTO> equipmentDTOs
+    )
     {
         // Map EquipmentDTOs to Equipment entities
-        var equipmentItems = equipmentDTOs.Select(dto => new Equipment
-        {
-            EmployeeId = dto.EmployeeId,
-            EquipmentCatId = dto.EquipmentCatId,
-            EquipmentName = dto.EquipmentName,
-            AssignedDate = dto.AssignedDate,
-            Condition = dto.Condition
-        }).ToList();
+        var equipmentItems = equipmentDTOs
+            .Select(dto => new Equipment
+            {
+                EmployeeId = dto.EmployeeId,
+                EquipmentCatId = dto.EquipmentCatId,
+                EquipmentName = dto.EquipmentName,
+                AssignedDate = dto.AssignedDate,
+                Condition = dto.Condition,
+            })
+            .ToList();
 
         // Add the equipment items to the context
         _context.Equipments.AddRange(equipmentItems);
@@ -101,7 +105,10 @@ public class EquipmentService : IEquipmentService
         return true; // Equipment deleted successfully
     }
 
-    public async Task<(int Code, string Message)> AssignEquipmentAsync(int employeeId, List<int> equipmentIds)
+    public async Task<(int Code, string Message)> AssignEquipmentAsync(
+        int employeeId,
+        List<int> equipmentIds
+    )
     {
         foreach (var equipmentId in equipmentIds)
         {
@@ -122,5 +129,4 @@ public class EquipmentService : IEquipmentService
         await _context.SaveChangesAsync();
         return (200, "Equipment assigned successfully");
     }
-
 }

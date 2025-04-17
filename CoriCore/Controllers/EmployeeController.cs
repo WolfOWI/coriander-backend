@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoriCore.Data;
+using CoriCore.DTOs;
+using CoriCore.Interfaces;
+using CoriCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CoriCore.Data;
-using CoriCore.Models;
-using CoriCore.DTOs;
-using CoriCore.Interfaces;
 
 namespace CoriCore.Controllers
 {
@@ -23,7 +23,11 @@ namespace CoriCore.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IUserService _userService;
 
-        public EmployeeController(AppDbContext context, IEmployeeService employeeService, IUserService userService)
+        public EmployeeController(
+            AppDbContext context,
+            IEmployeeService employeeService,
+            IUserService userService
+        )
         {
             _context = context;
             _employeeService = employeeService;
@@ -91,7 +95,7 @@ namespace CoriCore.Controllers
 
             // Delete the employee
             var result = await _employeeService.DeleteEmployeeByIdAsync(id);
-            
+
             return StatusCode(result.Code, new { result.Message });
         }
 
@@ -117,7 +121,6 @@ namespace CoriCore.Controllers
 
             return employee;
         }
-
 
         // POST: api/Employee
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -150,8 +153,5 @@ namespace CoriCore.Controllers
         // {
         //     return _context.Employees.Any(e => e.EmployeeId == id);
         // }
-
-        
     }
-
 }

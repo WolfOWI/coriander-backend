@@ -87,8 +87,8 @@ builder.Services.AddAuthentication(options =>
 .AddCookie()
 .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
 {
-    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
-    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
+    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
+    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
 })
 .AddJwtBearer(options =>
 {
@@ -192,6 +192,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowLocalhost");
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // Middleware for Google Authentication
 app.UseAuthentication(); // ✅ Must come before UseAuthorization

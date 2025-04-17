@@ -99,7 +99,7 @@ namespace CoriCore.Controllers
         }
 
         [HttpPost("register-admin-verified")]
-        public async Task<IActionResult> RegisterAdminVerified([FromBody] RegisterVerifiedDTO dto)
+        public async Task<IActionResult> RegisterAdminVerified([FromForm] RegisterVerifiedDTO dto)
         {
             var (code, message, isCreated, canSignIn) =
                 await _authService.RegisterAdminVerifiedAsync(dto);
@@ -135,7 +135,7 @@ namespace CoriCore.Controllers
 
         // Register employee with Email - after 2FA code is correct
         [HttpPost("register-verified")]
-        public async Task<IActionResult> RegisterVerified([FromBody] RegisterVerifiedDTO dto)
+        public async Task<IActionResult> RegisterVerified([FromForm] RegisterVerifiedDTO dto)
         {
             var (code, message, isCreated, canSignIn) = await _authService.RegisterVerifiedAsync(
                 dto
