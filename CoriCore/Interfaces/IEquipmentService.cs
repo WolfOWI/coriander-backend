@@ -47,4 +47,6 @@ public interface IEquipmentService
     /// <returns>A boolean value indicating whether the operation was successful</returns>
     Task<(int Code, string Message)> UnlinkEquipmentFromEmployee(int equipmentId);
 
+
+    
 }

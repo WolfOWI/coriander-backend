@@ -2,6 +2,9 @@ using System;
 
 namespace CoriCore.DTOs;
 
+/// <summary>
+/// The equipment item with the emp user information and the number of equipment items assigned.
+/// </summary>
 public class EmpEquipItemDTO
 {
     // Equipment Information
