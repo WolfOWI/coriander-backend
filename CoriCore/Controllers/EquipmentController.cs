@@ -32,12 +32,29 @@ namespace CoriCore.Controllers
         /// Gets all equipment items (both assigned and unassigned) with additional info about user/employee (if assigned)
         /// </summary>
         /// <returns>A list of equipment DTOs</returns>
-        [HttpGet("emp-equip-items")]
-        public async Task<ActionResult<List<EmpEquipItemDTO>>> GetAllEmpEquipItems()
+        [HttpGet]
+        public async Task<ActionResult<List<EmpEquipItemDTO>>> GetAllEquipItems()
         {   
-            var equipmentItems = await _equipmentService.GetAllEmpEquipItems();
-            return Ok(equipmentItems);
+            var assignedItems = await _equipmentService.GetAllAssignedEquipItems();
+            var unassignedItems = await _equipmentService.GetAllUnassignedEquipItems();
+
+            // Turn unassignedItems into a list of EmpEquipItemDTO
+            var unassignedItemsList = unassignedItems.Select(item => new EmpEquipItemDTO
+            {
+                Equipment = item,
+                FullName = null,
+                ProfilePicture = null,
+                NumberOfItems = null
+            }).ToList();
+
+            // Add assignedItems and unassignedItemsList to allItem
+            var allItems = new List<EmpEquipItemDTO>();
+            allItems.AddRange(unassignedItemsList);
+            allItems.AddRange(assignedItems);
+
+            return Ok(allItems);
         }
+        
 
         /// <summary>
         /// Gets all equipment assigned to a specific employee

@@ -8,7 +8,8 @@ public class EmpEquipItemDTO
     public EquipmentDTO Equipment { get; set; }
 
     // User Information
-    public string? FullName { get; set; } = string.Empty; // Nullable for unassigned equipment
+    public string? FullName { get; set; } // Nullable for unassigned equipment
+    public string? ProfilePicture { get; set; } // Nullable for unassigned equipment
 
     // Number of Equipment Items
     public int? NumberOfItems { get; set; } // Nullable for unassigned equipment

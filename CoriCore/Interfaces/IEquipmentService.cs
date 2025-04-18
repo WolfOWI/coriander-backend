@@ -28,9 +28,16 @@ public interface IEquipmentService
 
 
     /// <summary>
-    /// Gets all equipment items (both assigned and unassigned) with additional info about user/employee (if assigned)
+    /// Gets all assigned equipment items with additional info about user/employee (if assigned)
     /// </summary>
     /// <returns>A list of equipment DTOs</returns>
-    Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems();
+    Task<List<EmpEquipItemDTO>> GetAllAssignedEquipItems();
+
+
+    /// <summary>
+    /// Gets all unassigned equipment items
+    /// </summary>
+    /// <returns>A list of equipment DTOs</returns>
+    Task<List<EquipmentDTO>> GetAllUnassignedEquipItems();
 
 }

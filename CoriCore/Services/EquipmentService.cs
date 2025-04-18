@@ -123,12 +123,13 @@ public class EquipmentService : IEquipmentService
         return (200, "Equipment assigned successfully");
     }
 
-    public async Task<List<EmpEquipItemDTO>> GetAllEmpEquipItems()
+    public async Task<List<EmpEquipItemDTO>> GetAllAssignedEquipItems()
     {
-        // Get all equipment items (both assigned and unassigned) with their counts
+        // Get all assigned equipment items with their counts
         var equipmentWithCounts = await _context.Equipments
             .Include(e => e.EquipmentCategory)
             .Include(e => e.Employee)
+            .Where(e => e.EmployeeId.HasValue)
             .Include(e => e.Employee.User)
             .GroupBy(e => e.EmployeeId)
             .Select(g => new
@@ -152,7 +153,8 @@ public class EquipmentService : IEquipmentService
                     AssignedDate = e.AssignedDate,
                     Condition = e.Condition
                 },
-                FullName = e.Employee?.User?.FullName, // Will be null if equipment is unassigned
+                FullName = e.Employee?.User?.FullName,
+                ProfilePicture = e.Employee?.User?.ProfilePicture,
                 NumberOfItems = g.Count
             }))
             .ToList();
@@ -160,4 +162,24 @@ public class EquipmentService : IEquipmentService
         return empEquipItems;
     }
 
+
+    public async Task<List<EquipmentDTO>> GetAllUnassignedEquipItems()
+    {
+        var equipment = await _context.Equipments
+            .Include(e => e.EquipmentCategory)
+            .Where(e => !e.EmployeeId.HasValue) // Where EmployeeId is null
+            .Select(e => new EquipmentDTO
+            {
+                EquipmentId = e.EquipmentId,
+                EquipmentCatId = e.EquipmentCatId,
+                EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
+                EquipmentName = e.EquipmentName,
+                AssignedDate = e.AssignedDate,
+                Condition = e.Condition
+            })
+            .ToListAsync();
+
+        return equipment;
+    }
+    
 }
