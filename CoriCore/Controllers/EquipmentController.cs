@@ -128,6 +128,14 @@ namespace CoriCore.Controllers
             return Ok(updatedEquipment);
         }
 
+        // Assign equipment to employee
+        [HttpPost("assign-equipment")]
+        public async Task<IActionResult> AssignEquipmentToEmployee(int employeeId, List<int> equipmentIds)
+        {
+            var result = await _equipmentService.AssignEquipmentAsync(employeeId, equipmentIds);
+            return StatusCode(result.Code, result.Message);
+        }
+
         // Unlink equipment from employee
         [HttpPut("unlink/{equipmentId}")]
         public async Task<IActionResult> UnlinkEquipmentFromEmployee(int equipmentId)
