@@ -129,8 +129,8 @@ namespace CoriCore.Controllers
         }
 
         // Assign equipment to employee
-        [HttpPost("assign-equipment")]
-        public async Task<IActionResult> AssignEquipmentToEmployee(int employeeId, List<int> equipmentIds)
+        [HttpPost("assign-equipment/{employeeId:int}")]
+        public async Task<IActionResult> AssignEquipmentToEmployee(int employeeId, [FromBody] List<int> equipmentIds)
         {
             var result = await _equipmentService.AssignEquipmentAsync(employeeId, equipmentIds);
             return StatusCode(result.Code, result.Message);
