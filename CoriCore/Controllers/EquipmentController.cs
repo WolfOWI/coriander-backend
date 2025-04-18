@@ -137,7 +137,9 @@ namespace CoriCore.Controllers
         }
 
         // Unlink equipment from employee
-        [HttpPut("unlink/{equipmentId}")]
+        // Although this is a delete request, we aren't deleting the equipment item, we are just unlinking it from the employee
+        // This follows good conventions, we are "deleting" the link / relationship.
+        [HttpDelete("unlink/{equipmentId}")]
         public async Task<IActionResult> UnlinkEquipmentFromEmployee(int equipmentId)
         {
             var result = await _equipmentService.UnlinkEquipmentFromEmployee(equipmentId);
