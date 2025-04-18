@@ -132,7 +132,8 @@ namespace CoriCore.Controllers
         [HttpPost("assign-equipment/{employeeId:int}")]
         public async Task<IActionResult> AssignEquipmentToEmployee(int employeeId, [FromBody] List<int> equipmentIds)
         {
-            var result = await _equipmentService.AssignEquipmentAsync(employeeId, equipmentIds);
+            // Force assign equipment to the employee, regardless of whether it's already assigned to another employee
+            var result = await _equipmentService.ForceAssignEquipmentAsync(employeeId, equipmentIds);
             return StatusCode(result.Code, result.Message);
         }
 

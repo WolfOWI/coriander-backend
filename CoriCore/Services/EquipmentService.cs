@@ -123,6 +123,25 @@ public class EquipmentService : IEquipmentService
         return (200, "Equipment assigned successfully");
     }
 
+    // <inheritdoc/>
+    public async Task<(int Code, string Message)> ForceAssignEquipmentAsync(int employeeId, List<int> equipmentIds)
+    {
+        foreach (var equipmentId in equipmentIds)
+        {
+            var equipment = await _context.Equipments.FindAsync(equipmentId);
+
+            if (equipment == null){
+                return (404, $"Equipment with ID {equipmentId} not found");
+            }
+
+            // Assign the equipment to the employee, regardless of whether it's already assigned to another employee
+            equipment.EmployeeId = employeeId;
+            equipment.AssignedDate = DateOnly.FromDateTime(DateTime.Now);
+        }
+
+        await _context.SaveChangesAsync();
+        return (200, "Equipment assigned successfully");
+    }
     /// <inheritdoc/>
     public async Task<List<EmpEquipItemDTO>> GetAllAssignedEquipItems()
     {

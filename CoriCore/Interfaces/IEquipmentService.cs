@@ -25,7 +25,15 @@ public interface IEquipmentService
     Task<bool> DeleteEquipmentItemAsync(int equipmentId);
 
     Task<(int Code, string Message)> AssignEquipmentAsync(int employeeId, List<int> equipmentIds);
-
+    
+    // Force Assign: Used for when we want to change the employee that an equipment item is assigned to
+    /// <summary>
+    /// Force assign equipment to an employee, regardless of whether it's already assigned to another employee
+    /// </summary>
+    /// <param name="employeeId">The ID of the employee</param>
+    /// <param name="equipmentIds">The IDs of the equipment items to assign</param>
+    /// <returns>The status code and a message</returns>
+    Task<(int Code, string Message)> ForceAssignEquipmentAsync(int employeeId, List<int> equipmentIds);
 
     /// <summary>
     /// Gets all assigned equipment items with additional info about user/employee (if assigned)
