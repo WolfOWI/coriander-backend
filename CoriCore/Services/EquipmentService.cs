@@ -123,6 +123,7 @@ public class EquipmentService : IEquipmentService
         return (200, "Equipment assigned successfully");
     }
 
+    /// <inheritdoc/>
     public async Task<List<EmpEquipItemDTO>> GetAllAssignedEquipItems()
     {
         // Get all assigned equipment items with their counts
@@ -162,7 +163,7 @@ public class EquipmentService : IEquipmentService
         return empEquipItems;
     }
 
-
+    /// <inheritdoc/>
     public async Task<List<EquipmentDTO>> GetAllUnassignedEquipItems()
     {
         var equipment = await _context.Equipments
@@ -180,6 +181,35 @@ public class EquipmentService : IEquipmentService
             .ToListAsync();
 
         return equipment;
+    }
+    
+    /// <inheritdoc/>
+    public async Task<(int Code, string Message)> UnlinkEquipmentFromEmployee(int equipmentId)
+    {
+        // Find the equipment item
+        var equipment = await _context.Equipments.FindAsync(equipmentId);
+
+        // If the equipment item is not found, return a 404 error
+        if (equipment == null)
+        {
+            return (404, $"Equipment with ID {equipmentId} not found");
+        }
+
+        // Check if the equipment item is already unlinked
+        if (!equipment.EmployeeId.HasValue)
+        {
+            return (400, $"Equipment with ID {equipmentId} is already unlinked");
+        }
+
+        // Unlink the equipment item from the employee
+        equipment.EmployeeId = null;
+        equipment.AssignedDate = null;
+
+        // Save the changes to the database
+        await _context.SaveChangesAsync();
+
+        // Return a success message
+        return (200, "Equipment unlinked from employee successfully");
     }
     
 }

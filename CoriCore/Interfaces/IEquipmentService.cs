@@ -40,4 +40,11 @@ public interface IEquipmentService
     /// <returns>A list of equipment DTOs</returns>
     Task<List<EquipmentDTO>> GetAllUnassignedEquipItems();
 
+    /// <summary>
+    /// Unlink an equipment item from an employee (set EmployeeId & AssignmentDate to null)
+    /// </summary>
+    /// <param name="equipmentId">The ID of the equipment item</param>
+    /// <returns>A boolean value indicating whether the operation was successful</returns>
+    Task<(int Code, string Message)> UnlinkEquipmentFromEmployee(int equipmentId);
+
 }
