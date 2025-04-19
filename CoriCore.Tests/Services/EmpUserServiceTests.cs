@@ -15,10 +15,6 @@ public class EmpUserServiceTests
     private readonly EmpUserService _service;      // EmpUserService (to test)
     private readonly Mock<IEquipmentService> _mockEquipmentService; // Mock equipment service
 
-    // WE NEED TO MOCK THE DATABASE USING MOQ
-    // CURRENTLY WE ARE TESTING WITH A REAL COPY OF THE DATABASE
-
-    
     // Constructor (runs before each test)
     public EmpUserServiceTests()
     {
@@ -393,6 +389,139 @@ public class EmpUserServiceTests
         // Make sure we got a 404 code and message
         Assert.Equal(404, result.Code);
         Assert.Equal("Employee not found", result.Message);
+        // ------------------------------------------------------------
+    }
+    // ================================================================================================================
+
+    // GET ALL EMPLOYEES EQUIPMENT STATS TESTS
+    // ================================================================================================================
+    [Fact]
+    public async Task GetAllEmpsEquipStats_ReturnsCorrectStats()
+    {
+        // Arrange
+        // ------------------------------------------------------------
+        // Create test users and employees
+        var user1 = new User
+        {
+            UserId = 1,
+            FullName = "John Doe",
+            Email = "john@example.com",
+            Role = UserRole.Employee
+        };
+
+        var user2 = new User
+        {
+            UserId = 2,
+            FullName = "Jane Smith",
+            Email = "jane@example.com",
+            Role = UserRole.Employee
+        };
+
+        var employee1 = new Employee
+        {
+            EmployeeId = 1,
+            User = user1,
+            UserId = user1.UserId,
+            Gender = Gender.Male,
+            DateOfBirth = new DateOnly(1990, 1, 1),
+            PhoneNumber = "1234567890",
+            JobTitle = "Dev",
+            Department = "Engineering",
+            SalaryAmount = 50000,
+            PayCycle = PayCycle.Monthly,
+            EmployDate = new DateOnly(2020, 1, 1),
+            EmployType = EmployType.FullTime,
+            IsSuspended = false
+        };
+
+        var employee2 = new Employee
+        {
+            EmployeeId = 2,
+            User = user2,
+            UserId = user2.UserId,
+            Gender = Gender.Female,
+            DateOfBirth = new DateOnly(1992, 3, 15),
+            PhoneNumber = "0987654321",
+            JobTitle = "QA",
+            Department = "Testing",
+            SalaryAmount = 45000,
+            PayCycle = PayCycle.Monthly,
+            EmployDate = new DateOnly(2021, 6, 1),
+            EmployType = EmployType.FullTime,
+            IsSuspended = false
+        };
+
+        // Add test data to database
+        _context.Users.Add(user1);
+        _context.Users.Add(user2);
+        _context.Employees.Add(employee1);
+        _context.Employees.Add(employee2);
+
+        // Add the compared equipment to the database
+        var comparedEquipment = new Equipment
+        {
+            EquipmentId = 1,
+            EquipmentCatId = 1,
+            EquipmentName = "Reference Laptop",
+            AssignedDate = new DateOnly(2023, 1, 1),
+            Condition = EquipmentCondition.Good
+        };
+        _context.Equipments.Add(comparedEquipment);
+
+        await _context.SaveChangesAsync();
+
+        // Mock equipment service responses
+        var equipment1 = new List<EquipmentDTO>
+        {
+            new EquipmentDTO
+            {
+                EquipmentId = 1,
+                EmployeeId = 1,
+                EquipmentCatId = 1,
+                EquipmentCategoryName = "Laptop",
+                EquipmentName = "MacBook Pro",
+                AssignedDate = new DateOnly(2023, 1, 1),
+                Condition = EquipmentCondition.Good
+            }
+        };
+
+        var equipment2 = new List<EquipmentDTO>
+        {
+            new EquipmentDTO
+            {
+                EquipmentId = 2,
+                EmployeeId = 2,
+                EquipmentCatId = 2,
+                EquipmentCategoryName = "Monitor",
+                EquipmentName = "Dell 27\"",
+                AssignedDate = new DateOnly(2023, 2, 1),
+                Condition = EquipmentCondition.Good
+            }
+        };
+
+        _mockEquipmentService.Setup(x => x.GetEquipmentByEmployeeId(1)).ReturnsAsync(equipment1);
+        _mockEquipmentService.Setup(x => x.GetEquipmentByEmployeeId(2)).ReturnsAsync(equipment2);
+
+        // Act
+        // ------------------------------------------------------------
+        var result = await _service.GetAllEmpsEquipStats(1); // Compare against equipment with category ID 1
+        // ------------------------------------------------------------
+
+        // Assert
+        // ------------------------------------------------------------
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
+
+        var emp1Stats = result.First(r => r.EmployeeId == 1);
+        var emp2Stats = result.First(r => r.EmployeeId == 2);
+
+        // Check employee 1 stats
+        Assert.Equal(1, emp1Stats.NumberOfItems);
+        Assert.True(emp1Stats.HasItemOfSameEquipCat); // Has laptop (category 1)
+
+        // Check employee 2 stats
+        Assert.Equal(1, emp2Stats.NumberOfItems);
+        Assert.False(emp2Stats.HasItemOfSameEquipCat); // Has monitor (category 2)
         // ------------------------------------------------------------
     }
     // ================================================================================================================
