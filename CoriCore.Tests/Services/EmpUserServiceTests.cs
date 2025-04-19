@@ -3,7 +3,9 @@ using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Models;
 using CoriCore.Services;
+using CoriCore.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace CoriCore.Tests.Unit.Services;
 
@@ -11,6 +13,7 @@ public class EmpUserServiceTests
 {
     private readonly AppDbContext _context;        // Test database
     private readonly EmpUserService _service;      // EmpUserService (to test)
+    private readonly Mock<IEquipmentService> _mockEquipmentService; // Mock equipment service
 
     // WE NEED TO MOCK THE DATABASE USING MOQ
     // CURRENTLY WE ARE TESTING WITH A REAL COPY OF THE DATABASE
@@ -27,8 +30,11 @@ public class EmpUserServiceTests
         // Create temporary database in memory just for testing
         _context = new AppDbContext(options);  // Create a new database context with our options
 
-        // Create service using test database
-        _service = new EmpUserService(_context);
+        // Create mock equipment service
+        _mockEquipmentService = new Mock<IEquipmentService>();
+
+        // Create service using test database and mock equipment service
+        _service = new EmpUserService(_context, _mockEquipmentService.Object);
     }
 
     // GET ALL EMP USERS TESTS
