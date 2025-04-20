@@ -110,13 +110,8 @@ namespace CoriCore.Controllers
 
         // PUT: api/Equipment/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] EquipmentDTO equipmentDto)
+        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] UpdateEquipmentDTO equipmentDto)
         {
-            if (id != equipmentDto.EquipmentId)
-            {
-                return BadRequest("Equipment ID mismatch.");
-            }
-
             // Call service to edit the equipment item
             var updatedEquipment = await _equipmentService.EditEquipmentItemAsync(id, equipmentDto);
 

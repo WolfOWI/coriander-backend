@@ -67,24 +67,39 @@ public class EquipmentService : IEquipmentService
     }
 
     //Edit and update the equipment items by id
-    public async Task<Equipment> EditEquipmentItemAsync(int equipmentId, EquipmentDTO equipmentDTO)
+    public async Task<EquipmentDTO> EditEquipmentItemAsync(int equipmentId, UpdateEquipmentDTO equipmentDTO)
     {
-        var equipment = await _context.Equipments.FindAsync(equipmentId);
+        // Get the equipment item from the database (with the equipment category included)
+        var equipment = await _context.Equipments
+            .Include(e => e.EquipmentCategory)
+            .FirstOrDefaultAsync(e => e.EquipmentId == equipmentId);
+        
         if (equipment == null)
         {
             throw new KeyNotFoundException($"Equipment with ID {equipmentId} not found.");
         }
 
-        // Update the properties of the equipment item
-        equipment.EmployeeId = equipmentDTO.EmployeeId;
-        equipment.EquipmentName = equipmentDTO.EquipmentName;
-        equipment.AssignedDate = equipmentDTO.AssignedDate;
-        equipment.Condition = equipmentDTO.Condition;
+        // Update the properties of the equipment item if they are provided
+        if (equipmentDTO.EmployeeId.HasValue) equipment.EmployeeId = equipmentDTO.EmployeeId;
+        if (equipmentDTO.EquipmentCatId.HasValue) equipment.EquipmentCatId = equipmentDTO.EquipmentCatId.Value;
+        if (!string.IsNullOrEmpty(equipmentDTO.EquipmentName)) equipment.EquipmentName = equipmentDTO.EquipmentName;
+        if (equipmentDTO.AssignedDate.HasValue) equipment.AssignedDate = equipmentDTO.AssignedDate;
+        if (equipmentDTO.Condition.HasValue) equipment.Condition = equipmentDTO.Condition.Value;
 
         // Save changes to the database
         await _context.SaveChangesAsync();
 
-        return equipment;
+        // Return the updated equipment item
+        return new EquipmentDTO
+        {
+            EquipmentId = equipment.EquipmentId,
+            EmployeeId = equipment.EmployeeId,
+            EquipmentCatId = equipment.EquipmentCatId,
+            EquipmentCategoryName = equipment.EquipmentCategory.EquipmentCatName,
+            EquipmentName = equipment.EquipmentName,
+            AssignedDate = equipment.AssignedDate,
+            Condition = equipment.Condition
+        };
     }
 
     //Delete equipment item by id

@@ -20,7 +20,7 @@ public interface IEquipmentService
 
     Task<IEnumerable<Equipment>> CreateEquipmentItemsAsync(List<CreateEquipmentDTO> equipmentDTOs);
 
-    Task<Equipment> EditEquipmentItemAsync(int equipmentId, EquipmentDTO equipmentDTO);
+    Task<EquipmentDTO> EditEquipmentItemAsync(int equipmentId, UpdateEquipmentDTO equipmentDTO);
 
     Task<bool> DeleteEquipmentItemAsync(int equipmentId);
 
