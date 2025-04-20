@@ -249,6 +249,41 @@ public class EquipmentService : IEquipmentService
         return (200, "Equipment unlinked from employee successfully");
     }
 
-    
-    
+    /// <inheritdoc/>
+    public async Task<(int Code, string Message)> MassUnlinkEquipmentFromEmployee(int employeeId)
+    {
+        // First verify if the employee exists
+        var employee = await _context.Employees.FindAsync(employeeId);
+
+        if (employee == null)
+        {
+            return (404, $"Employee with ID {employeeId} not found");
+        }
+
+        // Then verify if the employee has any equipment assigned to them
+        var equipment = await _context.Equipments.Where(e => e.EmployeeId == employeeId).ToListAsync();
+
+        if (equipment == null)
+        {
+            return (404, $"No equipment found for employee with ID {employeeId}");
+        }
+
+        // Unlink the equipment item(s) from the employee
+        try
+        {
+            foreach (var item in equipment)
+            {
+                item.EmployeeId = null;
+                item.AssignedDate = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return (200, $"{equipment.Count} equipment item(s) unlinked from employee successfully.");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error unlinking equipment from employee: {ex.Message}");
+        }
+    }
 }

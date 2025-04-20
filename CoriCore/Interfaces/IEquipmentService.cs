@@ -52,9 +52,16 @@ public interface IEquipmentService
     /// Unlink an equipment item from an employee (set EmployeeId & AssignmentDate to null)
     /// </summary>
     /// <param name="equipmentId">The ID of the equipment item</param>
-    /// <returns>A boolean value indicating whether the operation was successful</returns>
+    /// <returns>A code and message</returns>
     Task<(int Code, string Message)> UnlinkEquipmentFromEmployee(int equipmentId);
 
+
+    /// <summary>
+    /// Mass unlink all equipment items from an employee by their id
+    /// </summary>
+    /// <param name="employeeId">The ID of the employee</param>
+    /// <returns>A code and message</returns>
+    Task<(int Code, string Message)> MassUnlinkEquipmentFromEmployee(int employeeId);
 
     
 }

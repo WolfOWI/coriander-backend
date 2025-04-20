@@ -154,6 +154,13 @@ namespace CoriCore.Controllers
             return StatusCode(result.Code, result.Message);
         }
 
+        // Mass unlink all equipment items from an employee by their id
+        [HttpDelete("mass-unlink/{employeeId}")]
+        public async Task<IActionResult> MassUnlinkEquipment(int employeeId)
+        {
+            var result = await _equipmentService.MassUnlinkEquipmentFromEmployee(employeeId);
+            return StatusCode(result.Code, result.Message);
+        }
         //Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEquipmentItem(int id)
