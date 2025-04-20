@@ -57,6 +57,16 @@ namespace CoriCore.Controllers
             return Ok(allItems);
         }
         
+        /// <summary>
+        /// Gets all unassigned equipment items only
+        /// </summary>
+        /// <returns>A list of equipment DTOs</returns>
+        [HttpGet("unassigned")]
+        public async Task<ActionResult<List<EquipmentDTO>>> GetAllUnassignedEquipItems()
+        {
+            var unassignedItems = await _equipmentService.GetAllUnassignedEquipItems();
+            return Ok(unassignedItems);
+        }
 
         /// <summary>
         /// Gets all equipment assigned to a specific employee

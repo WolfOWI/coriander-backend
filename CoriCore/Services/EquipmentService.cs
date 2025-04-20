@@ -157,6 +157,7 @@ public class EquipmentService : IEquipmentService
         await _context.SaveChangesAsync();
         return (200, "Equipment assigned successfully");
     }
+    
     /// <inheritdoc/>
     public async Task<List<EmpEquipItemDTO>> GetAllAssignedEquipItems()
     {
