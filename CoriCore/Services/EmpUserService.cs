@@ -181,6 +181,7 @@ public class EmpUserService : IEmpUserService
             var empStats = new EmpUserEquipStatsDTO
             {
                 EmployeeId = employee.EmployeeId,
+                IsSuspended = employee.IsSuspended,
                 FullName = employee.User.FullName,
                 ProfilePicture = employee.User.ProfilePicture,
                 NumberOfItems = equipmentItems.Count,

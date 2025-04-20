@@ -190,6 +190,7 @@ public class EquipmentService : IEquipmentService
                 },
                 FullName = e.Employee?.User?.FullName,
                 ProfilePicture = e.Employee?.User?.ProfilePicture,
+                IsSuspended = e.Employee?.IsSuspended,
                 NumberOfItems = g.Count
             }))
             .ToList();
