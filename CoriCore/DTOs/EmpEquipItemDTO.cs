@@ -15,6 +15,7 @@ public class EmpEquipItemDTO
     public string? ProfilePicture { get; set; } // Nullable for unassigned equipment
 
     // Employee Information
+    public DateOnly? EmployDate { get; set; } // Nullable for unassigned equipment
     public bool? IsSuspended { get; set; } // Nullable for unassigned equipment
 
     // Number of Equipment Items

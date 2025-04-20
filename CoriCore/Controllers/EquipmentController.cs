@@ -44,6 +44,7 @@ namespace CoriCore.Controllers
                 Equipment = item,
                 FullName = null,
                 ProfilePicture = null,
+                EmployDate = null,
                 IsSuspended = null,
                 NumberOfItems = null
             }).ToList();
