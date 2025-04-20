@@ -149,6 +149,13 @@ namespace CoriCore.Services
                 return (404, "Employee not found");
             }
 
+            // First unlink any equipment assigned to this employee
+            var unlinkResult = await _equipmentService.MassUnlinkEquipmentFromEmployee(employeeId);
+            if (unlinkResult.Code != 200)
+            {
+                return (400, $"Failed to unlink equipment: {unlinkResult.Message}");
+            }
+
             // Delete the employee
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();

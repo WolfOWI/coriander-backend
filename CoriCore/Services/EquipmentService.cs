@@ -265,7 +265,8 @@ public class EquipmentService : IEquipmentService
 
         if (equipment == null)
         {
-            return (404, $"No equipment found for employee with ID {employeeId}");
+            // This fine if the employee has no equipment assigned to them
+            return (200, $"No equipment found for employee with ID {employeeId}");
         }
 
         // Unlink the equipment item(s) from the employee
