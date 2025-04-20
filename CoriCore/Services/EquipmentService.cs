@@ -93,9 +93,9 @@ public class EquipmentService : IEquipmentService
         return new EquipmentDTO
         {
             EquipmentId = equipment.EquipmentId,
-            EmployeeId = equipment.EmployeeId,
+            EmployeeId = equipment.EmployeeId ?? 0,
             EquipmentCatId = equipment.EquipmentCatId,
-            EquipmentCategoryName = equipment.EquipmentCategory.EquipmentCatName,
+            EquipmentCategoryName = equipment.EquipmentCategory?.EquipmentCatName ?? string.Empty,
             EquipmentName = equipment.EquipmentName,
             AssignedDate = equipment.AssignedDate,
             Condition = equipment.Condition
