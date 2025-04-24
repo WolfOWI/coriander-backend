@@ -44,6 +44,8 @@ namespace CoriCore.Controllers
                 Equipment = item,
                 FullName = null,
                 ProfilePicture = null,
+                EmployDate = null,
+                IsSuspended = null,
                 NumberOfItems = null
             }).ToList();
 
@@ -55,6 +57,16 @@ namespace CoriCore.Controllers
             return Ok(allItems);
         }
         
+        /// <summary>
+        /// Gets all unassigned equipment items only
+        /// </summary>
+        /// <returns>A list of equipment DTOs</returns>
+        [HttpGet("unassigned")]
+        public async Task<ActionResult<List<EquipmentDTO>>> GetAllUnassignedEquipItems()
+        {
+            var unassignedItems = await _equipmentService.GetAllUnassignedEquipItems();
+            return Ok(unassignedItems);
+        }
 
         /// <summary>
         /// Gets all equipment assigned to a specific employee
@@ -110,13 +122,8 @@ namespace CoriCore.Controllers
 
         // PUT: api/Equipment/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] EquipmentDTO equipmentDto)
+        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] UpdateEquipmentDTO equipmentDto)
         {
-            if (id != equipmentDto.EquipmentId)
-            {
-                return BadRequest("Equipment ID mismatch.");
-            }
-
             // Call service to edit the equipment item
             var updatedEquipment = await _equipmentService.EditEquipmentItemAsync(id, equipmentDto);
 
@@ -147,6 +154,13 @@ namespace CoriCore.Controllers
             return StatusCode(result.Code, result.Message);
         }
 
+        // Mass unlink all equipment items from an employee by their id
+        [HttpDelete("mass-unlink/{employeeId}")]
+        public async Task<IActionResult> MassUnlinkEquipment(int employeeId)
+        {
+            var result = await _equipmentService.MassUnlinkEquipmentFromEmployee(employeeId);
+            return StatusCode(result.Code, result.Message);
+        }
         //Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEquipmentItem(int id)

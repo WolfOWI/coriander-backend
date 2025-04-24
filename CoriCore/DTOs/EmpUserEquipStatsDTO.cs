@@ -10,6 +10,8 @@ public class EmpUserEquipStatsDTO
     // Employee Information
     public int EmployeeId { get; set; }
 
+    public bool IsSuspended { get; set; }
+
     // User Information
     public string? FullName { get; set; } // Nullable for unassigned equipment
     public string? ProfilePicture { get; set; } // Nullable for unassigned equipment
