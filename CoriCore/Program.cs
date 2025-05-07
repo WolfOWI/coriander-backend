@@ -50,7 +50,7 @@ builder.Services.AddScoped<IImageService, ImageService>();
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         // Ek het port 5121 bygesit omdat myne op daai een run - Ruan
         policy.WithOrigins(
@@ -63,6 +63,7 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader()
                .AllowCredentials();
     });
+
 });
 
 // CONTROLLERS
@@ -81,15 +82,11 @@ var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddCookie()
-.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-{
-    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? "";
-    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? "";
-})
 .AddJwtBearer(options =>
 {
     options.Events = new JwtBearerEvents
@@ -189,7 +186,7 @@ if (app.Environment.IsDevelopment())
 }
 // ------------------------------------------------------------------------
 
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

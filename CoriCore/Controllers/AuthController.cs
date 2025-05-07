@@ -196,7 +196,7 @@ namespace CoriCore.Controllers
                 new CookieOptions
                 {
                     HttpOnly = false,
-                    Secure = false,
+                    Secure = true,
                     SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
                     Expires = DateTime.UtcNow.AddDays(7),
                 }
@@ -216,9 +216,9 @@ namespace CoriCore.Controllers
                 jwt,
                 new CookieOptions
                 {
-                    HttpOnly = false, // change to true when website is in production or when working with the frontend
-                    Secure = false, // same like above
-                    SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddDays(7),
                 }
             );
@@ -231,17 +231,22 @@ namespace CoriCore.Controllers
         // ========================================
 
         // See if user is logged in and Get current user details when logged in
+        // Not supported on Electron localhost
         [Authorize]
         [HttpGet("me")]
-        public async Task<IActionResult> GetCurrentUser()
+        public async Task<ActionResult<CurrentUserDTO>> GetMe()
         {
-            var userData = await _authService.GetCurrentUserDetails(User);
+            var userId = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("No user ID found in claims.");
+                return Unauthorized("No user.");
+            }
 
-            if (userData == null)
-                return Unauthorized("Invalid user session");
-
-            return Ok(userData);
+            var user = await _authService.GetCurrentUserDetails(User);
+            return Ok(user);
         }
+
 
         // Remove function when website is in production state
         [HttpGet("decode-token")]
