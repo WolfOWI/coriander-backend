@@ -248,7 +248,7 @@ namespace CoriCore.Controllers
         }
 
 
-        // Remove function when website is in production state
+        // Using this to decode the JWT token
         [HttpGet("decode-token")]
         public async Task<IActionResult> DecodeToken([FromQuery] string token)
         {
