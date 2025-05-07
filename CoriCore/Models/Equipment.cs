@@ -28,7 +28,7 @@ public class Equipment
 
     // EmployeeId (Foreign Key)
     // ----------------------------------------
-    public int? EmployeeId { get; set; }
+    public int? EmployeeId { get; set; } // Nullable for unassigned equipment
 
     [ForeignKey("EmployeeId")]
     public virtual Employee? Employee { get; set; } = null!;
@@ -51,8 +51,7 @@ public class Equipment
 
     // AssignedDate
     // ----------------------------------------
-    [Required]
-    public DateOnly AssignedDate { get; set; }
+    public DateOnly? AssignedDate { get; set; } // Nullable for unassigned equipment
     // ----------------------------------------
 
     // Condition

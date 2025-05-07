@@ -71,24 +71,39 @@ public class EquipmentService : IEquipmentService
     }
 
     //Edit and update the equipment items by id
-    public async Task<Equipment> EditEquipmentItemAsync(int equipmentId, EquipmentDTO equipmentDTO)
+    public async Task<EquipmentDTO> EditEquipmentItemAsync(int equipmentId, UpdateEquipmentDTO equipmentDTO)
     {
-        var equipment = await _context.Equipments.FindAsync(equipmentId);
+        // Get the equipment item from the database (with the equipment category included)
+        var equipment = await _context.Equipments
+            .Include(e => e.EquipmentCategory)
+            .FirstOrDefaultAsync(e => e.EquipmentId == equipmentId);
+
         if (equipment == null)
         {
             throw new KeyNotFoundException($"Equipment with ID {equipmentId} not found.");
         }
 
-        // Update the properties of the equipment item
-        equipment.EmployeeId = equipmentDTO.EmployeeId;
-        equipment.EquipmentName = equipmentDTO.EquipmentName;
-        equipment.AssignedDate = equipmentDTO.AssignedDate;
-        equipment.Condition = equipmentDTO.Condition;
+        // Update the properties of the equipment item if they are provided
+        if (equipmentDTO.EmployeeId.HasValue) equipment.EmployeeId = equipmentDTO.EmployeeId;
+        if (equipmentDTO.EquipmentCatId.HasValue) equipment.EquipmentCatId = equipmentDTO.EquipmentCatId.Value;
+        if (!string.IsNullOrEmpty(equipmentDTO.EquipmentName)) equipment.EquipmentName = equipmentDTO.EquipmentName;
+        if (equipmentDTO.AssignedDate.HasValue) equipment.AssignedDate = equipmentDTO.AssignedDate;
+        if (equipmentDTO.Condition.HasValue) equipment.Condition = equipmentDTO.Condition.Value;
 
         // Save changes to the database
         await _context.SaveChangesAsync();
 
-        return equipment;
+        // Return the updated equipment item
+        return new EquipmentDTO
+        {
+            EquipmentId = equipment.EquipmentId,
+            EmployeeId = equipment.EmployeeId ?? 0,
+            EquipmentCatId = equipment.EquipmentCatId,
+            EquipmentCategoryName = equipment.EquipmentCategory?.EquipmentCatName ?? string.Empty,
+            EquipmentName = equipment.EquipmentName,
+            AssignedDate = equipment.AssignedDate,
+            Condition = equipment.Condition
+        };
     }
 
     //Delete equipment item by id
@@ -128,5 +143,156 @@ public class EquipmentService : IEquipmentService
 
         await _context.SaveChangesAsync();
         return (200, "Equipment assigned successfully");
+    }
+
+    // <inheritdoc/>
+    public async Task<(int Code, string Message)> ForceAssignEquipmentAsync(int employeeId, List<int> equipmentIds)
+    {
+        foreach (var equipmentId in equipmentIds)
+        {
+            var equipment = await _context.Equipments.FindAsync(equipmentId);
+
+            if (equipment == null)
+            {
+                return (404, $"Equipment with ID {equipmentId} not found");
+            }
+
+            // Assign the equipment to the employee, regardless of whether it's already assigned to another employee
+            equipment.EmployeeId = employeeId;
+            equipment.AssignedDate = DateOnly.FromDateTime(DateTime.Now);
+        }
+
+        await _context.SaveChangesAsync();
+        return (200, "Equipment assigned successfully");
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<EmpEquipItemDTO>> GetAllAssignedEquipItems()
+    {
+        // Get all assigned equipment items with their counts
+        var equipmentWithCounts = await _context.Equipments
+            .Include(e => e.EquipmentCategory)
+            .Include(e => e.Employee)
+            .Where(e => e.EmployeeId.HasValue)
+            .Include(e => e.Employee.User)
+            .GroupBy(e => e.EmployeeId)
+            .Select(g => new
+            {
+                EquipmentItems = g.ToList(),
+                Count = g.Count()
+            })
+            .ToListAsync();
+
+        // Map equipment items to EmpEquipItemDTO
+        var empEquipItems = equipmentWithCounts
+            .SelectMany(g => g.EquipmentItems.Select(e => new EmpEquipItemDTO
+            {
+                Equipment = new EquipmentDTO
+                {
+                    EquipmentId = e.EquipmentId,
+                    EmployeeId = e.EmployeeId,
+                    EquipmentCatId = e.EquipmentCatId,
+                    EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
+                    EquipmentName = e.EquipmentName,
+                    AssignedDate = e.AssignedDate,
+                    Condition = e.Condition
+                },
+                FullName = e.Employee?.User?.FullName,
+                ProfilePicture = e.Employee?.User?.ProfilePicture,
+                EmployDate = e.Employee?.EmployDate,
+                IsSuspended = e.Employee?.IsSuspended,
+                NumberOfItems = g.Count
+            }))
+            .ToList();
+
+        return empEquipItems;
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<EquipmentDTO>> GetAllUnassignedEquipItems()
+    {
+        var equipment = await _context.Equipments
+            .Include(e => e.EquipmentCategory)
+            .Where(e => !e.EmployeeId.HasValue) // Where EmployeeId is null
+            .Select(e => new EquipmentDTO
+            {
+                EquipmentId = e.EquipmentId,
+                EquipmentCatId = e.EquipmentCatId,
+                EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName,
+                EquipmentName = e.EquipmentName,
+                AssignedDate = e.AssignedDate,
+                Condition = e.Condition
+            })
+            .ToListAsync();
+
+        return equipment;
+    }
+
+    /// <inheritdoc/>
+    public async Task<(int Code, string Message)> UnlinkEquipmentFromEmployee(int equipmentId)
+    {
+        // Find the equipment item
+        var equipment = await _context.Equipments.FindAsync(equipmentId);
+
+        // If the equipment item is not found, return a 404 error
+        if (equipment == null)
+        {
+            return (404, $"Equipment with ID {equipmentId} not found");
+        }
+
+        // Check if the equipment item is already unlinked
+        if (!equipment.EmployeeId.HasValue)
+        {
+            return (400, $"Equipment with ID {equipmentId} is already unlinked");
+        }
+
+        // Unlink the equipment item from the employee
+        equipment.EmployeeId = null;
+        equipment.AssignedDate = null;
+
+        // Save the changes to the database
+        await _context.SaveChangesAsync();
+
+        // Return a success message
+        return (200, "Equipment unlinked from employee successfully");
+    }
+
+    /// <inheritdoc/>
+    public async Task<(int Code, string Message)> MassUnlinkEquipmentFromEmployee(int employeeId)
+    {
+        // First verify if the employee exists
+        var employee = await _context.Employees.FindAsync(employeeId);
+
+        if (employee == null)
+        {
+            return (404, $"Employee with ID {employeeId} not found");
+        }
+
+        // Then verify if the employee has any equipment assigned to them
+        var equipment = await _context.Equipments.Where(e => e.EmployeeId == employeeId).ToListAsync();
+
+        if (equipment == null)
+        {
+            // This fine if the employee has no equipment assigned to them
+            return (200, $"No equipment found for employee with ID {employeeId}");
+        }
+
+        // Unlink the equipment item(s) from the employee
+        try
+        {
+            foreach (var item in equipment)
+            {
+                item.EmployeeId = null;
+                item.AssignedDate = null;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return (200, $"{equipment.Count} equipment item(s) unlinked from employee successfully.");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error unlinking equipment from employee: {ex.Message}");
+        }
     }
 }

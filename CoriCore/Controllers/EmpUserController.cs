@@ -64,5 +64,19 @@ namespace CoriCore.Controllers
             var result = await _empUserService.UpdateEmpUserDetailsByIdAsync(id, updateDto);
             return StatusCode(result.Code, new { result.Message });
         }
+
+        // GET: api/EmpUser/equip-stats/{comparedEquipId}
+        /// <summary>
+        /// Get all employees with some equipment stats
+        /// </summary>
+        /// <param name="comparedEquipId">The ID of the equipment item to compare against</param>
+        /// <returns>List of EmpUserEquipStatsDTO</returns>
+        [HttpGet("equip-stats/{comparedEquipId}")]
+        public async Task<ActionResult<IEnumerable<EmpUserEquipStatsDTO>>> GetAllEmpsEquipStats(int comparedEquipId)
+        {
+            var empUserEquipStats = await _empUserService.GetAllEmpsEquipStats(comparedEquipId);
+            return Ok(empUserEquipStats);
+        }
+        
     }
 }

@@ -11,10 +11,12 @@ namespace CoriCore.Services;
 public class EmpUserService : IEmpUserService
 {
     private readonly AppDbContext _context;
+    private readonly IEquipmentService _equipmentService;
 
-    public EmpUserService(AppDbContext context)
+    public EmpUserService(AppDbContext context, IEquipmentService equipmentService)
     {
         _context = context;
+        _equipmentService = equipmentService;
     }
     
     // Get all EmpUsers
@@ -131,5 +133,65 @@ public class EmpUserService : IEmpUserService
             }
         }
 
+    /// <inheritdoc/>
+    public async Task<List<EmpUserEquipStatsDTO>> GetAllEmpsEquipStats(int comparedEquipId)
+    {
 
+        // Get the category ID of the equipment we're comparing against
+        var comparedEquipment = await _context.Equipments
+            .FirstOrDefaultAsync(e => e.EquipmentId == comparedEquipId);
+
+        // If the equipment is not found
+        if (comparedEquipment == null)
+        {
+            throw new Exception($"Equipment with ID {comparedEquipId} not found");
+        }
+
+        // CategoryId of the equipment we're comparing against
+        var comparedCategoryId = comparedEquipment.EquipmentCatId;
+
+        // List to store results & return
+        var empUserEquipStats = new List<EmpUserEquipStatsDTO>();
+
+    
+        // Get all employee users
+        var employees = await _context.Employees
+            .Include(e => e.User)
+            .ToListAsync();
+
+        // Add stats for each employee
+        foreach (var employee in employees)
+        {
+            // Get equipment items for this employee (from equipment service)
+            var equipmentItems = await _equipmentService.GetEquipmentByEmployeeId(employee.EmployeeId);
+
+            bool hasSameEquipCat = false;
+
+            // For each item of employee, check if same category as the compared equip item's category
+            foreach (var item in equipmentItems)
+            {
+                if (item.EquipmentCatId == comparedCategoryId)
+                {
+                    hasSameEquipCat = true;
+                    break; // Break if found
+                }
+            }
+            
+            // Create DTO for this employee
+            var empStats = new EmpUserEquipStatsDTO
+            {
+                EmployeeId = employee.EmployeeId,
+                IsSuspended = employee.IsSuspended,
+                FullName = employee.User.FullName,
+                ProfilePicture = employee.User.ProfilePicture,
+                NumberOfItems = equipmentItems.Count,
+                HasItemOfSameEquipCat = hasSameEquipCat
+            };
+            
+            // Add to list
+            empUserEquipStats.Add(empStats);
+        }
+
+        return empUserEquipStats;
+    }
 }
