@@ -8,7 +8,7 @@ namespace CoriCore.Controllers
     public class HealthController : ControllerBase
     {
     /// <summary>
-    /// Check the health of the backend service
+    /// Checks the health of the backend service
     /// </summary>
     /// <returns>The health of the service</returns>
     [HttpGet]
