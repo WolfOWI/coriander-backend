@@ -29,6 +29,46 @@ namespace CoriCore.Controllers
         }
 
         /// <summary>
+        /// Gets all equipment items (both assigned and unassigned) with additional info about user/employee (if assigned)
+        /// </summary>
+        /// <returns>A list of equipment DTOs</returns>
+        [HttpGet]
+        public async Task<ActionResult<List<EmpEquipItemDTO>>> GetAllEquipItems()
+        {   
+            var assignedItems = await _equipmentService.GetAllAssignedEquipItems();
+            var unassignedItems = await _equipmentService.GetAllUnassignedEquipItems();
+
+            // Turn unassignedItems into a list of EmpEquipItemDTO
+            var unassignedItemsList = unassignedItems.Select(item => new EmpEquipItemDTO
+            {
+                Equipment = item,
+                FullName = null,
+                ProfilePicture = null,
+                EmployDate = null,
+                IsSuspended = null,
+                NumberOfItems = null
+            }).ToList();
+
+            // Add assignedItems and unassignedItemsList to allItem
+            var allItems = new List<EmpEquipItemDTO>();
+            allItems.AddRange(unassignedItemsList);
+            allItems.AddRange(assignedItems);
+
+            return Ok(allItems);
+        }
+        
+        /// <summary>
+        /// Gets all unassigned equipment items only
+        /// </summary>
+        /// <returns>A list of equipment DTOs</returns>
+        [HttpGet("unassigned")]
+        public async Task<ActionResult<List<EquipmentDTO>>> GetAllUnassignedEquipItems()
+        {
+            var unassignedItems = await _equipmentService.GetAllUnassignedEquipItems();
+            return Ok(unassignedItems);
+        }
+
+        /// <summary>
         /// Gets all equipment assigned to a specific employee
         /// </summary>
         /// <param name="employeeId">The ID of the employee</param>
@@ -40,26 +80,6 @@ namespace CoriCore.Controllers
             return Ok(equipment);
         }
 
-        // GET: api/Equipment
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Equipment>>> GetEquipments()
-        {
-            return await _context.Equipments.ToListAsync();
-        }
-
-        // GET: api/Equipment/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Equipment>> GetEquipment(int id)
-        {
-            var equipment = await _context.Equipments.FindAsync(id);
-
-            if (equipment == null)
-            {
-                return NotFound();
-            }
-
-            return equipment;
-        }
 
         // POST
         [HttpPost("CreateEquipmentItems")]
@@ -83,7 +103,7 @@ namespace CoriCore.Controllers
             var equipmentDtosCreated = equipmentItemsWithCategories.Select(e => new EquipmentDTO
             {
                 EquipmentId = e.EquipmentId,
-                EmployeeId = e.EmployeeId,
+                EmployeeId = e.EmployeeId ?? 0,
                 EquipmentCatId = e.EquipmentCatId,
                 EquipmentCategoryName = e.EquipmentCategory.EquipmentCatName, // Fixed property name
                 EquipmentName = e.EquipmentName,
@@ -92,18 +112,18 @@ namespace CoriCore.Controllers
             }).ToList();
 
             // Return the created equipment items as a response
-            return CreatedAtAction(nameof(GetEquipments), new { count = equipmentDtosCreated.Count }, equipmentDtosCreated);
+            return Ok(new
+            {
+                Count = equipmentDtosCreated.Count,
+                Data = equipmentDtosCreated
+            });
+
         }
 
         // PUT: api/Equipment/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] EquipmentDTO equipmentDto)
+        public async Task<IActionResult> EditEquipmentItem(int id, [FromBody] UpdateEquipmentDTO equipmentDto)
         {
-            if (id != equipmentDto.EquipmentId)
-            {
-                return BadRequest("Equipment ID mismatch.");
-            }
-
             // Call service to edit the equipment item
             var updatedEquipment = await _equipmentService.EditEquipmentItemAsync(id, equipmentDto);
 
@@ -115,6 +135,32 @@ namespace CoriCore.Controllers
             return Ok(updatedEquipment);
         }
 
+        // Assign equipment to employee
+        [HttpPost("assign-equipment/{employeeId:int}")]
+        public async Task<IActionResult> AssignEquipmentToEmployee(int employeeId, [FromBody] List<int> equipmentIds)
+        {
+            // Force assign equipment to the employee, regardless of whether it's already assigned to another employee
+            var result = await _equipmentService.ForceAssignEquipmentAsync(employeeId, equipmentIds);
+            return StatusCode(result.Code, result.Message);
+        }
+
+        // Unlink equipment from employee
+        // Although this is a delete request, we aren't deleting the equipment item, we are just unlinking it from the employee
+        // This follows good conventions, we are "deleting" the link / relationship.
+        [HttpDelete("unlink/{equipmentId}")]
+        public async Task<IActionResult> UnlinkEquipmentFromEmployee(int equipmentId)
+        {
+            var result = await _equipmentService.UnlinkEquipmentFromEmployee(equipmentId);
+            return StatusCode(result.Code, result.Message);
+        }
+
+        // Mass unlink all equipment items from an employee by their id
+        [HttpDelete("mass-unlink/{employeeId}")]
+        public async Task<IActionResult> MassUnlinkEquipment(int employeeId)
+        {
+            var result = await _equipmentService.MassUnlinkEquipmentFromEmployee(employeeId);
+            return StatusCode(result.Code, result.Message);
+        }
         //Delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEquipmentItem(int id)
@@ -129,69 +175,7 @@ namespace CoriCore.Controllers
             return NoContent();
         }
 
-        // PUT: api/Equipment/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPut("{id}")]
-        // public async Task<IActionResult> PutEquipment(int id, Equipment equipment)
-        // {
-        //     if (id != equipment.EquipmentId)
-        //     {
-        //         return BadRequest();
-        //     }
-
-        //     _context.Entry(equipment).State = EntityState.Modified;
-
-        //     try
-        //     {
-        //         await _context.SaveChangesAsync();
-        //     }
-        //     catch (DbUpdateConcurrencyException)
-        //     {
-        //         if (!EquipmentExists(id))
-        //         {
-        //             return NotFound();
-        //         }
-        //         else
-        //         {
-        //             throw;
-        //         }
-        //     }
-
-        //     return NoContent();
-        // }
-
-        // POST: api/Equipment
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // [HttpPost]
-        // public async Task<ActionResult<Equipment>> PostEquipment(Equipment equipment)
-        // {
-        //     _context.Equipments.Add(equipment);
-        //     await _context.SaveChangesAsync();
-
-        //     return CreatedAtAction("GetEquipment", new { id = equipment.EquipmentId }, equipment);
-        // }
-
-        // DELETE: api/Equipment/5
-        // [HttpDelete("{id}")]
-        // public async Task<IActionResult> DeleteEquipment(int id)
-        // {
-        //     var equipment = await _context.Equipments.FindAsync(id);
-        //     if (equipment == null)
-        //     {
-        //         return NotFound();
-        //     }
-
-        //     _context.Equipments.Remove(equipment);
-        //     await _context.SaveChangesAsync();
-
-        //     return NoContent();
-        // }
-
-        private bool EquipmentExists(int id)
-        {
-            return _context.Equipments.Any(e => e.EquipmentId == id);
-        }
-
         
+
     }
 }

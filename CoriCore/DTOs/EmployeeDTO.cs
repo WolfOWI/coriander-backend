@@ -17,5 +17,7 @@ public class EmployeeDto
     public EmployType EmployType { get; set; }
     public DateOnly EmployDate { get; set; }
     public bool IsSuspended { get; set; } = false; // Default to False
+
+    public List<int>? EquipmentIds { get; set; } = new();
 }
 

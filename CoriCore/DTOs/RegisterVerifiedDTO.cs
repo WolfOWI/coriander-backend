@@ -1,5 +1,6 @@
 using System;
 using CoriCore.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace CoriCore.DTOs;
 
@@ -11,4 +12,6 @@ public class RegisterVerifiedDTO
     public string? ProfilePicture { get; set; }
     public required string Code { get; set; }
     public UserRole Role { get; set; } = UserRole.Unassigned;
+
+    public IFormFile? ProfileImage { get; set; }
 }

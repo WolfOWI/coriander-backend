@@ -3,15 +3,15 @@
 // Wolf Botha & Ruan Klopper
 
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
-using Microsoft.EntityFrameworkCore;
 using Google.Apis.Auth;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace CoriCore.Services;
@@ -21,20 +21,27 @@ namespace CoriCore.Services;
 /// </summary>
 public class AuthServices : IAuthService
 {
-
     // DEPENDENCY INJECTION
     // ========================================
     private readonly AppDbContext _context;
     private readonly IUserService _userService;
     private readonly IEmailService _emailService;
+    private readonly IImageService _imageService;
 
     // Constructor: Allows this service to interact with the database.
-    public AuthServices(AppDbContext context, IUserService userService, IEmailService emailService)
+    public AuthServices(
+        AppDbContext context,
+        IUserService userService,
+        IEmailService emailService,
+        IImageService imageService
+    )
     {
         _context = context;
         _userService = userService;
         _emailService = emailService;
+        _imageService = imageService;
     }
+
     // ========================================
 
     // JWT token generator
@@ -42,13 +49,15 @@ public class AuthServices : IAuthService
     public Task<string> GenerateJwt(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes("asjdfhaksljdfhsakjdhfsakjdfhaksldjfhalksjdfhaskjdhfkajdshfklasdfhalsdjkfhasdjkfhksadljhfkjsdhfaskjdhflasdfk2h321b7c3289c120b74c1290b12790.b123789"); // Replace with env var
+        var key = Encoding.ASCII.GetBytes(
+            "asjdfhaksljdfhsakjdhfsakjdfhaksldjfhalksjdfhaskjdhfkajdshfklasdfhalsdjkfhasdjkfhksadljhfkjsdhfaskjdhflasdfk2h321b7c3289c120b74c1290b12790.b123789"
+        ); // Replace with env var
 
         var claims = new List<Claim>
         {
             new Claim("userId", user.UserId.ToString()),
             new Claim("email", user.Email),
-            new Claim("role", user.Role.ToString())
+            new Claim("role", user.Role.ToString()),
         };
 
         if (user.Employee != null)
@@ -61,7 +70,10 @@ public class AuthServices : IAuthService
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature
+            ),
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -93,7 +105,7 @@ public class AuthServices : IAuthService
             Email = user.Email,
             Password = hashedPassword,
             ProfilePicture = user.ProfilePicture,
-            Role = user.Role
+            Role = user.Role,
         };
 
         // Adding the user to the database
@@ -110,7 +122,8 @@ public class AuthServices : IAuthService
 
         // Check if user already exists by Google ID or email
         var existingUser = await _context.Users.FirstOrDefaultAsync(u =>
-            u.GoogleId == payload.Subject || u.Email == payload.Email);
+            u.GoogleId == payload.Subject || u.Email == payload.Email
+        );
 
         if (existingUser != null)
         {
@@ -123,23 +136,30 @@ public class AuthServices : IAuthService
             Email = payload.Email,
             GoogleId = payload.Subject,
             ProfilePicture = payload.Picture,
-            Role = UserRole.Unassigned // (Changed this from employee to unassigned - Wolf)
+            Role = UserRole.Unassigned, // (Changed this from employee to unassigned - Wolf)
         };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
+        await _emailService.SendAccountPendingEmail(user.Email, user.FullName);
+
         return true;
     }
 
     // Register a new admin (via Google method)
-    public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminWithGoogleAsync(string googleToken)
+    public async Task<(
+        int Code,
+        string Message,
+        bool IsCreated,
+        bool CanSignIn
+    )> RegisterAdminWithGoogleAsync(string googleToken)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
         // Check if user already exists
-        var existing = await _context.Users
-            .Include(u => u.Admin)
+        var existing = await _context
+            .Users.Include(u => u.Admin)
             .FirstOrDefaultAsync(u => u.Email == payload.Email || u.GoogleId == payload.Subject);
 
         if (existing != null)
@@ -147,7 +167,12 @@ public class AuthServices : IAuthService
             if (existing.IsVerified && existing.Role == UserRole.Admin && existing.Admin != null)
                 return (409, "Admin account already exists. Try logging in.", false, true);
 
-            return (409, "Email already registered under a different role or not verified.", false, false);
+            return (
+                409,
+                "Email already registered under a different role or not verified.",
+                false,
+                false
+            );
         }
 
         // Create and verify user
@@ -158,17 +183,14 @@ public class AuthServices : IAuthService
             GoogleId = payload.Subject,
             ProfilePicture = payload.Picture,
             Role = UserRole.Admin,
-            IsVerified = true
+            IsVerified = true,
         };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
         // Link admin
-        var admin = new Admin
-        {
-            UserId = user.UserId
-        };
+        var admin = new Admin { UserId = user.UserId };
 
         await _context.Admins.AddAsync(admin);
         await _context.SaveChangesAsync();
@@ -177,12 +199,22 @@ public class AuthServices : IAuthService
     }
 
     // Register a new admin (via Email method) & 2FA
-    public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterAdminVerifiedAsync(RegisterVerifiedDTO dto)
+    public async Task<(
+        int Code,
+        string Message,
+        bool IsCreated,
+        bool CanSignIn
+    )> RegisterAdminVerifiedAsync(RegisterVerifiedDTO dto)
     {
         var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
         if (existing == null)
-            return (404, "Email not found. Please request a verification code first.", false, false);
+            return (
+                404,
+                "Email not found. Please request a verification code first.",
+                false,
+                false
+            );
 
         if (existing.IsVerified)
             return (409, "Email already verified. Try logging in instead.", false, true);
@@ -190,7 +222,10 @@ public class AuthServices : IAuthService
         if (existing.VerificationCode != dto.Code)
             return (401, "Invalid verification code.", false, false);
 
-        if (existing.CodeGeneratedAt == null || DateTime.UtcNow - existing.CodeGeneratedAt > TimeSpan.FromMinutes(10))
+        if (
+            existing.CodeGeneratedAt == null
+            || DateTime.UtcNow - existing.CodeGeneratedAt > TimeSpan.FromMinutes(10)
+        )
             return (410, "Verification code expired. Request a new one.", false, false);
 
         // ✅ Update the user
@@ -202,13 +237,16 @@ public class AuthServices : IAuthService
         existing.VerificationCode = null;
         existing.CodeGeneratedAt = null;
 
+        if (dto.ProfileImage != null)
+        {
+            var imagePath = await _imageService.UploadImageAsync(dto.ProfileImage);
+            existing.ProfilePicture = imagePath;
+        }
+
         await _context.SaveChangesAsync();
 
         // ✅ Create and assign Admin entity
-        var admin = new Admin
-        {
-            UserId = existing.UserId
-        };
+        var admin = new Admin { UserId = existing.UserId };
         await _context.Admins.AddAsync(admin);
         await _context.SaveChangesAsync();
 
@@ -241,7 +279,7 @@ public class AuthServices : IAuthService
             {
                 Email = dto.Email,
                 FullName = dto.FullName,
-                IsVerified = false
+                IsVerified = false,
             };
             await _context.Users.AddAsync(existing);
         }
@@ -261,7 +299,10 @@ public class AuthServices : IAuthService
         if (user == null || user.VerificationCode != dto.Code)
             return false;
 
-        if (user.CodeGeneratedAt == null || DateTime.UtcNow - user.CodeGeneratedAt > TimeSpan.FromMinutes(10))
+        if (
+            user.CodeGeneratedAt == null
+            || DateTime.UtcNow - user.CodeGeneratedAt > TimeSpan.FromMinutes(10)
+        )
             return false;
 
         user.IsVerified = true;
@@ -274,13 +315,23 @@ public class AuthServices : IAuthService
 
     // Function to do a full user registration after the 2FA has been sent
     // It will register user
-    public async Task<(int Code, string Message, bool IsCreated, bool CanSignIn)> RegisterVerifiedAsync(RegisterVerifiedDTO dto)
+    public async Task<(
+        int Code,
+        string Message,
+        bool IsCreated,
+        bool CanSignIn
+    )> RegisterVerifiedAsync(RegisterVerifiedDTO dto)
     {
         var existing = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
         if (existing == null)
         {
-            return (404, "Email not found. Please request a verification code first.", false, false);
+            return (
+                404,
+                "Email not found. Please request a verification code first.",
+                false,
+                false
+            );
         }
 
         if (existing.IsVerified)
@@ -293,7 +344,10 @@ public class AuthServices : IAuthService
             return (401, "Invalid verification code.", false, false);
         }
 
-        if (existing.CodeGeneratedAt == null || DateTime.UtcNow - existing.CodeGeneratedAt > TimeSpan.FromMinutes(10))
+        if (
+            existing.CodeGeneratedAt == null
+            || DateTime.UtcNow - existing.CodeGeneratedAt > TimeSpan.FromMinutes(10)
+        )
         {
             return (410, "Verification code expired. Request a new one.", false, false);
         }
@@ -305,6 +359,12 @@ public class AuthServices : IAuthService
         existing.IsVerified = true;
         existing.VerificationCode = null;
         existing.CodeGeneratedAt = null;
+
+        if (dto.ProfileImage != null)
+        {
+            var imagePath = await _imageService.UploadImageAsync(dto.ProfileImage);
+            existing.ProfilePicture = imagePath;
+        }
 
         await _context.SaveChangesAsync();
         await _emailService.SendAccountPendingEmail(existing.Email, existing.FullName);
@@ -320,8 +380,8 @@ public class AuthServices : IAuthService
     /// <inheritdoc/>
     public async Task<string> LoginWithEmail(string email, string password)
     {
-        var user = await _context.Users
-            .Include(u => u.Employee)
+        var user = await _context
+            .Users.Include(u => u.Employee)
             .Include(u => u.Admin)
             .FirstOrDefaultAsync(u => u.Email == email);
 
@@ -338,8 +398,8 @@ public class AuthServices : IAuthService
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
-        var user = await _context.Users
-            .Include(u => u.Employee)
+        var user = await _context
+            .Users.Include(u => u.Employee)
             .Include(u => u.Admin)
             .FirstOrDefaultAsync(u => u.GoogleId == payload.Subject || u.Email == payload.Email);
 
@@ -351,7 +411,7 @@ public class AuthServices : IAuthService
                 Email = payload.Email,
                 GoogleId = payload.Subject,
                 ProfilePicture = payload.Picture,
-                Role = UserRole.Unassigned
+                Role = UserRole.Unassigned,
             };
 
             await _context.Users.AddAsync(user);
@@ -367,6 +427,7 @@ public class AuthServices : IAuthService
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user.Password);
         return Task.FromResult(isPasswordValid);
     }
+
     // ========================================
 
 
@@ -378,10 +439,12 @@ public class AuthServices : IAuthService
         // Get the user from the database
         User? userfromDb = await _userService.GetUserByEmailAsync(email);
 
-        if (userfromDb == null) return false;
+        if (userfromDb == null)
+            return false;
 
         return true;
     }
+
     public Task<bool> RevokeToken(string token)
     {
         throw new NotImplementedException();
@@ -397,15 +460,17 @@ public class AuthServices : IAuthService
     {
         var userIdClaim = user.FindFirst("userId")?.Value;
 
-        if (string.IsNullOrEmpty(userIdClaim)) return null;
+        if (string.IsNullOrEmpty(userIdClaim))
+            return null;
 
         int userId = int.Parse(userIdClaim);
-        var u = await _context.Users
-            .Include(u => u.Employee)
+        var u = await _context
+            .Users.Include(u => u.Employee)
             .Include(u => u.Admin)
             .FirstOrDefaultAsync(u => u.UserId == userId);
 
-        if (u == null) return null;
+        if (u == null)
+            return null;
 
         return new CurrentUserDTO
         {
@@ -417,8 +482,9 @@ public class AuthServices : IAuthService
             IsVerified = u.IsVerified,
             EmployeeId = u.Employee?.EmployeeId,
             AdminId = u.Admin?.AdminId,
-            IsLinked = (u.Role == UserRole.Admin && u.Admin != null) ||
-                        (u.Role == UserRole.Employee && u.Employee != null)
+            IsLinked =
+                (u.Role == UserRole.Admin && u.Admin != null)
+                || (u.Role == UserRole.Employee && u.Employee != null),
         };
     }
 
@@ -451,8 +517,8 @@ public class AuthServices : IAuthService
             if (!int.TryParse(userIdClaim.Value, out var userId))
                 return null;
 
-            var user = await _context.Users
-                .Include(u => u.Employee)
+            var user = await _context
+                .Users.Include(u => u.Employee)
                 .Include(u => u.Admin)
                 .FirstOrDefaultAsync(u => u.UserId == userId);
 
@@ -469,10 +535,10 @@ public class AuthServices : IAuthService
                 IsVerified = user.IsVerified,
                 EmployeeId = user.Employee?.EmployeeId,
                 AdminId = user.Admin?.AdminId,
-                IsLinked = (user.Role == UserRole.Admin && user.Admin != null) ||
-                            (user.Role == UserRole.Employee && user.Employee != null)
+                IsLinked =
+                    (user.Role == UserRole.Admin && user.Admin != null)
+                    || (user.Role == UserRole.Employee && user.Employee != null),
             };
-
         }
         catch
         {
@@ -480,7 +546,5 @@ public class AuthServices : IAuthService
         }
     }
 
-
     // ========================================
-
 }

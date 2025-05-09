@@ -82,6 +82,20 @@ namespace CoriCore.Services
             return user;
         }
 
+        public async Task<List<User>> GetUnlinkedUsersAsync()
+        {
+            var linkedEmployeeIds = await _context.Employees.Select(e => e.UserId).ToListAsync();
+            var linkedAdminIds = await _context.Admins.Select(a => a.UserId).ToListAsync();
+
+            var unlinkedUsers = await _context
+                .Users.Where(u =>
+                    !linkedEmployeeIds.Contains(u.UserId) && !linkedAdminIds.Contains(u.UserId)
+                )
+                .ToListAsync();
+
+            return unlinkedUsers;
+        }
+
         // Template
         // public Task<int> SetUserRoleAsync(int userId, int userRole)
         // {

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 
 // Load environment variables (from .env file)
@@ -44,12 +45,14 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 // Page Service (For whole front-end pages)
 builder.Services.AddScoped<IPageService, PageService>();
+// Image service - Local store
+builder.Services.AddScoped<IImageService, ImageService>();
 // ========================================
 
 // CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
         // Ek het port 5121 bygesit omdat myne op daai een run - Ruan
         policy.WithOrigins(
@@ -62,6 +65,7 @@ builder.Services.AddCors(options =>
                .AllowAnyHeader()
                .AllowCredentials();
     });
+
 });
 
 // CONTROLLERS
@@ -80,15 +84,11 @@ var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddCookie()
-.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
-{
-    options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID");
-    options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET");
-})
 .AddJwtBearer(options =>
 {
     options.Events = new JwtBearerEvents
@@ -125,7 +125,12 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddOpenApi(); // Add OpenAPI support
 builder.Services.AddEndpointsApiExplorer(); // Add endpoints explorer
-builder.Services.AddSwaggerGen(); // Adding Swagger Package
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoriCore", Version = "v1" });
+    c.OperationFilter<SwaggerFileUploadOperationFilter>();
+});
+
 
 // Database connection configuration
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -183,9 +188,10 @@ if (app.Environment.IsDevelopment())
 }
 // ------------------------------------------------------------------------
 
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowFrontend");
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 // Middleware for Google Authentication
 app.UseAuthentication(); // ✅ Must come before UseAuthorization

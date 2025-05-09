@@ -34,4 +34,11 @@ public interface IEmpUserService
     /// </returns>
     Task<(int Code, string Message)> UpdateEmpUserDetailsByIdAsync(int id, EmployeeUpdateDTO updateDto);
 
+    /// <summary>
+    /// Get all employees with their equipment stats
+    /// </summary>
+    /// <param name="comparedEquipId">The ID of the equipment item to compare against (if emp has equipment in the same category)</param>
+    /// <returns>A list of EmpUserEquipStatsDTOs</returns>
+    Task<List<EmpUserEquipStatsDTO>> GetAllEmpsEquipStats(int comparedEquipId);
+
 }

@@ -14,16 +14,17 @@ namespace CoriCore.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-
         // Dependency Injection
         // ========================================
         private readonly IAuthService _authService;
         private readonly IAdminService _adminService;
+
         public AuthController(IAuthService authService, IAdminService adminService)
         {
             _authService = authService;
             _adminService = adminService;
         }
+
         // ========================================
 
 
@@ -49,7 +50,6 @@ namespace CoriCore.Controllers
             return Ok("User registered successfully");
         }
 
-
         // ========================================
         // 🔴 Admins - Production registration & 2 factor authentication "Sign up" : Google & Email
         // ========================================
@@ -73,10 +73,7 @@ namespace CoriCore.Controllers
             // ADMIN CREATION (ASSIGNMENT TO USER)
             // ========================================
             // Create an AdminDTO from the created user
-            var adminDTO = new AdminDTO
-            {
-                UserId = createdUser.UserId
-            };
+            var adminDTO = new AdminDTO { UserId = createdUser.UserId };
 
             await _adminService.CreateAdmin(adminDTO);
 
@@ -87,29 +84,36 @@ namespace CoriCore.Controllers
         [HttpPost("google-register-admin")]
         public async Task<IActionResult> GoogleRegisterAdmin([FromBody] GoogleRegisterDTO dto)
         {
-            var (code, message, isCreated, canSignIn) = await _authService.RegisterAdminWithGoogleAsync(dto.IdToken);
+            var (code, message, isCreated, canSignIn) =
+                await _authService.RegisterAdminWithGoogleAsync(dto.IdToken);
 
-            return StatusCode(code, new
-            {
-                message,
-                isCreated,
-                canSignIn
-            });
+            return StatusCode(
+                code,
+                new
+                {
+                    message,
+                    isCreated,
+                    canSignIn,
+                }
+            );
         }
 
         [HttpPost("register-admin-verified")]
-        public async Task<IActionResult> RegisterAdminVerified([FromBody] RegisterVerifiedDTO dto)
+        public async Task<IActionResult> RegisterAdminVerified([FromForm] RegisterVerifiedDTO dto)
         {
-            var (code, message, isCreated, canSignIn) = await _authService.RegisterAdminVerifiedAsync(dto);
+            var (code, message, isCreated, canSignIn) =
+                await _authService.RegisterAdminVerifiedAsync(dto);
 
-            return StatusCode(code, new
-            {
-                message,
-                isCreated,
-                canSignIn
-            });
+            return StatusCode(
+                code,
+                new
+                {
+                    message,
+                    isCreated,
+                    canSignIn,
+                }
+            );
         }
-
 
         // ========================================
         // 🔵 Employees - Production registration & 2 factor authentication "Sign up" : Google & Email
@@ -131,18 +135,22 @@ namespace CoriCore.Controllers
 
         // Register employee with Email - after 2FA code is correct
         [HttpPost("register-verified")]
-        public async Task<IActionResult> RegisterVerified([FromBody] RegisterVerifiedDTO dto)
+        public async Task<IActionResult> RegisterVerified([FromForm] RegisterVerifiedDTO dto)
         {
-            var (code, message, isCreated, canSignIn) = await _authService.RegisterVerifiedAsync(dto);
+            var (code, message, isCreated, canSignIn) = await _authService.RegisterVerifiedAsync(
+                dto
+            );
 
-            return StatusCode(code, new
-            {
-                message,
-                isCreated,
-                canSignIn
-            });
+            return StatusCode(
+                code,
+                new
+                {
+                    message,
+                    isCreated,
+                    canSignIn,
+                }
+            );
         }
-
 
         // ========================================
         // 🟢 All users - 2FA
@@ -150,7 +158,9 @@ namespace CoriCore.Controllers
 
         // 2FA - only applicable for email registration
         [HttpPost("request-verification")]
-        public async Task<IActionResult> RequestVerification([FromBody] RequestEmailVerificationDTO dto)
+        public async Task<IActionResult> RequestVerification(
+            [FromBody] RequestEmailVerificationDTO dto
+        )
         {
             await _authService.SendVerificationCodeAsync(dto);
             return Ok("Verification code sent");
@@ -160,10 +170,10 @@ namespace CoriCore.Controllers
         public async Task<IActionResult> VerifyEmailCode([FromBody] VerifyEmailCodeDTO dto)
         {
             var result = await _authService.VerifyEmailCodeAsync(dto);
-            if (!result) return BadRequest("Invalid or expired code");
+            if (!result)
+                return BadRequest("Invalid or expired code");
             return Ok("Email verified successfully");
         }
-
 
         // ========================================
         // 🟢 All users - Production authentication "loggin in" : Google & Email
@@ -180,13 +190,17 @@ namespace CoriCore.Controllers
                 return Unauthorized("Invalid Google login.");
             }
 
-            Response.Cookies.Append("token", token, new CookieOptions
-            {
-                HttpOnly = false,
-                Secure = false,
-                SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
-                Expires = DateTime.UtcNow.AddDays(7)
-            });
+            Response.Cookies.Append(
+                "token",
+                token,
+                new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
+                    Expires = DateTime.UtcNow.AddDays(7),
+                }
+            );
 
             return Ok("Login successful");
         }
@@ -197,36 +211,44 @@ namespace CoriCore.Controllers
         {
             string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
 
-            Response.Cookies.Append("token", jwt, new CookieOptions
-            {
-                HttpOnly = false, // change to true when website is in production or when working with the frontend
-                Secure = false, // same like above
-                SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
-                Expires = DateTime.UtcNow.AddDays(7)
-            });
+            Response.Cookies.Append(
+                "token",
+                jwt,
+                new CookieOptions
+                {
+                    HttpOnly = false,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddDays(7),
+                }
+            );
 
             return Ok("Login successful");
         }
-
 
         // ========================================
         // 🟢 All users - JWTs / session management
         // ========================================
 
         // See if user is logged in and Get current user details when logged in
+        // Not supported on Electron localhost
         [Authorize]
         [HttpGet("me")]
-        public async Task<IActionResult> GetCurrentUser()
+        public async Task<ActionResult<CurrentUserDTO>> GetMe()
         {
-            var userData = await _authService.GetCurrentUserDetails(User);
+            var userId = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("No user ID found in claims.");
+                return Unauthorized("No user.");
+            }
 
-            if (userData == null)
-                return Unauthorized("Invalid user session");
-
-            return Ok(userData);
+            var user = await _authService.GetCurrentUserDetails(User);
+            return Ok(user);
         }
 
-        // Remove function when website is in production state
+
+        // Using this to decode the JWT token
         [HttpGet("decode-token")]
         public async Task<IActionResult> DecodeToken([FromQuery] string token)
         {

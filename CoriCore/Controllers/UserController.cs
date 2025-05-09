@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CoriCore.Data;
+using CoriCore.Interfaces;
+using CoriCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CoriCore.Data;
-using CoriCore.Models;
 
 namespace CoriCore.Controllers
 {
@@ -18,10 +19,12 @@ namespace CoriCore.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IUserService _userService;
 
-        public UserController(AppDbContext context)
+        public UserController(AppDbContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // GET: api/User
@@ -107,6 +110,13 @@ namespace CoriCore.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.UserId == id);
+        }
+
+        [HttpGet("unlinked")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUnlinkedUsers()
+        {
+            var users = await _userService.GetUnlinkedUsersAsync();
+            return Ok(users);
         }
     }
 }
