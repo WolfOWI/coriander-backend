@@ -49,9 +49,9 @@ public class AuthServices : IAuthService
     public Task<string> GenerateJwt(User user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(
-            "asjdfhaksljdfhsakjdhfsakjdfhaksldjfhalksjdfhaskjdhfkajdshfklasdfhalsdjkfhasdjkfhksadljhfkjsdhfaskjdhflasdfk2h321b7c3289c120b74c1290b12790.b123789"
-        ); // Replace with env var
+        var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+             ?? "super_mega_ultra_secret_jwt_key_123456"; // fallback for dev
+        var key = Encoding.ASCII.GetBytes(jwtSecret);
 
         var claims = new List<Claim>
         {
