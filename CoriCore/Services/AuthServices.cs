@@ -452,7 +452,7 @@ public class AuthServices : IAuthService
 
     public Task Logout(HttpContext context)
     {
-        context.Response.Cookies.Delete("jwt");
+        context.Response.Cookies.Delete("token");
         return Task.CompletedTask;
     }
 
