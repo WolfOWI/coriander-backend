@@ -76,5 +76,23 @@ namespace CoriCore.Controllers
                 return NotFound($"Error retrieving employee profile page: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Gets all the information needed for the Admin Dashboard page
+        /// </summary>
+        /// <returns>An AdminDashboardPageDTO containing all necessary information</returns>
+        [HttpGet("admin-dashboard")]
+        public async Task<ActionResult<AdminDashboardPageDTO>> GetAdminDashboardPage()
+        {
+            try
+            {
+                var pageInfo = await _pageService.GetAdminDashboardPageInfo();
+                return Ok(pageInfo);
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Error retrieving admin dashboard page: {ex.Message}");
+            }
+        }
     }
 } 

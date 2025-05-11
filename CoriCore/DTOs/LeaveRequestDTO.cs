@@ -10,7 +10,10 @@ public class LeaveRequestDTO
     // LeaveRequest Table
     public int LeaveRequestId { get; set; }  // Primary Key
     public int EmployeeId { get; set; }  // Foreign Key
+
+    public string EmployeeName { get; set; } = string.Empty;  // Employee Name
     public int LeaveTypeId { get; set; }  // Foreign Key
+    public string LeaveType { get; set; } = string.Empty;  // Leave Type Name
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
     public string? Comment { get; set; }

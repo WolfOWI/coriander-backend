@@ -10,25 +10,48 @@ using CoriCore.Interfaces;
 using CoriCore.Models;
 
 namespace CoriCore.Services;
-
+ 
 public class PageService : IPageService
 {
     private readonly IEmpUserService _empUserService;
     private readonly IEquipmentService _equipmentService;
     private readonly ILeaveBalanceService _leaveBalanceService;
     private readonly IPerformanceReviewService _performanceReviewService;
+    private readonly ILeaveRequestService _leaveRequestService;
+    private readonly IEmployeeService _employeeService;
 
     public PageService(
         IEmpUserService empUserService,
         IEquipmentService equipmentService,
         ILeaveBalanceService leaveBalanceService,
-        IPerformanceReviewService performanceReviewService)
+        IPerformanceReviewService performanceReviewService,
+        ILeaveRequestService leaveRequestService,
+        IEmployeeService employeeService)
     {
         _empUserService = empUserService;
         _equipmentService = equipmentService;
         _leaveBalanceService = leaveBalanceService;
         _performanceReviewService = performanceReviewService;
+        _leaveRequestService = leaveRequestService;
+        _employeeService = employeeService;
     }
+
+    public async Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo()
+    {
+        var empUserRating = await _performanceReviewService.GetRandomEmpUserRatingMetricsByNum(3);
+        var topRatedEmployees = await _performanceReviewService.GetTopRatedEmployees();
+        var leaveRequests = await _leaveRequestService.GetAllLeaveRequests();
+        var empStatusTotal = await _employeeService.GetEmployeeStatusTotals();
+
+        return new AdminDashboardPageDTO
+        {
+            EmpUserRatingMetrics = empUserRating,
+            TopRatedEmployees = topRatedEmployees,
+            LeaveRequests = leaveRequests,
+            EmployeeStatusTotals = empStatusTotal
+        };
+    }
+
 
     /// <inheritdoc/>
     public async Task<AdminEmpDetailsPageDTO> GetAdminEmpDetailsPageInfo(int employeeId)
@@ -93,7 +116,7 @@ public class PageService : IPageService
         
         return empManageList;
     }
-        
+
     /// <inheritdoc/>
     public async Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId)
     {
