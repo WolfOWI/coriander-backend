@@ -36,9 +36,7 @@ public interface IPerformanceReviewService
     Task<bool> DeletePerformanceReview(int id);
 
     Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm();
-
-    Task<List<EmpUserRatingMetricsDTO>> GetTopRatedEmployees();
-
+    Task<List<TopRatedEmployeesDTO>> GetTopRatedEmployees();
     Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus);
 
 }

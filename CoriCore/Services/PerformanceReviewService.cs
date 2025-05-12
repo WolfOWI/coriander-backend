@@ -233,19 +233,71 @@ public class PerformanceReviewService : IPerformanceReviewService
     /// <summary>
     /// Get the Top rated employess
     /// </summary>
-    public async Task<List<EmpUserRatingMetricsDTO>> GetTopRatedEmployees()
+    public async Task<List<TopRatedEmployeesDTO>> GetTopRatedEmployees()
     {
-        // Fetch all employee rating metrics
-        var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
+        var reviews = await _context.PerformanceReviews
+            .Include(pr => pr.Employee)
+                .ThenInclude(e => e.User)
+            .Where(pr => pr.Rating != null)
+            .ToListAsync();
 
-        // Sort employees by AverageRating in descending order and take top 3
-        var topRatedEmployees = allEmployeeMetrics
-            .OrderByDescending(emp => emp.AverageRating)
+        if (!reviews.Any())
+            return new List<TopRatedEmployeesDTO>();
+
+        var groupedRatings = reviews
+            .GroupBy(pr => pr.EmployeeId)
+            .Select(group =>
+            {
+                var firstReview = group.First();
+                var emp = firstReview.Employee;
+                var user = emp.User;
+
+                return new TopRatedEmployeesDTO
+                {
+                    Employees = new List<EmpUserDTO>
+                    {
+                        new EmpUserDTO
+                        {
+                            UserId = user.UserId,
+                            FullName = user.FullName,
+                            Email = user.Email,
+                            GoogleId = user.GoogleId,
+                            ProfilePicture = user.ProfilePicture,
+                            Role = user.Role,
+                            EmployeeId = emp.EmployeeId,
+                            Gender = emp.Gender,
+                            DateOfBirth = emp.DateOfBirth,
+                            PhoneNumber = emp.PhoneNumber,
+                            JobTitle = emp.JobTitle,
+                            Department = emp.Department,
+                            SalaryAmount = emp.SalaryAmount,
+                            PayCycle = emp.PayCycle,
+                            LastPaidDate = emp.LastPaidDate,
+                            EmployType = emp.EmployType,
+                            EmployDate = emp.EmployDate,
+                            IsSuspended = emp.IsSuspended
+                        }
+                    },
+                    Ratings = new List<EmpUserRatingMetricsDTO>
+                    {
+                        new EmpUserRatingMetricsDTO
+                        {
+                            EmployeeId = emp.EmployeeId,
+                            FullName = user.FullName,
+                            AverageRating = Math.Round(group.Average(pr => pr.Rating!.Value), 2),
+                            NumberOfRatings = group.Count(),
+                        }
+                    }
+                };
+            })
+            .OrderByDescending(e => e.Ratings!.First().AverageRating)
+            .ThenByDescending(e => e.Ratings!.First().NumberOfRatings)
             .Take(3)
             .ToList();
 
-        return topRatedEmployees;
+        return groupedRatings;
     }
+
 
     //Toggle status from 1 to 2 (Completed)
     public async Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus)

@@ -264,16 +264,20 @@ namespace CoriCore.Controllers
             return Ok(reviewDTOs);
         }
 
-        [HttpGet("top-rated")]
-        public async Task<ActionResult<List<EmpUserRatingMetricsDTO>>> GetTopRatedEmployees()
+        [HttpGet("top-rated-employees")]
+        public async Task<ActionResult<List<TopRatedEmployeesDTO>>> GetTopRatedEmployees()
         {
-            var topRatedEmployees = await _PerformanceReviewService.GetTopRatedEmployees();
-            if (topRatedEmployees == null || !topRatedEmployees.Any())
+            var topEmployees = await _PerformanceReviewService.GetTopRatedEmployees();
+
+            if (!topEmployees.Any())
             {
-                return NotFound("No top-rated employees found.");
+                return NotFound("No rated employees found.");
             }
-            return Ok(topRatedEmployees);
+
+            return Ok(topEmployees);
         }
+
+
         
         [HttpPut("update-status/{id}")]
         public async Task<ActionResult<PerformanceReview>> UpdateReviewStatus(int id, [FromQuery] ReviewStatus status)
