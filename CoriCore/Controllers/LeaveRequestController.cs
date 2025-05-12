@@ -48,10 +48,18 @@ namespace CoriCore.Controllers
 
 
         // GET: api/LeaveRequest
+        //Display all leave requests using the leaveRequestDTO
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetLeaveRequests()
+        public async Task<ActionResult<IEnumerable<LeaveRequestDTO>>> GetAllLeaveRequests()
         {
-            return await _context.LeaveRequests.ToListAsync();
+            var leaveRequests = await _leaveRequestService.GetAllLeaveRequests();
+
+            if (leaveRequests == null || !leaveRequests.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(leaveRequests);
         }
 
         // GET: api/LeaveRequest/5

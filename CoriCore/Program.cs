@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 using CoriCore.Interfaces;
 using CoriCore.Services; // Library for loading environment variables from a .env file
+using CoriCore.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,6 +15,12 @@ using Microsoft.OpenApi.Models;
 
 // Load environment variables (from .env file)
 Env.Load();
+
+// Debug logging for Google Meet environment variables
+Console.WriteLine("Debug: Loading Google Meet environment variables");
+Console.WriteLine($"GMEET_CLIENT_ID: {Environment.GetEnvironmentVariable("GMEET_CLIENT_ID")}");
+Console.WriteLine($"GMEET_SCOPE: {Environment.GetEnvironmentVariable("GMEET_SCOPE")}");
+Console.WriteLine($"GMEET_REDIRECT_URL: {Environment.GetEnvironmentVariable("GMEET_REDIRECT_URL")}");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +54,10 @@ builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<IPageService, PageService>();
 // Image service - Local store
 builder.Services.AddScoped<IImageService, ImageService>();
+// Google Meet Token Service
+builder.Services.AddScoped<IGMeetTokenService, GMeetTokenService>();
+// Google Meet Service
+builder.Services.AddScoped<IGoogleMeetService, GoogleMeetService>();
 // ========================================
 
 // CORS
@@ -80,7 +91,7 @@ builder.Services.AddControllers()
 // Google Authentication, Cookies and JWT management
 // ========================================
 var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
-             ?? "super_mega_ultra_secret_jwt_key_123456"; // fallback for dev
+    ?? throw new Exception("JWT_SECRET environment variable is not set");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -129,6 +140,31 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoriCore", Version = "v1" });
     c.OperationFilter<SwaggerFileUploadOperationFilter>();
+
+    // Add JWT Authentication support
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 
@@ -149,6 +185,15 @@ if (string.IsNullOrEmpty(connectionString))
 // Add the db context to the services
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+// Configure Google Meet settings from environment variables
+builder.Services.Configure<GoogleMeetOptions>(options =>
+{
+    options.ClientId = Environment.GetEnvironmentVariable("GMEET_CLIENT_ID");
+    options.ClientSecret = Environment.GetEnvironmentVariable("GMEET_CLIENT_SECRET");
+    options.Scope = Environment.GetEnvironmentVariable("GMEET_SCOPE");
+    options.RedirectUrl = Environment.GetEnvironmentVariable("GMEET_REDIRECT_URL");
+});
 
 var app = builder.Build();
 
@@ -198,5 +243,10 @@ app.UseAuthentication(); // ✅ Must come before UseAuthorization
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Fallback route
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

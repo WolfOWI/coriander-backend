@@ -202,7 +202,7 @@ namespace CoriCore.Controllers
                 }
             );
 
-            return Ok("Login successful");
+            return Ok(new { token, message = "Login successful" });
         }
 
         // Email login - returns JWT
