@@ -94,5 +94,24 @@ namespace CoriCore.Controllers
                 return NotFound($"Error retrieving admin dashboard page: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Gets all the information needed for the Employee Leave Overview page
+        /// </summary>
+        /// <param name="employeeId">The ID of the employee</param>
+        /// <returns>An EmployeeLeaveOverviewPageDTO containing all necessary information</returns>
+        [HttpGet("employee-leave-overview/{employeeId}")]   
+        public async Task<ActionResult<EmployeeLeaveOverviewPageDTO>> GetEmployeeLeaveOverviewPage(int employeeId)
+        {
+            try
+            {
+                var pageInfo = await _pageService.GetEmployeeLeaveOverviewPageInfo(employeeId);
+                return Ok(pageInfo);
+            }
+            catch (Exception ex)
+            {
+                return NotFound($"Error retrieving employee leave overview page: {ex.Message}");
+            }
+        }
     }
 } 

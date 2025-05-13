@@ -134,5 +134,18 @@ public class PageService : IPageService
         };
         
     }
+
+    /// <inheritdoc/>
+    public async Task<EmployeeLeaveOverviewPageDTO> GetEmployeeLeaveOverviewPageInfo(int employeeId)
+    {
+        var leaveRequests = await _leaveRequestService.GetLeaveRequestsByEmployeeId(employeeId);
+        var leaveBalances = await _leaveBalanceService.GetAllLeaveBalancesByEmployeeId(employeeId);
+
+        return new EmployeeLeaveOverviewPageDTO
+        {
+            LeaveRequests = leaveRequests,
+            LeaveBalances = leaveBalances
+        };
+    }
     
 } 
