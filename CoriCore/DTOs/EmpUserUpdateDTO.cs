@@ -3,6 +3,7 @@
 
 using System;
 using CoriCore.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace CoriCore.DTOs;
 
@@ -20,4 +21,5 @@ public class EmployeeUpdateDTO
     public EmployType? EmployType { get; set; }
     public DateOnly? EmployDate { get; set; }
     public bool? IsSuspended { get; set; }
+    public string? ProfilePicture { get; set; }
 } 
