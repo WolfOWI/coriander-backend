@@ -185,6 +185,18 @@ public class EmpLeaveRequestService : IEmpLeaveRequestService
         var leaveRequest = await _context.LeaveRequests.FindAsync(leaveRequestId);
         if (leaveRequest == null) return false; // Leave request not found
 
+        // If the request was approved, the days lost must be added back to the leave balance
+        if (leaveRequest.Status == LeaveStatus.Approved)
+        {
+            // Calculate the duration of the leave request
+            int duration = CalculateDurationInDays(leaveRequest.StartDate, leaveRequest.EndDate);
+
+            // Add the duration back to the employee's leave balance
+            bool response = await _leaveBalanceService.AddLeaveRequestDays(leaveRequest.EmployeeId, leaveRequest.LeaveTypeId, duration);
+            if (!response) return false; // Couldn't add leave request days back to the employee's leave balance
+        }
+
+        // Update the status of the leave request
         leaveRequest.Status = LeaveStatus.Pending;
         await _context.SaveChangesAsync();
         return true;

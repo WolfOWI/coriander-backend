@@ -37,4 +37,13 @@ public interface ILeaveBalanceService
     /// <param name="days">The number of days to subtract</param>
     /// <returns>A boolean indicating the success of the operation</returns>
     Task<bool> SubtractLeaveRequestDays(int employeeId, int leaveTypeId, int days);
+
+    /// <summary>
+    /// Add days back to an employee's leave balance of a specific leave type, respecting the default days limit
+    /// </summary>
+    /// <param name="employeeId">The ID of the employee</param>
+    /// <param name="leaveTypeId">The ID of the leave type</param>
+    /// <param name="days">The number of days to add back</param>
+    /// <returns>A boolean indicating the success of the operation</returns>
+    Task<bool> AddLeaveRequestDays(int employeeId, int leaveTypeId, int days);
 }
