@@ -31,6 +31,30 @@ namespace CoriCore.Controllers
             return Ok(leaveRequests);
         }
 
+        // Get pending leave requests
+        [HttpGet("GetAllPending")]
+        public async Task<ActionResult<List<EmpLeaveRequestDTO>>> GetPendingLeaveRequests()
+        {
+            var pendingLeaveRequests = await _leaveRequestService.GetPendingLeaveRequests();
+            return Ok(pendingLeaveRequests);
+        }
+
+        // Get approved leave requests
+        [HttpGet("GetAllApproved")]
+        public async Task<ActionResult<List<EmpLeaveRequestDTO>>> GetApprovedLeaveRequests()
+        {
+            var approvedLeaveRequests = await _leaveRequestService.GetApprovedLeaveRequests();
+            return Ok(approvedLeaveRequests);
+        }
+
+        // Get rejected leave requests
+        [HttpGet("GetAllRejected")]
+        public async Task<ActionResult<List<EmpLeaveRequestDTO>>> GetRejectedLeaveRequests()
+        {
+            var rejectedLeaveRequests = await _leaveRequestService.GetRejectedLeaveRequests();
+            return Ok(rejectedLeaveRequests);
+        }
+
         // Approve leave request by Id
         [HttpPut("ApproveLeaveRequestById/{leaveRequestId}")]
         public async Task<IActionResult> ApproveLeaveRequestById(int leaveRequestId)

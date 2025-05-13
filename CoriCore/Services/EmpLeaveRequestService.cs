@@ -28,24 +28,122 @@ public class EmpLeaveRequestService : IEmpLeaveRequestService
             .Select(lr => new EmpLeaveRequestDTO
             {
                 LeaveRequestId = lr.LeaveRequestId,
-                EmployeeId = lr.Employee.EmployeeId,
                 LeaveTypeId = lr.LeaveType.LeaveTypeId,
-                LeaveTypeName = lr.LeaveType.LeaveTypeName,
                 StartDate = lr.StartDate,
                 EndDate = lr.EndDate,
                 Comment = lr.Comment,
                 Status = lr.Status,
                 CreatedAt = lr.CreatedAt,
+                LeaveTypeName = lr.LeaveType.LeaveTypeName,
+                UserId = lr.Employee.User.UserId,
+                FullName = lr.Employee.User.FullName,
+                EmployeeId = lr.Employee.EmployeeId,
+                EmployType = lr.Employee.EmployType,
+                IsSuspended = lr.Employee.IsSuspended,
+                // Find the remaining days of the specific leave type of the leave request
                 RemainingDays = lr.Employee.LeaveBalances.Where(lb => lb.LeaveTypeId == lr.LeaveType.LeaveTypeId)
                     .Select(lb => lb.RemainingDays)
                     .FirstOrDefault(),
-                FullName = lr.Employee.User.FullName,
-                IsVerified = lr.Employee.User.IsVerified,
-                VerificationCode = lr.Employee.User.VerificationCode
             })
             .ToListAsync();
 
         return leaveRequests;
+    }
+
+    // Get pending leave requests
+    public async Task<List<EmpLeaveRequestDTO>> GetPendingLeaveRequests()
+    {
+        return await _context.LeaveRequests
+            .Include(lr => lr.Employee)
+                .ThenInclude(e => e.User)
+            .Include(lr => lr.LeaveType)
+            .Include(lr => lr.Employee.LeaveBalances)
+            .Where(lr => lr.Status == LeaveStatus.Pending)
+            .Select(lr => new EmpLeaveRequestDTO
+            {
+                LeaveRequestId = lr.LeaveRequestId,
+                LeaveTypeId = lr.LeaveType.LeaveTypeId,
+                StartDate = lr.StartDate,
+                EndDate = lr.EndDate,
+                Comment = lr.Comment,
+                Status = lr.Status,
+                CreatedAt = lr.CreatedAt,
+                LeaveTypeName = lr.LeaveType.LeaveTypeName,
+                UserId = lr.Employee.User.UserId,
+                FullName = lr.Employee.User.FullName,
+                EmployeeId = lr.Employee.EmployeeId,
+                EmployType = lr.Employee.EmployType,
+                IsSuspended = lr.Employee.IsSuspended,
+                RemainingDays = lr.Employee.LeaveBalances
+                    .Where(lb => lb.LeaveTypeId == lr.LeaveType.LeaveTypeId)
+                    .Select(lb => lb.RemainingDays)
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
+    }
+
+    // Get approved leave requests
+    public async Task<List<EmpLeaveRequestDTO>> GetApprovedLeaveRequests()
+    {
+        return await _context.LeaveRequests
+            .Include(lr => lr.Employee)
+                .ThenInclude(e => e.User)
+            .Include(lr => lr.LeaveType)
+            .Include(lr => lr.Employee.LeaveBalances)
+            .Where(lr => lr.Status == LeaveStatus.Approved)
+            .Select(lr => new EmpLeaveRequestDTO
+            {
+                LeaveRequestId = lr.LeaveRequestId,
+                LeaveTypeId = lr.LeaveType.LeaveTypeId,
+                StartDate = lr.StartDate,
+                EndDate = lr.EndDate,
+                Comment = lr.Comment,
+                Status = lr.Status,
+                CreatedAt = lr.CreatedAt,
+                LeaveTypeName = lr.LeaveType.LeaveTypeName,
+                UserId = lr.Employee.User.UserId,
+                FullName = lr.Employee.User.FullName,
+                EmployeeId = lr.Employee.EmployeeId,
+                EmployType = lr.Employee.EmployType,
+                IsSuspended = lr.Employee.IsSuspended,
+                RemainingDays = lr.Employee.LeaveBalances
+                    .Where(lb => lb.LeaveTypeId == lr.LeaveType.LeaveTypeId)
+                    .Select(lb => lb.RemainingDays)
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
+    }
+
+    // Get rejected leave requests
+    public async Task<List<EmpLeaveRequestDTO>> GetRejectedLeaveRequests()
+    {
+        return await _context.LeaveRequests
+            .Include(lr => lr.Employee)
+                .ThenInclude(e => e.User)
+            .Include(lr => lr.LeaveType)
+            .Include(lr => lr.Employee.LeaveBalances)
+            .Where(lr => lr.Status == LeaveStatus.Rejected)
+            .Select(lr => new EmpLeaveRequestDTO
+            {
+                LeaveRequestId = lr.LeaveRequestId,
+                LeaveTypeId = lr.LeaveType.LeaveTypeId,
+                StartDate = lr.StartDate,
+                EndDate = lr.EndDate,
+                Comment = lr.Comment,
+                Status = lr.Status,
+                CreatedAt = lr.CreatedAt,
+                LeaveTypeName = lr.LeaveType.LeaveTypeName,
+                UserId = lr.Employee.User.UserId,
+                FullName = lr.Employee.User.FullName,
+                EmployeeId = lr.Employee.EmployeeId,
+                EmployType = lr.Employee.EmployType,
+                IsSuspended = lr.Employee.IsSuspended,
+                RemainingDays = lr.Employee.LeaveBalances
+                    .Where(lb => lb.LeaveTypeId == lr.LeaveType.LeaveTypeId)
+                    .Select(lb => lb.RemainingDays)
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
     }
 
     // Approve a leave request
