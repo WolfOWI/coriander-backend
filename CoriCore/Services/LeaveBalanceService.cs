@@ -84,5 +84,27 @@ public class LeaveBalanceService : ILeaveBalanceService
         };
     }
 
-    
+    // Subtract leave request days from an employee's leave balance of a specific leave type
+    /// <inheritdoc/>
+    public async Task<bool> SubtractLeaveRequestDays(int employeeId, int leaveTypeId, int days)
+    {
+        var leaveBalance = await _context.LeaveBalances
+            .FirstOrDefaultAsync(lb => lb.EmployeeId == employeeId && lb.LeaveTypeId == leaveTypeId);
+        if (leaveBalance == null)
+        {
+            return false; // Leave balance not found
+        }
+        if (leaveBalance.RemainingDays < days)
+        {   
+            // If the leave balance is less than the days requested, make the remaining days 0
+            leaveBalance.RemainingDays = 0;
+        }
+        else
+        {
+            // Subtract the leave request days from the leave balance
+            leaveBalance.RemainingDays -= days;
+        }
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

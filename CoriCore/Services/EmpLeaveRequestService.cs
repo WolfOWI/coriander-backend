@@ -1,6 +1,7 @@
 // Iné Smith
 
 using System;
+using Azure;
 using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
@@ -12,10 +13,11 @@ namespace CoriCore.Services;
 public class EmpLeaveRequestService : IEmpLeaveRequestService
 {
     private readonly AppDbContext _context;
-
-    public EmpLeaveRequestService(AppDbContext context)
+    private readonly ILeaveBalanceService _leaveBalanceService;
+    public EmpLeaveRequestService(AppDbContext context, ILeaveBalanceService leaveBalanceService)
     {
         _context = context;
+        _leaveBalanceService = leaveBalanceService;
     }
 
     // Get all employee leave requests
@@ -146,12 +148,21 @@ public class EmpLeaveRequestService : IEmpLeaveRequestService
             .ToListAsync();
     }
 
-    // Approve a leave request
+    // Approve a leave request by Id (and subtract the duration of the leave request from the employee's leave balance)
     public async Task<bool> ApproveLeaveRequestById(int leaveRequestId)
     {
         var leaveRequest = await _context.LeaveRequests.FindAsync(leaveRequestId);
-        if (leaveRequest == null) return false;
+        if (leaveRequest == null) return false; // Leave request not found
 
+        // Calculate the duration of the leave request
+        int duration = CalculateDurationInDays(leaveRequest.StartDate, leaveRequest.EndDate);
+
+        // Subtract the duration of the leave request from the employee's leave balance
+        bool response = await _leaveBalanceService.SubtractLeaveRequestDays(leaveRequest.EmployeeId, leaveRequest.LeaveTypeId, duration);
+
+        if (!response) return false; // Couldn't subtract leave request days from the employee's leave balance
+
+        // Update the status of the leave request
         leaveRequest.Status = LeaveStatus.Approved;
         await _context.SaveChangesAsync();
         return true;
@@ -161,7 +172,7 @@ public class EmpLeaveRequestService : IEmpLeaveRequestService
     public async Task<bool> RejectLeaveRequestById(int leaveRequestId)
     {
         var leaveRequest = await _context.LeaveRequests.FindAsync(leaveRequestId);
-        if (leaveRequest == null) return false;
+        if (leaveRequest == null) return false; // Leave request not found
 
         leaveRequest.Status = LeaveStatus.Rejected;
         await _context.SaveChangesAsync();
@@ -172,10 +183,16 @@ public class EmpLeaveRequestService : IEmpLeaveRequestService
     public async Task<bool> SetLeaveRequestToPendingById(int leaveRequestId)
     {
         var leaveRequest = await _context.LeaveRequests.FindAsync(leaveRequestId);
-        if (leaveRequest == null) return false;
+        if (leaveRequest == null) return false; // Leave request not found
 
         leaveRequest.Status = LeaveStatus.Pending;
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    // Calculate the duration of a leave request in days
+    private int CalculateDurationInDays(DateOnly startDate, DateOnly endDate)
+    {
+        return (endDate.ToDateTime(TimeOnly.MinValue) - startDate.ToDateTime(TimeOnly.MinValue)).Days + 1;
     }
 }
