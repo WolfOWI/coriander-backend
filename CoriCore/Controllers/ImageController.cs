@@ -51,5 +51,29 @@ namespace CoriCore.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Updates a user's profile picture
+        /// </summary>
+        /// <param name="userId">The ID of the user</param>
+        /// <param name="file">The new profile picture file</param>
+        /// <returns>The URL of the new profile picture, or an error if the user wasn't found</returns>
+        [HttpPost("profile-picture/{userId}")]
+        public async Task<IActionResult> UpdateProfilePicture(int userId, [FromForm] ImageUploadDTO dto)
+        {
+            try
+            {
+                var imageUrl = await _imageService.UpdateUserProfilePictureAsync(userId, dto.File);
+                if (imageUrl != null)
+                {
+                    return Ok(new { imageUrl });
+                }
+                return NotFound(new { message = "User not found" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

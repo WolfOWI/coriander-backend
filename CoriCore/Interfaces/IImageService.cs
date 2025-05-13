@@ -25,5 +25,13 @@ namespace CoriCore.Interfaces
         /// <param name="userId">The ID of the user</param>
         /// <returns>True if the profile picture was removed successfully, false if the user was not found</returns>
         Task<bool> RemoveUserProfilePictureAsync(int userId);
+
+        /// <summary>
+        /// Updates a user's profile picture, removing the old one if it exists
+        /// </summary>
+        /// <param name="userId">The ID of the user</param>
+        /// <param name="file">The new profile picture file</param>
+        /// <returns>The relative path to the uploaded image, or null if the user was not found</returns>
+        Task<string?> UpdateUserProfilePictureAsync(int userId, IFormFile file);
     }
 }

@@ -88,5 +88,27 @@ namespace CoriCore.Services
 
             return true;
         }
+
+        public async Task<string?> UpdateUserProfilePictureAsync(int userId, IFormFile file)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return null;
+
+            // Remove existing profile picture if it exists
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                await RemoveUserProfilePictureAsync(userId);
+            }
+
+            // Upload the new profile picture
+            var newProfilePicturePath = await UploadImageAsync(file);
+            
+            // Update the user's profile picture path
+            user.ProfilePicture = newProfilePicturePath;
+            await _context.SaveChangesAsync();
+
+            return newProfilePicturePath;
+        }
     }
 }
