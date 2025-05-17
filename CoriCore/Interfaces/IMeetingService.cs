@@ -32,7 +32,17 @@ public interface IMeetingService
     /// <returns>Meeting request</returns>
     Task<MeetingRequestCreateDTO> CreateMeetingRequest(MeetingRequestCreateDTO meetingRequestCreateDTO);
     // ========================================
-    
+
+    // UPDATE
+    // ========================================
+    /// <summary>
+    /// Admin confirms (accepts) & "creates" (updates) the meeting request with relevant details (MeetingConfirmDTO)
+    /// </summary>
+    /// <param name="meetingId">Meeting ID</param>
+    /// <param name="meetingConfirmDTO">Meeting confirm DTO</param>
+    /// <returns>Tuple with code and message</returns>
+    Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingConfirmDTO meetingConfirmDTO);
+    // ========================================
     
     
 

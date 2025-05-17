@@ -16,11 +16,20 @@ namespace CoriCore.Controllers
             _meetingService = meetingService;
         }
 
-        [HttpPost("CreateEmployeeRequest")]
+        [HttpPost("CreateRequest")]
         public async Task<IActionResult> CreateEmployeeMeetingRequest([FromBody] MeetingRequestCreateDTO meetingRequestCreateDTO)
         {
             var meetingRequest = await _meetingService.CreateMeetingRequest(meetingRequestCreateDTO);
             return Ok(meetingRequest);
         }
+
+        [HttpPut("ConfirmAndUpdate/{meetingId}")]
+        public async Task<IActionResult> ConfirmAndUpdateMeetingRequest(int meetingId, [FromBody] MeetingConfirmDTO meetingConfirmDTO)
+        {
+            var (code, message) = await _meetingService.ConfirmAndUpdateMeetingRequest(meetingId, meetingConfirmDTO);
+            return StatusCode(code, message);
+        }
     }
+
+
 }
