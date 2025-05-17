@@ -46,6 +46,8 @@ builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 builder.Services.AddScoped<IApplyForLeaveService, ApplyForLeaveService>();
 // Performance Review Service
 builder.Services.AddScoped<IPerformanceReviewService, PerformanceReviewService>();
+// Meeting Service
+builder.Services.AddScoped<IMeetingService, MeetingService>();
 // Email Service
 builder.Services.AddScoped<IEmailService, EmailService>();
 // Equipment Service
