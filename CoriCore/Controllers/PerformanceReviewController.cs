@@ -221,7 +221,7 @@ namespace CoriCore.Controllers
                 Rating = reviewDTO.Rating,
                 Comment = reviewDTO.Comment,
                 DocUrl = reviewDTO.DocUrl,
-                Status = ReviewStatus.Upcoming // Set status to Upcoming (1) or keep the existing status
+                Status = ReviewStatus.Completed 
             };
 
             // Update the performance review in the database
