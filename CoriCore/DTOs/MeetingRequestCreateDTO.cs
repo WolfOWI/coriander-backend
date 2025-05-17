@@ -8,7 +8,5 @@ public class MeetingRequestCreateDTO
     public int AdminId { get; set; }
     public int EmployeeId { get; set; }
     public string? Purpose { get; set; }
-    public DateTime RequestedAt { get; set; }
-    public MeetStatus Status { get; set; }
     
 }
