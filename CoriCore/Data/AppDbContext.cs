@@ -40,7 +40,10 @@ public class AppDbContext : DbContext
     // PerformanceReview table
     public DbSet<PerformanceReview> PerformanceReviews { get; set; }
 
-    // Relationships:
+    // Meeting table
+    public DbSet<Meeting> Meetings { get; set; }
+
+    // Override Relationships:
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -56,8 +59,6 @@ public class AppDbContext : DbContext
             .HasOne(u => u.Admin)
             .WithOne(a => a.User)
             .HasForeignKey<Admin>(a => a.UserId);
-
-        // ...any other relationships...
     }
     // ------------------------------------------------------------------------
 }
