@@ -19,7 +19,9 @@ public class MeetingService : IMeetingService
 
     // GET
     // ========================================
-    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeId(int employeeId)
+    // EMPLOYEE RELATED 
+    // ------------------------
+    public async Task<IEnumerable<MeetingDTO>> GetAllMeetingsByEmployeeId(int employeeId)
     {
         var meetings = await _context.Meetings
             .Where(m => m.EmployeeId == employeeId)
@@ -46,7 +48,39 @@ public class MeetingService : IMeetingService
         });
     }
 
-    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminId(int adminId)
+    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeIdAndStatus(int employeeId, MeetStatus status)
+    {
+        var meetings = await _context.Meetings
+            .Where(m => m.EmployeeId == employeeId)
+            .Include(m => m.Admin)
+                .ThenInclude(a => a.User)
+            .Include(m => m.Employee)
+                .ThenInclude(e => e.User)
+            .Where(m => m.Status == status) // Filter by status
+            .ToListAsync();
+
+        return meetings.Select(m => new MeetingDTO
+        {
+            MeetingId = m.MeetingId,
+            AdminId = m.AdminId,
+            AdminName = m.Admin.User.FullName,
+            EmployeeId = m.EmployeeId,
+            EmployeeName = m.Employee.User.FullName,
+            IsOnline = m.IsOnline,
+            MeetLocation = m.MeetLocation,
+            MeetLink = m.MeetLink,
+            StartDate = m.StartDate,
+            EndDate = m.EndDate,
+            Purpose = m.Purpose,
+            RequestedAt = m.RequestedAt,
+            Status = m.Status,
+        });
+    }
+    // ------------------------
+
+    // ADMIN RELATED 
+    // ------------------------
+    public async Task<IEnumerable<MeetingDTO>> GetAllMeetingsByAdminId(int adminId)
     {
         var meetings = await _context.Meetings
             .Where(m => m.AdminId == adminId)
@@ -72,6 +106,7 @@ public class MeetingService : IMeetingService
             Status = m.Status,
         });
     }
+    // ------------------------
     // ========================================
 
     // CREATE
@@ -138,6 +173,48 @@ public class MeetingService : IMeetingService
             return (500, $"Error updating meeting request: {ex.Message}");
         }
         
+    }
+
+    public async Task<(int Code, string Message)> RejectMeetingRequest(int meetingId)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        meeting.Status = MeetStatus.Rejected; // update status to rejected
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return (200, "Meeting request rejected successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error rejecting meeting request: {ex.Message}");
+        }
+    }
+
+    public async Task<(int Code, string Message)> MarkMeetingAsCompleted(int meetingId)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        meeting.Status = MeetStatus.Completed; // update status to completed
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return (200, "Meeting marked as completed successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error marking meeting as completed: {ex.Message}");
+        }
     }
     // ========================================
 }
