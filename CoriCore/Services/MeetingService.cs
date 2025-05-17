@@ -3,6 +3,7 @@ using CoriCore.Data;
 using CoriCore.DTOs;
 using CoriCore.Interfaces;
 using CoriCore.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoriCore.Services;
 
@@ -15,6 +16,63 @@ public class MeetingService : IMeetingService
     {
         _context = context;
     }
+
+    // GET
+    // ========================================
+    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeId(int employeeId)
+    {
+        var meetings = await _context.Meetings
+            .Where(m => m.EmployeeId == employeeId)
+            .Include(m => m.Admin)
+                .ThenInclude(a => a.User)
+            .Include(m => m.Employee)
+                .ThenInclude(e => e.User)
+            .ToListAsync();
+        return meetings.Select(m => new MeetingDTO
+        {
+            MeetingId = m.MeetingId,
+            AdminId = m.AdminId,
+            AdminName = m.Admin.User.FullName,
+            EmployeeId = m.EmployeeId,
+            EmployeeName = m.Employee.User.FullName,
+            IsOnline = m.IsOnline,
+            MeetLocation = m.MeetLocation,
+            MeetLink = m.MeetLink,
+            StartDate = m.StartDate,
+            EndDate = m.EndDate,
+            Purpose = m.Purpose,
+            RequestedAt = m.RequestedAt,
+            Status = m.Status,
+        });
+    }
+
+    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminId(int adminId)
+    {
+        var meetings = await _context.Meetings
+            .Where(m => m.AdminId == adminId)
+            .Include(m => m.Admin)
+                .ThenInclude(a => a.User)
+            .Include(m => m.Employee)
+                .ThenInclude(e => e.User)
+            .ToListAsync();
+        return meetings.Select(m => new MeetingDTO
+        {
+            MeetingId = m.MeetingId,
+            AdminId = m.AdminId,
+            AdminName = m.Admin.User.FullName,
+            EmployeeId = m.EmployeeId,
+            EmployeeName = m.Employee.User.FullName,
+            IsOnline = m.IsOnline,
+            MeetLocation = m.MeetLocation,
+            MeetLink = m.MeetLink,
+            StartDate = m.StartDate,
+            EndDate = m.EndDate,
+            Purpose = m.Purpose,
+            RequestedAt = m.RequestedAt,
+            Status = m.Status,
+        });
+    }
+    // ========================================
 
     // CREATE
     // ========================================

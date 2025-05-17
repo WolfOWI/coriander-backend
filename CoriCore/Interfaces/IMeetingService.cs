@@ -13,14 +13,14 @@ public interface IMeetingService
     /// </summary>
     /// <param name="employeeId">Employee ID</param>
     /// <returns>List of meetings that the employee is involved in</returns>
-    // Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeId(int employeeId);
+    Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeId(int employeeId);
 
     /// <summary>
     /// Get all meetings by admin id
     /// </summary>
     /// <param name="adminId">Admin ID</param>
     /// <returns>List of meetings that the admin is involved in</returns>
-    // Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminId(int adminId);
+    Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminId(int adminId);
     // ========================================
 
     // CREATE

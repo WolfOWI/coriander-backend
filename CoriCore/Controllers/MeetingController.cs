@@ -16,19 +16,42 @@ namespace CoriCore.Controllers
             _meetingService = meetingService;
         }
 
+        // GET
+        // ========================================
+        [HttpGet("ByEmployee/{employeeId}")]
+        public async Task<IActionResult> GetMeetingsByEmployeeId(int employeeId)
+        {
+            var meetings = await _meetingService.GetMeetingsByEmployeeId(employeeId);
+            return Ok(meetings);
+        }
+
+        [HttpGet("ByAdmin/{adminId}")]
+        public async Task<IActionResult> GetMeetingsByAdminId(int adminId)
+        {
+            var meetings = await _meetingService.GetMeetingsByAdminId(adminId);
+            return Ok(meetings);
+        }
+        // ========================================
+
+        // CREATE
+        // ========================================
         [HttpPost("CreateRequest")]
         public async Task<IActionResult> CreateEmployeeMeetingRequest([FromBody] MeetingRequestCreateDTO meetingRequestCreateDTO)
         {
             var meetingRequest = await _meetingService.CreateMeetingRequest(meetingRequestCreateDTO);
             return Ok(meetingRequest);
         }
+        // ========================================
 
-        [HttpPut("ConfirmAndUpdate/{meetingId}")]
-        public async Task<IActionResult> ConfirmAndUpdateMeetingRequest(int meetingId, [FromBody] MeetingConfirmDTO meetingConfirmDTO)
+        // UPDATE
+        // ========================================
+        [HttpPut("ConfirmAndSchedule/{meetingId}")]
+        public async Task<IActionResult> ConfirmAndScheduleMeetingRequest(int meetingId, [FromBody] MeetingConfirmDTO meetingConfirmDTO)
         {
             var (code, message) = await _meetingService.ConfirmAndUpdateMeetingRequest(meetingId, meetingConfirmDTO);
             return StatusCode(code, message);
         }
+        // ========================================
     }
 
 
