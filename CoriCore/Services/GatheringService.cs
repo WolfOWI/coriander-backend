@@ -92,6 +92,15 @@ public class GatheringService : IGatheringService
             .ThenBy(g => g.Type); // Secondary sort by type for items with same start date
     }
 
+    public async Task<IEnumerable<GatheringDTO>> GetAllUpcomingAndCompletedGatheringsByEmployeeIdDescending(int employeeId)
+    {
+        var upcomingGatherings = await GetAllGatheringsByEmployeeIdAndStatus(employeeId, "Upcoming");
+        var completedGatherings = await GetAllGatheringsByEmployeeIdAndStatus(employeeId, "Completed");
+
+        return upcomingGatherings.Concat(completedGatherings)
+            .OrderByDescending(g => g.StartDate);
+    }
+
 
     public async Task<IEnumerable<GatheringDTO>> GetAllGatheringsByEmployeeIdAndStatus(int employeeId, string status)
     {

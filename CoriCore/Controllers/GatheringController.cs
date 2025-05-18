@@ -42,6 +42,13 @@ namespace CoriCore.Controllers
             return Ok(gatherings);
         }
 
+        [HttpGet("upcoming-and-completed-by-empId-desc/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllUpcomingAndCompletedGatheringsByEmpIdDescending(int employeeId)
+        {
+            var gatherings = await _gatheringService.GetAllUpcomingAndCompletedGatheringsByEmployeeIdDescending(employeeId);
+            return Ok(gatherings);
+        }
+
         [HttpGet("upcoming-by-adminId/{adminId}")]
         public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllUpcomingGatheringsByAdminId(int adminId)
         {
