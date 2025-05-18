@@ -14,6 +14,6 @@ public class AdminEmpDetailsPageDTO
     public List<EquipmentDTO>? Equipment { get; set; }
     public List<LeaveBalanceDTO>? LeaveBalances { get; set; }
     public EmpUserRatingMetricsDTO? EmpUserRatingMetrics { get; set; }
-    public List<PerformanceReviewDTO>? PerformanceReviews { get; set; }
+    public List<GatheringDTO>? Gatherings { get; set; }
 
 }

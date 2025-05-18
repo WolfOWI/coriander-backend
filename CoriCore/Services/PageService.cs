@@ -20,6 +20,7 @@ public class PageService : IPageService
     private readonly ILeaveRequestService _leaveRequestService;
     private readonly IEmployeeService _employeeService;
     private readonly IAdminService _adminService;
+    private readonly IGatheringService _gatheringService;
 
     public PageService(
         IEmpUserService empUserService,
@@ -28,7 +29,8 @@ public class PageService : IPageService
         IPerformanceReviewService performanceReviewService,
         ILeaveRequestService leaveRequestService,
         IEmployeeService employeeService,
-        IAdminService adminService)
+        IAdminService adminService,
+        IGatheringService gatheringService)
     {
         _empUserService = empUserService;
         _equipmentService = equipmentService;
@@ -37,6 +39,7 @@ public class PageService : IPageService
         _leaveRequestService = leaveRequestService;
         _employeeService = employeeService;
         _adminService = adminService;
+        _gatheringService = gatheringService;
     }
 
     public async Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo(int adminId)
@@ -66,7 +69,7 @@ public class PageService : IPageService
         var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
         var leaveBalances = await _leaveBalanceService.GetAllLeaveBalancesByEmployeeId(employeeId);
         var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(employeeId);
-        var performanceReviews = await _performanceReviewService.GetPrmByEmpId(employeeId);
+        var gatherings = await _gatheringService.GetAllUpcomingAndCompletedGatheringsByEmployeeIdDescending(employeeId);
 
         // Create the DTO with all the gathered information
         return new AdminEmpDetailsPageDTO
@@ -75,24 +78,7 @@ public class PageService : IPageService
             Equipment = equipment,
             LeaveBalances = leaveBalances,
             EmpUserRatingMetrics = ratingMetrics,
-            PerformanceReviews = performanceReviews
-                .Select(pr => new PerformanceReviewDTO
-                {
-                    ReviewId = pr.ReviewId,
-                    AdminId = pr.AdminId,
-                    AdminName = pr.Admin.User.FullName,
-                    EmployeeId = pr.EmployeeId,
-                    EmployeeName = pr.Employee.User.FullName,
-                    IsOnline = pr.IsOnline,
-                    MeetLocation = pr.MeetLocation,
-                    MeetLink = pr.MeetLink,
-                    StartDate = pr.StartDate,
-                    EndDate = pr.EndDate,
-                    Rating = pr.Rating,
-                    Comment = pr.Comment,
-                    DocUrl = pr.DocUrl,
-                    Status = (ReviewStatus)pr.Status
-                })
+            Gatherings = gatherings
                 .ToList()
         };
     }
