@@ -19,7 +19,7 @@ namespace CoriCore.Controllers
 
         // GET
         // ========================================
-        // Get all rejected & requested meetings (requests) for an employee
+        // Get all meeting requests (rejected & requested meetings) for an employee
         [HttpGet("GetAllRequestsByEmpId/{employeeId}")]
         public async Task<IActionResult> GetAllRequestsByEmpId(int employeeId)
         {
@@ -34,6 +34,14 @@ namespace CoriCore.Controllers
 
             // Return the combined list
             return Ok(allMeetingRequests);
+        }
+
+        // Get all upcoming meetings for an admin
+        [HttpGet("GetAllUpcomingByAdminId/{adminId}")]
+        public async Task<IActionResult> GetAllUpcomingByAdminId(int adminId)
+        {
+            var meetings = await _meetingService.GetMeetingsByAdminIdAndStatus(adminId, MeetStatus.Upcoming);
+            return Ok(meetings);
         }
 
         // ========================================

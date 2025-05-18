@@ -19,35 +19,6 @@ public class MeetingService : IMeetingService
 
     // GET
     // ========================================
-    // EMPLOYEE RELATED 
-    // ------------------------
-    public async Task<IEnumerable<MeetingDTO>> GetAllMeetingsByEmployeeId(int employeeId)
-    {
-        var meetings = await _context.Meetings
-            .Where(m => m.EmployeeId == employeeId)
-            .Include(m => m.Admin)
-                .ThenInclude(a => a.User)
-            .Include(m => m.Employee)
-                .ThenInclude(e => e.User)
-            .ToListAsync();
-        return meetings.Select(m => new MeetingDTO
-        {
-            MeetingId = m.MeetingId,
-            AdminId = m.AdminId,
-            AdminName = m.Admin.User.FullName,
-            EmployeeId = m.EmployeeId,
-            EmployeeName = m.Employee.User.FullName,
-            IsOnline = m.IsOnline,
-            MeetLocation = m.MeetLocation,
-            MeetLink = m.MeetLink,
-            StartDate = m.StartDate,
-            EndDate = m.EndDate,
-            Purpose = m.Purpose,
-            RequestedAt = m.RequestedAt,
-            Status = m.Status,
-        });
-    }
-
     public async Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeIdAndStatus(int employeeId, MeetStatus status)
     {
         var meetings = await _context.Meetings
@@ -76,14 +47,12 @@ public class MeetingService : IMeetingService
             Status = m.Status,
         });
     }
-    // ------------------------
 
-    // ADMIN RELATED 
-    // ------------------------
-    public async Task<IEnumerable<MeetingDTO>> GetAllMeetingsByAdminId(int adminId)
+    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminIdAndStatus(int adminId, MeetStatus status)
     {
         var meetings = await _context.Meetings
             .Where(m => m.AdminId == adminId)
+            .Where(m => m.Status == status)
             .Include(m => m.Admin)
                 .ThenInclude(a => a.User)
             .Include(m => m.Employee)
@@ -106,7 +75,6 @@ public class MeetingService : IMeetingService
             Status = m.Status,
         });
     }
-    // ------------------------
     // ========================================
 
     // CREATE
@@ -141,6 +109,7 @@ public class MeetingService : IMeetingService
 
         return meeting;
     }
+
     // ========================================
 
     // UPDATE

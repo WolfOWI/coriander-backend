@@ -9,16 +9,6 @@ public interface IMeetingService
 
     // GET
     // ========================================
-    // EMPLOYEE RELATED 
-    // ------------------------
-    /// <summary>
-    /// Get all meetings by employee id
-    /// </summary>
-    /// <param name="employeeId">Employee ID</param>
-    /// <returns>List of ALL meetings that the employee is involved in</returns>
-    Task<IEnumerable<MeetingDTO>> GetAllMeetingsByEmployeeId(int employeeId);
-
-
     /// <summary>
     /// Get meetings by employee id and status
     /// </summary>
@@ -26,17 +16,14 @@ public interface IMeetingService
     /// <param name="status">Meeting status</param>
     /// <returns>List of meetings that the employee is involved in with the given status</returns>
     Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeIdAndStatus(int employeeId, MeetStatus status);
-    // ------------------------
 
-    // ADMIN RELATED 
-    // ------------------------
     /// <summary>
-    /// Get all meetings by admin id
+    /// Get meetings by admin id and status
     /// </summary>
     /// <param name="adminId">Admin ID</param>
-    /// <returns>List of ALL meetings that the admin is involved in</returns>
-    Task<IEnumerable<MeetingDTO>> GetAllMeetingsByAdminId(int adminId);
-    // ------------------------
+    /// <param name="status">Meeting status</param>
+    /// <returns>List of meetings that the admin is involved in with the given status</returns>
+    Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminIdAndStatus(int adminId, MeetStatus status);
     // ========================================
 
     // CREATE
