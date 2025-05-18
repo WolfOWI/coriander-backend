@@ -19,49 +19,23 @@ namespace CoriCore.Controllers
 
         // GET
         // ========================================
-        // EMPLOYEE RELATED 
-        // ------------------------
-        [HttpGet("GetAllByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetAllMeetingsByEmployeeId(int employeeId)
+        // Get all rejected & requested meetings (requests) for an employee
+        [HttpGet("GetAllRequestsByEmpId/{employeeId}")]
+        public async Task<IActionResult> GetAllRequestsByEmpId(int employeeId)
         {
-            var meetings = await _meetingService.GetAllMeetingsByEmployeeId(employeeId);
-            return Ok(meetings);
-        }
-        
+            var pendingMeetingRequests = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Requested);
+            var rejectedMeetingRequests = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Rejected);
 
-        [HttpGet("GetUpcomingByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetUpcomingMeetingsByEmployeeId(int employeeId)
-        {
-            var meetings = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Upcoming);
-            return Ok(meetings);
-        }
+            // Combine the two lists
+            var allMeetingRequests = rejectedMeetingRequests.Concat(pendingMeetingRequests);
 
-        [HttpGet("GetCompletedByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetCompletedMeetingsByEmployeeId(int employeeId)
-        {
-            var meetings = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Completed);
-            return Ok(meetings);
+            // Sort by requestedAt descending
+            allMeetingRequests = allMeetingRequests.OrderByDescending(m => m.RequestedAt);
+
+            // Return the combined list
+            return Ok(allMeetingRequests);
         }
 
-        [HttpGet("GetRejectedByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetRejectedMeetingsByEmployeeId(int employeeId)
-        {
-            var meetings = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Rejected);
-            return Ok(meetings);
-        }
-        // ------------------------
-
-
-
-        // ADMIN RELATED 
-        // ------------------------
-        [HttpGet("GetAllByAdminId/{adminId}")]
-        public async Task<IActionResult> GetAllMeetingsByAdminId(int adminId)
-        {
-            var meetings = await _meetingService.GetAllMeetingsByAdminId(adminId);
-            return Ok(meetings);
-        }
-        // ------------------------
         // ========================================
 
         // CREATE
