@@ -36,6 +36,13 @@ public interface IPerformanceReviewService
     Task<bool> DeletePerformanceReview(int id);
 
     Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm();
+
+    /// <summary>
+    /// Get all upcoming performance reviews that the admin is involved in (by adminId)
+    /// </summary>
+    /// <param name="adminId">The id of the admin</param>
+    /// <returns>A list of upcoming performance reviews</returns>
+    Task<IEnumerable<PerformanceReviewDTO>> GetAllUpcomingPrmByAdminId(int adminId);
     Task<List<TopRatedEmployeesDTO>> GetTopRatedEmployees();
     Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus);
 

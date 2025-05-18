@@ -264,6 +264,14 @@ namespace CoriCore.Controllers
             return Ok(reviewDTOs);
         }
 
+        // Get all upcoming performance reviews that the admin is involved in (by adminId)
+        [HttpGet("GetAllUpcomingPrmByAdminId/{adminId}")]
+        public async Task<IActionResult> GetAllUpcomingPrmByAdminId(int adminId)
+        {
+            var reviews = await _PerformanceReviewService.GetAllUpcomingPrmByAdminId(adminId);
+            return Ok(reviews);
+        }
+
         [HttpGet("top-rated-employees")]
         public async Task<ActionResult<List<TopRatedEmployeesDTO>>> GetTopRatedEmployees()
         {
