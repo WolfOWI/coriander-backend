@@ -175,7 +175,7 @@ public class MeetingService : IMeetingService
         
     }
 
-    public async Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto)
+    public async Task<(int Code, string Message)> UpdateMeeting(int meetingId, MeetingUpdateDTO dto)
     {
         var meeting = await _context.Meetings.FindAsync(meetingId);
         if (meeting == null)
@@ -189,6 +189,36 @@ public class MeetingService : IMeetingService
         meeting.MeetLink = dto.MeetLink;
         meeting.StartDate = dto.StartDate;
         meeting.EndDate = dto.EndDate;
+
+        try
+        {
+            _context.Meetings.Update(meeting);
+            await _context.SaveChangesAsync();
+            return (200, "Meeting request updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error updating meeting request details: {ex.Message}");
+        }
+    }
+
+    public async Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingRequestUpdateDTO dto)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        // Check if the meetingId has requested status
+        if (meeting.Status != MeetStatus.Requested)
+        {
+            return (400, "Meeting request is not in requested status");
+        }
+
+        // Update meeting request details (only if provided)
+        if (dto.AdminId.HasValue) meeting.AdminId = dto.AdminId.Value;
+        if (dto.Purpose != null) meeting.Purpose = dto.Purpose;
 
         try
         {

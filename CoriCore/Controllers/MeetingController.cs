@@ -58,7 +58,14 @@ namespace CoriCore.Controllers
         }
 
         [HttpPut("Update/{meetingId}")]
-        public async Task<IActionResult> UpdateMeetingRequest(int meetingId, [FromBody] MeetingUpdateDTO dto)
+        public async Task<IActionResult> UpdateMeeting(int meetingId, [FromBody] MeetingUpdateDTO dto)
+        {
+            var (code, message) = await _meetingService.UpdateMeeting(meetingId, dto);
+            return StatusCode(code, message);
+        }
+
+        [HttpPut("UpdateRequest/{meetingId}")]
+        public async Task<IActionResult> UpdateMeetingRequest(int meetingId, [FromBody] MeetingRequestUpdateDTO dto)
         {
             var (code, message) = await _meetingService.UpdateMeetingRequest(meetingId, dto);
             return StatusCode(code, message);

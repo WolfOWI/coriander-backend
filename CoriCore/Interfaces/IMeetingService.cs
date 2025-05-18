@@ -65,7 +65,15 @@ public interface IMeetingService
     /// <param name="meetingId">Meeting ID</param>
     /// <param name="dto">Meeting update DTO</param>
     /// <returns>Tuple with code and message</returns>
-    Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto);
+    Task<(int Code, string Message)> UpdateMeeting(int meetingId, MeetingUpdateDTO dto);
+
+    /// <summary>
+    /// Employee edits their meeting request
+    /// </summary>
+    /// <param name="meetingId">Meeting ID</param>
+    /// <param name="dto">Meeting request update DTO</param>
+    /// <returns>Tuple with code and message</returns>
+    Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingRequestUpdateDTO dto);
 
     /// <summary>
     /// Admin rejects the meeting request
