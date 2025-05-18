@@ -21,10 +21,24 @@ namespace CoriCore.Controllers
         /// </summary>
         /// <param name="employeeId">The ID of the employee</param>
         /// <returns>List of gatherings sorted by start date</returns>
-        [HttpGet("employee/{employeeId}")]
-        public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllGatheringsByEmployeeId(int employeeId)
+        [HttpGet("all-by-empId/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllGatheringsByEmpId(int employeeId)
         {
             var gatherings = await _gatheringService.GetAllGatheringsByEmployeeId(employeeId);
+            return Ok(gatherings);
+        }
+
+        [HttpGet("upcoming-by-empId/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllUpcomingGatheringsByEmpId(int employeeId)
+        {
+            var gatherings = await _gatheringService.GetAllGatheringsByEmployeeIdAndStatus(employeeId, "Upcoming");
+            return Ok(gatherings);
+        }
+
+        [HttpGet("completed-by-empId/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllCompletedGatheringsByEmpId(int employeeId)
+        {
+            var gatherings = await _gatheringService.GetAllGatheringsByEmployeeIdAndStatus(employeeId, "Completed");
             return Ok(gatherings);
         }
 
