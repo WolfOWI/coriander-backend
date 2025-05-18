@@ -231,7 +231,6 @@ public class AuthServices : IAuthService
         // ✅ Update the user
         existing.FullName = dto.FullName;
         existing.Password = await HashPassword(dto.Password);
-        existing.ProfilePicture = dto.ProfilePicture;
         existing.Role = UserRole.Admin;
         existing.IsVerified = true;
         existing.VerificationCode = null;
@@ -354,7 +353,6 @@ public class AuthServices : IAuthService
 
         existing.FullName = dto.FullName;
         existing.Password = await HashPassword(dto.Password);
-        existing.ProfilePicture = dto.ProfilePicture;
         existing.Role = dto.Role;
         existing.IsVerified = true;
         existing.VerificationCode = null;
