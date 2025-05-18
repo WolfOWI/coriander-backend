@@ -172,6 +172,21 @@ public class GatheringService : IGatheringService
 
         return gatherings.OrderBy(g => g.StartDate);
     }
+
+    public async Task<IEnumerable<GatheringDTO>> GetAllGatheringsByAdminIdAndStatus(int adminId, string status)
+    {
+        MeetStatus meetingStatus = MeetStatus.Upcoming;
+        ReviewStatus reviewStatus = ReviewStatus.Upcoming;
+
+        if (status == "Completed")
+        {
+            meetingStatus = MeetStatus.Completed;
+            reviewStatus = ReviewStatus.Completed;
+        }
+        
+        var gatherings = await GetAllGatheringsByAdminId(adminId);
+        return gatherings.Where(g => g.MeetingStatus == meetingStatus || g.ReviewStatus == reviewStatus);
+    }
     // ========================================
 
 }
