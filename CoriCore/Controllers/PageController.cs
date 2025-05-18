@@ -81,12 +81,12 @@ namespace CoriCore.Controllers
         /// Gets all the information needed for the Admin Dashboard page
         /// </summary>
         /// <returns>An AdminDashboardPageDTO containing all necessary information</returns>
-        [HttpGet("admin-dashboard")]
-        public async Task<ActionResult<AdminDashboardPageDTO>> GetAdminDashboardPage()
+        [HttpGet("admin-dashboard/{adminId}")]
+        public async Task<ActionResult<AdminDashboardPageDTO>> GetAdminDashboardPage(int adminId)
         {
             try
             {
-                var pageInfo = await _pageService.GetAdminDashboardPageInfo();
+                var pageInfo = await _pageService.GetAdminDashboardPageInfo(adminId);
                 return Ok(pageInfo);
             }
             catch (Exception ex)

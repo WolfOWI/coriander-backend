@@ -98,33 +98,20 @@ public class PerformanceReviewService : IPerformanceReviewService
     }
 
     /// <inheritdoc/>
-    public async Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
-    {
+    public async Task<List<EmpUserRatingMetricsDTO>> GetTopEmpUserRatingMetrics(int count)
+{
+    // Get all employee rating metrics
+    var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
 
-        // Get all employee rating metrics
-        var allEmployeeMetrics = await GetAllEmpUserRatingMetrics();
+    // Order by average rating descending, then by number of ratings descending
+    var topEmployees = allEmployeeMetrics
+        .OrderByDescending(emp => emp.AverageRating)
+        .ThenByDescending(emp => emp.NumberOfRatings)
+        .Take(count) // Take up to 'count' employees (e.g., 5)
+        .ToList();
 
-
-        // Check if the number of employees is valid
-        if (numberOfEmps <= 0)
-        {
-            throw new ArgumentException("Number of employees must be greater than 0");
-        }
-
-        // Check if the number of employees is greater than the total number of employees
-        if (numberOfEmps > allEmployeeMetrics.Count)
-        {
-            throw new ArgumentException("Number of employees must be less than the total number of employee ratings available which is currently " + allEmployeeMetrics.Count);
-        }
-
-        // Get random employees
-        var randomEmployees = allEmployeeMetrics
-            .OrderBy(emp => Guid.NewGuid()) // Randomly orders employees by generating a unique random GUID for each one
-            .Take(numberOfEmps) // Take the number of employees
-            .ToList();
-
-        return randomEmployees;
-    }
+    return topEmployees;
+}
 
     public async Task<EmpUserRatingMetricsDTO?> GetEmpUserRatingMetricsByEmpId(int employeeId)
     {

@@ -50,4 +50,22 @@ public class AdminService : IAdminService
 
         return "Admin created successfully";
     }
+
+    public async Task<AdminUserDTO?> GetAdminUserByAdminId(int adminId)
+    {
+        var admin = await _context.Admins
+            .Include(a => a.User)
+            .FirstOrDefaultAsync(a => a.AdminId == adminId);
+
+        if (admin == null || admin.User == null)
+            return null;
+
+        return new AdminUserDTO
+        {
+            AdminId = admin.AdminId,
+            UserId = admin.UserId,
+            Email = admin.User.Email,
+            FullName = admin.User.FullName
+        };
+    }
 }

@@ -33,7 +33,7 @@ public interface IPageService
     /// Get all the information for the Admin Dashboard page
     /// </summary>
     /// <returns>An AdminDashboardPageDTO containing all necessary information</returns>
-    Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo();
+    Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo(int adminId);
 
     /// <summary>
     /// Get all the information for the Employee Leave Overview page

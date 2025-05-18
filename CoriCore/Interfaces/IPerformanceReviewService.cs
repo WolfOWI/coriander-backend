@@ -20,7 +20,7 @@ public interface IPerformanceReviewService
     /// </summary>
     /// <param name="numberOfEmps">The number of employees to get</param>
     /// <returns>A list of employee rating metrics</returns>
-    Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps);
+    Task<List<EmpUserRatingMetricsDTO>> GetTopEmpUserRatingMetrics(int count);
 
     /// <summary>
     /// Get employee rating metrics by employee id

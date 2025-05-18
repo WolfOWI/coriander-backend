@@ -19,6 +19,7 @@ public class PageService : IPageService
     private readonly IPerformanceReviewService _performanceReviewService;
     private readonly ILeaveRequestService _leaveRequestService;
     private readonly IEmployeeService _employeeService;
+    private readonly IAdminService _adminService;
 
     public PageService(
         IEmpUserService empUserService,
@@ -26,7 +27,8 @@ public class PageService : IPageService
         ILeaveBalanceService leaveBalanceService,
         IPerformanceReviewService performanceReviewService,
         ILeaveRequestService leaveRequestService,
-        IEmployeeService employeeService)
+        IEmployeeService employeeService,
+        IAdminService adminService)
     {
         _empUserService = empUserService;
         _equipmentService = equipmentService;
@@ -34,17 +36,20 @@ public class PageService : IPageService
         _performanceReviewService = performanceReviewService;
         _leaveRequestService = leaveRequestService;
         _employeeService = employeeService;
+        _adminService = adminService;
     }
 
-    public async Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo()
+    public async Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo(int adminId)
     {
-        var empUserRating = await _performanceReviewService.GetRandomEmpUserRatingMetricsByNum(3);
+        var adminUser = await _adminService.GetAdminUserByAdminId(adminId);
+        var empUserRating = await _performanceReviewService.GetTopEmpUserRatingMetrics(5);
         var topRatedEmployees = await _performanceReviewService.GetTopRatedEmployees();
         var leaveRequests = await _leaveRequestService.GetAllLeaveRequests();
         var empStatusTotal = await _employeeService.GetEmployeeStatusTotals();
 
         return new AdminDashboardPageDTO
         {
+            AdminUser = adminUser,
             EmpUserRatingMetrics = empUserRating,
             TopRatedEmployees = topRatedEmployees,
             LeaveRequests = leaveRequests,

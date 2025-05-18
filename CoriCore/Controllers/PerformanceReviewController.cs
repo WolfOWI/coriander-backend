@@ -133,12 +133,12 @@ namespace CoriCore.Controllers
         /// </summary>
         /// <param name="numberOfEmps">The number of employees to get</param>
         /// <returns>A list of employee rating metrics</returns>
-        [HttpGet("RandomEmpUserRatingMetrics/{numberOfEmps}")]
-        public async Task<IActionResult> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
+        [HttpGet("GetTopEmpUserRatingMetrics")]
+        public async Task<IActionResult> GetTopEmpUserRatingMetrics(int count)
         {
             try
             {
-                var metrics = await _PerformanceReviewService.GetRandomEmpUserRatingMetricsByNum(numberOfEmps);
+                var metrics = await _PerformanceReviewService.GetTopEmpUserRatingMetrics(count);
                 return Ok(metrics);
             }
             catch (ArgumentException ex)
