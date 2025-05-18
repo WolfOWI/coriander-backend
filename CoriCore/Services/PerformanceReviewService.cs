@@ -229,7 +229,50 @@ public class PerformanceReviewService : IPerformanceReviewService
             .ToListAsync();
     }
 
+    // ========================================
+    // GET ALL UPCOMING PERFORMANCE REVIEWS THAT THE ADMIN IS INVOLVED IN (BY ADMIN ID)
+    // ========================================
+    public async Task<IEnumerable<PerformanceReviewDTO>> GetAllUpcomingPrmByAdminId(int adminId)
+    {
+        // Check if the admin exists
+        var admin = await _context.Admins.FindAsync(adminId);
+        if (admin == null)
+        {
+            throw new Exception("Admin not found");
+        }
 
+        // Get all upcoming performance reviews that the admin is involved in
+        var upcomingReviews = await _context.PerformanceReviews
+            .Include(pr => pr.Admin)
+                .ThenInclude(a => a.User)
+            .Include(pr => pr.Employee)
+                .ThenInclude(e => e.User)
+            .Where(pr => pr.AdminId == adminId && pr.Status == ReviewStatus.Upcoming)
+            .ToListAsync();
+
+        // Convert to DTOs
+        return upcomingReviews.Select(pr => new PerformanceReviewDTO
+        {
+            ReviewId = pr.ReviewId,
+            AdminId = pr.AdminId,
+            AdminName = pr.Admin.User.FullName,
+            EmployeeId = pr.EmployeeId,
+            EmployeeName = pr.Employee.User.FullName,
+            IsOnline = pr.IsOnline,
+            MeetLocation = pr.MeetLocation,
+            MeetLink = pr.MeetLink,
+            StartDate = pr.StartDate,
+            EndDate = pr.EndDate,
+            Rating = pr.Rating,
+            Comment = pr.Comment,
+            DocUrl = pr.DocUrl,
+            Status = pr.Status
+        });
+    }
+
+    // ========================================
+    // GET TOP RATED EMPLOYEES
+    // ========================================
     /// <summary>
     /// Get the Top rated employess
     /// </summary>

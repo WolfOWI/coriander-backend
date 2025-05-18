@@ -19,35 +19,6 @@ public class MeetingService : IMeetingService
 
     // GET
     // ========================================
-    // EMPLOYEE RELATED 
-    // ------------------------
-    public async Task<IEnumerable<MeetingDTO>> GetAllMeetingsByEmployeeId(int employeeId)
-    {
-        var meetings = await _context.Meetings
-            .Where(m => m.EmployeeId == employeeId)
-            .Include(m => m.Admin)
-                .ThenInclude(a => a.User)
-            .Include(m => m.Employee)
-                .ThenInclude(e => e.User)
-            .ToListAsync();
-        return meetings.Select(m => new MeetingDTO
-        {
-            MeetingId = m.MeetingId,
-            AdminId = m.AdminId,
-            AdminName = m.Admin.User.FullName,
-            EmployeeId = m.EmployeeId,
-            EmployeeName = m.Employee.User.FullName,
-            IsOnline = m.IsOnline,
-            MeetLocation = m.MeetLocation,
-            MeetLink = m.MeetLink,
-            StartDate = m.StartDate,
-            EndDate = m.EndDate,
-            Purpose = m.Purpose,
-            RequestedAt = m.RequestedAt,
-            Status = m.Status,
-        });
-    }
-
     public async Task<IEnumerable<MeetingDTO>> GetMeetingsByEmployeeIdAndStatus(int employeeId, MeetStatus status)
     {
         var meetings = await _context.Meetings
@@ -76,14 +47,12 @@ public class MeetingService : IMeetingService
             Status = m.Status,
         });
     }
-    // ------------------------
 
-    // ADMIN RELATED 
-    // ------------------------
-    public async Task<IEnumerable<MeetingDTO>> GetAllMeetingsByAdminId(int adminId)
+    public async Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminIdAndStatus(int adminId, MeetStatus status)
     {
         var meetings = await _context.Meetings
             .Where(m => m.AdminId == adminId)
+            .Where(m => m.Status == status)
             .Include(m => m.Admin)
                 .ThenInclude(a => a.User)
             .Include(m => m.Employee)
@@ -106,7 +75,6 @@ public class MeetingService : IMeetingService
             Status = m.Status,
         });
     }
-    // ------------------------
     // ========================================
 
     // CREATE
@@ -141,11 +109,12 @@ public class MeetingService : IMeetingService
 
         return meeting;
     }
+
     // ========================================
 
     // UPDATE
     // ========================================
-    public async Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingConfirmDTO meetingConfirmDTO)
+    public async Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto)
     {
         // Check if meeting exists
         var meeting = await _context.Meetings.FindAsync(meetingId);
@@ -155,11 +124,11 @@ public class MeetingService : IMeetingService
         }
 
         // Update meeting details
-        meeting.IsOnline = meetingConfirmDTO.IsOnline;
-        if (meetingConfirmDTO.MeetLocation != null) meeting.MeetLocation = meetingConfirmDTO.MeetLocation; // if location is provided, update it
-        if (meetingConfirmDTO.MeetLink != null) meeting.MeetLink = meetingConfirmDTO.MeetLink; // if link is provided, update it
-        meeting.StartDate = meetingConfirmDTO.StartDate;
-        meeting.EndDate = meetingConfirmDTO.EndDate;
+        meeting.IsOnline = dto.IsOnline;
+        if (dto.MeetLocation != null) meeting.MeetLocation = dto.MeetLocation; // if location is provided, update it
+        if (dto.MeetLink != null) meeting.MeetLink = dto.MeetLink; // if link is provided, update it
+        if (dto.StartDate != null) meeting.StartDate = dto.StartDate;
+        if (dto.EndDate != null) meeting.EndDate = dto.EndDate;
         meeting.Status = MeetStatus.Upcoming; // update status to upcoming
 
         try
@@ -173,6 +142,63 @@ public class MeetingService : IMeetingService
             return (500, $"Error updating meeting request: {ex.Message}");
         }
         
+    }
+
+    public async Task<(int Code, string Message)> UpdateMeeting(int meetingId, MeetingUpdateDTO dto)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        // Update meeting details
+        meeting.IsOnline = dto.IsOnline;
+        meeting.MeetLocation = dto.MeetLocation;
+        meeting.MeetLink = dto.MeetLink;
+        meeting.StartDate = dto.StartDate;
+        meeting.EndDate = dto.EndDate;
+
+        try
+        {
+            _context.Meetings.Update(meeting);
+            await _context.SaveChangesAsync();
+            return (200, "Meeting request updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error updating meeting request details: {ex.Message}");
+        }
+    }
+
+    public async Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingRequestUpdateDTO dto)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        // Check if the meetingId has requested status
+        if (meeting.Status != MeetStatus.Requested)
+        {
+            return (400, "Meeting request is not in requested status");
+        }
+
+        // Update meeting request details (only if provided)
+        if (dto.AdminId.HasValue) meeting.AdminId = dto.AdminId.Value;
+        if (dto.Purpose != null) meeting.Purpose = dto.Purpose;
+
+        try
+        {
+            _context.Meetings.Update(meeting);
+            await _context.SaveChangesAsync();
+            return (200, "Meeting request updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error updating meeting request details: {ex.Message}");
+        }
     }
 
     public async Task<(int Code, string Message)> RejectMeetingRequest(int meetingId)
@@ -214,6 +240,29 @@ public class MeetingService : IMeetingService
         catch (Exception ex)
         {
             return (500, $"Error marking meeting as completed: {ex.Message}");
+        }
+    }
+    // ========================================
+
+    // DELETE
+    // ========================================
+    public async Task<(int Code, string Message)> DeleteMeeting(int meetingId)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        try
+        {
+            _context.Meetings.Remove(meeting);
+            await _context.SaveChangesAsync();
+            return (200, "Meeting deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error deleting meeting: {ex.Message}");
         }
     }
     // ========================================

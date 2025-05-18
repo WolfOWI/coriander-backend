@@ -19,49 +19,31 @@ namespace CoriCore.Controllers
 
         // GET
         // ========================================
-        // EMPLOYEE RELATED 
-        // ------------------------
-        [HttpGet("GetAllByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetAllMeetingsByEmployeeId(int employeeId)
+        // Get all meeting requests (rejected & requested meetings) for an employee
+        [HttpGet("GetAllRequestsByEmpId/{employeeId}")]
+        public async Task<IActionResult> GetAllRequestsByEmpId(int employeeId)
         {
-            var meetings = await _meetingService.GetAllMeetingsByEmployeeId(employeeId);
-            return Ok(meetings);
-        }
-        
+            var pendingMeetingRequests = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Requested);
+            var rejectedMeetingRequests = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Rejected);
 
-        [HttpGet("GetUpcomingByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetUpcomingMeetingsByEmployeeId(int employeeId)
-        {
-            var meetings = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Upcoming);
-            return Ok(meetings);
-        }
+            // Combine the two lists
+            var allMeetingRequests = rejectedMeetingRequests.Concat(pendingMeetingRequests);
 
-        [HttpGet("GetCompletedByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetCompletedMeetingsByEmployeeId(int employeeId)
-        {
-            var meetings = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Completed);
-            return Ok(meetings);
+            // Sort by requestedAt descending
+            allMeetingRequests = allMeetingRequests.OrderByDescending(m => m.RequestedAt);
+
+            // Return the combined list
+            return Ok(allMeetingRequests);
         }
 
-        [HttpGet("GetRejectedByEmpId/{employeeId}")]
-        public async Task<IActionResult> GetRejectedMeetingsByEmployeeId(int employeeId)
+        // Get all upcoming meetings for an admin
+        [HttpGet("GetAllUpcomingByAdminId/{adminId}")]
+        public async Task<IActionResult> GetAllUpcomingByAdminId(int adminId)
         {
-            var meetings = await _meetingService.GetMeetingsByEmployeeIdAndStatus(employeeId, MeetStatus.Rejected);
+            var meetings = await _meetingService.GetMeetingsByAdminIdAndStatus(adminId, MeetStatus.Upcoming);
             return Ok(meetings);
         }
-        // ------------------------
 
-
-
-        // ADMIN RELATED 
-        // ------------------------
-        [HttpGet("GetAllByAdminId/{adminId}")]
-        public async Task<IActionResult> GetAllMeetingsByAdminId(int adminId)
-        {
-            var meetings = await _meetingService.GetAllMeetingsByAdminId(adminId);
-            return Ok(meetings);
-        }
-        // ------------------------
         // ========================================
 
         // CREATE
@@ -77,9 +59,23 @@ namespace CoriCore.Controllers
         // UPDATE
         // ========================================
         [HttpPut("ConfirmAndSchedule/{meetingId}")]
-        public async Task<IActionResult> ConfirmAndScheduleMeetingRequest(int meetingId, [FromBody] MeetingConfirmDTO meetingConfirmDTO)
+        public async Task<IActionResult> ConfirmAndScheduleMeetingRequest(int meetingId, [FromBody] MeetingUpdateDTO dto)
         {
-            var (code, message) = await _meetingService.ConfirmAndUpdateMeetingRequest(meetingId, meetingConfirmDTO);
+            var (code, message) = await _meetingService.ConfirmAndUpdateMeetingRequest(meetingId, dto);
+            return StatusCode(code, message);
+        }
+
+        [HttpPut("Update/{meetingId}")]
+        public async Task<IActionResult> UpdateMeeting(int meetingId, [FromBody] MeetingUpdateDTO dto)
+        {
+            var (code, message) = await _meetingService.UpdateMeeting(meetingId, dto);
+            return StatusCode(code, message);
+        }
+
+        [HttpPut("UpdateRequest/{meetingId}")]
+        public async Task<IActionResult> UpdateMeetingRequest(int meetingId, [FromBody] MeetingRequestUpdateDTO dto)
+        {
+            var (code, message) = await _meetingService.UpdateMeetingRequest(meetingId, dto);
             return StatusCode(code, message);
         }
 
@@ -94,6 +90,16 @@ namespace CoriCore.Controllers
         public async Task<IActionResult> MarkMeetingAsCompleted(int meetingId)
         {
             var (code, message) = await _meetingService.MarkMeetingAsCompleted(meetingId);
+            return StatusCode(code, message);
+        }
+        // ========================================
+
+        // DELETE
+        // ========================================
+        [HttpDelete("Delete/{meetingId}")]
+        public async Task<IActionResult> DeleteMeeting(int meetingId)
+        {
+            var (code, message) = await _meetingService.DeleteMeeting(meetingId);
             return StatusCode(code, message);
         }
         // ========================================
