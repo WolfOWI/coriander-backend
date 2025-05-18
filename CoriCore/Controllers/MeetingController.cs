@@ -71,6 +71,16 @@ namespace CoriCore.Controllers
             return StatusCode(code, message);
         }
         // ========================================
+
+        // DELETE
+        // ========================================
+        [HttpDelete("Delete/{meetingId}")]
+        public async Task<IActionResult> DeleteMeeting(int meetingId)
+        {
+            var (code, message) = await _meetingService.DeleteMeeting(meetingId);
+            return StatusCode(code, message);
+        }
+        // ========================================
     }
 
 

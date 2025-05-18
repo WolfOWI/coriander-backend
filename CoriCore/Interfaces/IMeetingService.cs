@@ -74,7 +74,14 @@ public interface IMeetingService
     /// <returns>Tuple with code and message</returns>
     Task<(int Code, string Message)> MarkMeetingAsCompleted(int meetingId);
     // ========================================
-    
-    
 
+    // DELETE
+    // ========================================
+    /// <summary>
+    /// Delete a meeting
+    /// </summary>
+    /// <param name="meetingId">Meeting ID</param>
+    /// <returns>Tuple with code and message</returns>
+    Task<(int Code, string Message)> DeleteMeeting(int meetingId);
+    // ========================================
 }

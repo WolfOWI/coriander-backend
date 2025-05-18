@@ -217,4 +217,27 @@ public class MeetingService : IMeetingService
         }
     }
     // ========================================
+
+    // DELETE
+    // ========================================
+    public async Task<(int Code, string Message)> DeleteMeeting(int meetingId)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        try
+        {
+            _context.Meetings.Remove(meeting);
+            await _context.SaveChangesAsync();
+            return (200, "Meeting deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error deleting meeting: {ex.Message}");
+        }
+    }
+    // ========================================
 }
