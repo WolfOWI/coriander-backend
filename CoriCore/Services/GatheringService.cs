@@ -183,9 +183,26 @@ public class GatheringService : IGatheringService
             meetingStatus = MeetStatus.Completed;
             reviewStatus = ReviewStatus.Completed;
         }
-        
+
         var gatherings = await GetAllGatheringsByAdminId(adminId);
         return gatherings.Where(g => g.MeetingStatus == meetingStatus || g.ReviewStatus == reviewStatus);
+    }
+
+    public async Task<IEnumerable<GatheringDTO>> GetUpcomingAndCompletedGatheringsByAdminIdAndMonth(int adminId, string month)
+    {
+        // Parse month string to integer
+        if (!int.TryParse(month, out int monthNumber) || monthNumber < 1 || monthNumber > 12)
+        {
+            throw new ArgumentException("Month must be a number between 1 and 12");
+        }
+
+        var upcomingGatherings = await GetAllGatheringsByAdminIdAndStatus(adminId, "Upcoming");
+        var completedGatherings = await GetAllGatheringsByAdminIdAndStatus(adminId, "Completed");
+
+        // Combine and filter gatherings where StartDate is not null and matches the month
+        return upcomingGatherings.Concat(completedGatherings)
+            .Where(g => g.StartDate.HasValue && g.StartDate.Value.Month == monthNumber)
+            .OrderBy(g => g.StartDate);
     }
     // ========================================
 

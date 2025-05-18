@@ -42,7 +42,6 @@ namespace CoriCore.Controllers
             return Ok(gatherings);
         }
 
-
         [HttpGet("upcoming-by-adminId/{adminId}")]
         public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetAllUpcomingGatheringsByAdminId(int adminId)
         {
@@ -55,6 +54,26 @@ namespace CoriCore.Controllers
         {
             var gatherings = await _gatheringService.GetAllGatheringsByAdminIdAndStatus(adminId, "Completed");
             return Ok(gatherings);
+        }
+
+        /// <summary>
+        /// Get all upcoming and completed gatherings for an admin for a specific month
+        /// </summary>
+        /// <param name="adminId">The ID of the admin</param>
+        /// <param name="month">The month number (1-12)</param>
+        /// <returns>List of gatherings for the specified month</returns>
+        [HttpGet("by-adminId/{adminId}/month/{month}")]
+        public async Task<ActionResult<IEnumerable<GatheringDTO>>> GetGatheringsByAdminIdAndMonth(int adminId, string month)
+        {
+            try
+            {
+                var gatherings = await _gatheringService.GetUpcomingAndCompletedGatheringsByAdminIdAndMonth(adminId, month);
+                return Ok(gatherings);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

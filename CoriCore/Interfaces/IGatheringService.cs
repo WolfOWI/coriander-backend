@@ -37,4 +37,13 @@ public interface IGatheringService
     Task<IEnumerable<GatheringDTO>> GetAllGatheringsByAdminIdAndStatus(int adminId, string status);
 
 
+    /// <summary>
+    /// Get upcoming and completed gatherings (meetings and performance reviews) for an admin for a specific month
+    /// </summary>
+    /// <param name="adminId">The ID of the admin</param>
+    /// <param name="month">The month to get the gatherings for</param>
+    /// <returns>List of gatherings (meetings and performance reviews) sorted by start date</returns>
+    Task<IEnumerable<GatheringDTO>> GetUpcomingAndCompletedGatheringsByAdminIdAndMonth(int adminId, string month);
+
+
 }
