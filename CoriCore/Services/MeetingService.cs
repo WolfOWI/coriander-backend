@@ -145,7 +145,7 @@ public class MeetingService : IMeetingService
 
     // UPDATE
     // ========================================
-    public async Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingConfirmDTO meetingConfirmDTO)
+    public async Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto)
     {
         // Check if meeting exists
         var meeting = await _context.Meetings.FindAsync(meetingId);
@@ -155,11 +155,11 @@ public class MeetingService : IMeetingService
         }
 
         // Update meeting details
-        meeting.IsOnline = meetingConfirmDTO.IsOnline;
-        if (meetingConfirmDTO.MeetLocation != null) meeting.MeetLocation = meetingConfirmDTO.MeetLocation; // if location is provided, update it
-        if (meetingConfirmDTO.MeetLink != null) meeting.MeetLink = meetingConfirmDTO.MeetLink; // if link is provided, update it
-        meeting.StartDate = meetingConfirmDTO.StartDate;
-        meeting.EndDate = meetingConfirmDTO.EndDate;
+        meeting.IsOnline = dto.IsOnline;
+        if (dto.MeetLocation != null) meeting.MeetLocation = dto.MeetLocation; // if location is provided, update it
+        if (dto.MeetLink != null) meeting.MeetLink = dto.MeetLink; // if link is provided, update it
+        if (dto.StartDate != null) meeting.StartDate = dto.StartDate;
+        if (dto.EndDate != null) meeting.EndDate = dto.EndDate;
         meeting.Status = MeetStatus.Upcoming; // update status to upcoming
 
         try
@@ -173,6 +173,33 @@ public class MeetingService : IMeetingService
             return (500, $"Error updating meeting request: {ex.Message}");
         }
         
+    }
+
+    public async Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        // Update meeting details
+        meeting.IsOnline = dto.IsOnline;
+        meeting.MeetLocation = dto.MeetLocation;
+        meeting.MeetLink = dto.MeetLink;
+        meeting.StartDate = dto.StartDate;
+        meeting.EndDate = dto.EndDate;
+
+        try
+        {
+            _context.Meetings.Update(meeting);
+            await _context.SaveChangesAsync();
+            return (200, "Meeting request updated successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error updating meeting request details: {ex.Message}");
+        }
     }
 
     public async Task<(int Code, string Message)> RejectMeetingRequest(int meetingId)

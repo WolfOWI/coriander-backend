@@ -52,12 +52,20 @@ public interface IMeetingService
     // UPDATE
     // ========================================
     /// <summary>
-    /// Admin confirms (accepts) & "creates" (updates) the meeting request with relevant details (MeetingConfirmDTO)
+    /// Admin confirms (accepts) & "creates" (updates) the meeting request with relevant details (MeetingUpdateDTO)
     /// </summary>
     /// <param name="meetingId">Meeting ID</param>
-    /// <param name="meetingConfirmDTO">Meeting confirm DTO</param>
+    /// <param name="dto">Meeting update DTO</param>
     /// <returns>Tuple with code and message</returns>
-    Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingConfirmDTO meetingConfirmDTO);
+    Task<(int Code, string Message)> ConfirmAndUpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto);
+
+    /// <summary>
+    /// Admin updates the meeting request details
+    /// </summary>
+    /// <param name="meetingId">Meeting ID</param>
+    /// <param name="dto">Meeting update DTO</param>
+    /// <returns>Tuple with code and message</returns>
+    Task<(int Code, string Message)> UpdateMeetingRequest(int meetingId, MeetingUpdateDTO dto);
 
     /// <summary>
     /// Admin rejects the meeting request

@@ -51,9 +51,16 @@ namespace CoriCore.Controllers
         // UPDATE
         // ========================================
         [HttpPut("ConfirmAndSchedule/{meetingId}")]
-        public async Task<IActionResult> ConfirmAndScheduleMeetingRequest(int meetingId, [FromBody] MeetingConfirmDTO meetingConfirmDTO)
+        public async Task<IActionResult> ConfirmAndScheduleMeetingRequest(int meetingId, [FromBody] MeetingUpdateDTO dto)
         {
-            var (code, message) = await _meetingService.ConfirmAndUpdateMeetingRequest(meetingId, meetingConfirmDTO);
+            var (code, message) = await _meetingService.ConfirmAndUpdateMeetingRequest(meetingId, dto);
+            return StatusCode(code, message);
+        }
+
+        [HttpPut("Update/{meetingId}")]
+        public async Task<IActionResult> UpdateMeetingRequest(int meetingId, [FromBody] MeetingUpdateDTO dto)
+        {
+            var (code, message) = await _meetingService.UpdateMeetingRequest(meetingId, dto);
             return StatusCode(code, message);
         }
 
