@@ -75,6 +75,27 @@ public class MeetingService : IMeetingService
             Status = m.Status,
         });
     }
+
+    public async Task<IEnumerable<MeetingRequestDTO>> GetAllPendingRequestsByAdminId(int adminId)
+    {
+        var meetings = await _context.Meetings
+            .Where(m => m.AdminId == adminId)
+            .Where(m => m.Status == MeetStatus.Requested)
+            .Include(m => m.Employee)
+                .ThenInclude(e => e.User)
+            .ToListAsync();
+
+        return meetings.Select(m => new MeetingRequestDTO
+        {
+            MeetingId = m.MeetingId,
+            EmployeeId = m.EmployeeId,
+            EmployeeName = m.Employee.User.FullName,
+            ProfilePicture = m.Employee.User.ProfilePicture,
+            Purpose = m.Purpose,
+            RequestedAt = m.RequestedAt,
+            Status = m.Status,
+        });
+    }
     // ========================================
 
     // CREATE

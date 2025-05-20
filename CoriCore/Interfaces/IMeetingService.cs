@@ -24,6 +24,13 @@ public interface IMeetingService
     /// <param name="status">Meeting status</param>
     /// <returns>List of meetings that the admin is involved in with the given status</returns>
     Task<IEnumerable<MeetingDTO>> GetMeetingsByAdminIdAndStatus(int adminId, MeetStatus status);
+
+    /// <summary>
+    /// Get all pending requests by admin Id
+    /// </summary>
+    /// <param name="adminId">Admin ID</param>
+    /// <returns>List of pending meeting requests (with employee name & profile picture)</returns>
+    Task<IEnumerable<MeetingRequestDTO>> GetAllPendingRequestsByAdminId(int adminId);
     // ========================================
 
     // CREATE

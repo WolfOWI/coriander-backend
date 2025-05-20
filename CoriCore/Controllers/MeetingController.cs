@@ -48,7 +48,7 @@ namespace CoriCore.Controllers
         [HttpGet("GetAllPendingRequestsByAdminId/{adminId}")]
         public async Task<IActionResult> GetAllPendingRequestsByAdminId(int adminId)
         {
-            var pendingRequests = await _meetingService.GetMeetingsByAdminIdAndStatus(adminId, MeetStatus.Requested);
+            var pendingRequests = await _meetingService.GetAllPendingRequestsByAdminId(adminId);
             return Ok(pendingRequests);
         }
 
