@@ -16,10 +16,16 @@ public interface IAdminService
     Task<string> CreateAdmin(AdminDTO adminDTO);
 
     /// <summary>
-    /// Get an admin user by user ID
+    /// Get all admins
     /// </summary>
-    /// <param name="userId">The user ID</param>
-    /// <returns>The AdminUserDTO if found, otherwise null</returns>
-    Task<AdminUserDTO?> GetAdminUserByAdminId(int userId);
+    /// <returns>A list of all admins in AdminUserDTO format</returns>
+    Task<List<AdminUserDTO>> GetAllAdmins();
+
+    /// <summary>
+    /// Get an admin by admin ID
+    /// </summary>
+    /// <param name="adminId">The admin ID</param>
+    Task<AdminUserDTO?> GetAdminUserByAdminId(int adminId);
+    
 
 }

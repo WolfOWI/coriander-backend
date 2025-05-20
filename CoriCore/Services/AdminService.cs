@@ -51,6 +51,24 @@ public class AdminService : IAdminService
         return "Admin created successfully";
     }
 
+    /// <inheritdoc/>
+    public async Task<List<AdminUserDTO>> GetAllAdmins()
+    {
+        var admins = await _context.Admins
+            .Include(a => a.User)
+            .Select(a => new AdminUserDTO
+            {
+                AdminId = a.AdminId,
+                UserId = a.UserId,
+                Email = a.User.Email,
+                FullName = a.User.FullName
+            })
+            .ToListAsync();
+
+        return admins;
+    }
+
+    /// <inheritdoc/>
     public async Task<AdminUserDTO?> GetAdminUserByAdminId(int adminId)
     {
         var admin = await _context.Admins
