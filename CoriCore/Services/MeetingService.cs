@@ -83,6 +83,7 @@ public class MeetingService : IMeetingService
             .Where(m => m.Status == MeetStatus.Requested)
             .Include(m => m.Employee)
                 .ThenInclude(e => e.User)
+            .OrderByDescending(m => m.RequestedAt)
             .ToListAsync();
 
         return meetings.Select(m => new MeetingRequestDTO

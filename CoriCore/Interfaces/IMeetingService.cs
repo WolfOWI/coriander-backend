@@ -29,7 +29,7 @@ public interface IMeetingService
     /// Get all pending requests by admin Id
     /// </summary>
     /// <param name="adminId">Admin ID</param>
-    /// <returns>List of pending meeting requests (with employee name & profile picture)</returns>
+    /// <returns>List of pending meeting requests (with employee name & profile picture) from latest to oldest</returns>
     Task<IEnumerable<MeetingRequestDTO>> GetAllPendingRequestsByAdminId(int adminId);
     // ========================================
 
