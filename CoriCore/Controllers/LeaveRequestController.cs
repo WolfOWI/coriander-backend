@@ -48,10 +48,18 @@ namespace CoriCore.Controllers
 
 
         // GET: api/LeaveRequest
+        //Display all leave requests using the leaveRequestDTO
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LeaveRequest>>> GetLeaveRequests()
+        public async Task<ActionResult<IEnumerable<LeaveRequestDTO>>> GetAllLeaveRequests()
         {
-            return await _context.LeaveRequests.ToListAsync();
+            var leaveRequests = await _leaveRequestService.GetAllLeaveRequests();
+
+            if (leaveRequests == null || !leaveRequests.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(leaveRequests);
         }
 
         // GET: api/LeaveRequest/5
@@ -66,48 +74,6 @@ namespace CoriCore.Controllers
             }
 
             return leaveRequest;
-        }
-
-        // PUT: api/LeaveRequest/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLeaveRequest(int id, LeaveRequest leaveRequest)
-        {
-            if (id != leaveRequest.LeaveRequestId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(leaveRequest).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LeaveRequestExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/LeaveRequest
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<LeaveRequest>> PostLeaveRequest(LeaveRequest leaveRequest)
-        {
-            _context.LeaveRequests.Add(leaveRequest);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetLeaveRequest", new { id = leaveRequest.LeaveRequestId }, leaveRequest);
         }
 
         // POST: api/LeaveRequest/SubmitLeaveRequest

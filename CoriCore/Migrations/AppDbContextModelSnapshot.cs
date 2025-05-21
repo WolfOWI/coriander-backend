@@ -30,6 +30,18 @@ namespace CoriCore.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdminId"));
 
+                    b.Property<string>("GMeetAccessToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GMeetRefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("GMeetTokenExpiresIn")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("GMeetTokenGeneratedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -233,6 +245,55 @@ namespace CoriCore.Migrations
                     b.ToTable("LeaveTypes");
                 });
 
+            modelBuilder.Entity("CoriCore.Models.Meeting", b =>
+                {
+                    b.Property<int>("MeetingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("MeetingId"));
+
+                    b.Property<int>("AdminId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool?>("IsOnline")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("MeetLink")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("MeetLocation")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Purpose")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("MeetingId");
+
+                    b.HasIndex("AdminId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Meetings");
+                });
+
             modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>
                 {
                     b.Property<int>("ReviewId")
@@ -403,6 +464,25 @@ namespace CoriCore.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("LeaveType");
+                });
+
+            modelBuilder.Entity("CoriCore.Models.Meeting", b =>
+                {
+                    b.HasOne("CoriCore.Models.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoriCore.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("CoriCore.Models.PerformanceReview", b =>

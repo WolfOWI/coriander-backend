@@ -10,25 +10,56 @@ using CoriCore.Interfaces;
 using CoriCore.Models;
 
 namespace CoriCore.Services;
-
+ 
 public class PageService : IPageService
 {
     private readonly IEmpUserService _empUserService;
     private readonly IEquipmentService _equipmentService;
     private readonly ILeaveBalanceService _leaveBalanceService;
     private readonly IPerformanceReviewService _performanceReviewService;
+    private readonly ILeaveRequestService _leaveRequestService;
+    private readonly IEmployeeService _employeeService;
+    private readonly IAdminService _adminService;
+    private readonly IGatheringService _gatheringService;
 
     public PageService(
         IEmpUserService empUserService,
         IEquipmentService equipmentService,
         ILeaveBalanceService leaveBalanceService,
-        IPerformanceReviewService performanceReviewService)
+        IPerformanceReviewService performanceReviewService,
+        ILeaveRequestService leaveRequestService,
+        IEmployeeService employeeService,
+        IAdminService adminService,
+        IGatheringService gatheringService)
     {
         _empUserService = empUserService;
         _equipmentService = equipmentService;
         _leaveBalanceService = leaveBalanceService;
         _performanceReviewService = performanceReviewService;
+        _leaveRequestService = leaveRequestService;
+        _employeeService = employeeService;
+        _adminService = adminService;
+        _gatheringService = gatheringService;
     }
+
+    public async Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo(int adminId)
+    {
+        var adminUser = await _adminService.GetAdminUserByAdminId(adminId);
+        var empUserRating = await _performanceReviewService.GetTopEmpUserRatingMetrics(5);
+        var topRatedEmployees = await _performanceReviewService.GetTopRatedEmployees();
+        var leaveRequests = await _leaveRequestService.GetAllLeaveRequests();
+        var empStatusTotal = await _employeeService.GetEmployeeStatusTotals();
+
+        return new AdminDashboardPageDTO
+        {
+            AdminUser = adminUser,
+            EmpUserRatingMetrics = empUserRating,
+            TopRatedEmployees = topRatedEmployees,
+            LeaveRequests = leaveRequests,
+            EmployeeStatusTotals = empStatusTotal
+        };
+    }
+
 
     /// <inheritdoc/>
     public async Task<AdminEmpDetailsPageDTO> GetAdminEmpDetailsPageInfo(int employeeId)
@@ -38,7 +69,7 @@ public class PageService : IPageService
         var equipment = await _equipmentService.GetEquipmentByEmployeeId(employeeId);
         var leaveBalances = await _leaveBalanceService.GetAllLeaveBalancesByEmployeeId(employeeId);
         var ratingMetrics = await _performanceReviewService.GetEmpUserRatingMetricsByEmpId(employeeId);
-        var performanceReviews = await _performanceReviewService.GetPrmByEmpId(employeeId);
+        var gatherings = await _gatheringService.GetAllUpcomingAndCompletedGatheringsByEmployeeIdDescending(employeeId);
 
         // Create the DTO with all the gathered information
         return new AdminEmpDetailsPageDTO
@@ -47,24 +78,7 @@ public class PageService : IPageService
             Equipment = equipment,
             LeaveBalances = leaveBalances,
             EmpUserRatingMetrics = ratingMetrics,
-            PerformanceReviews = performanceReviews
-                .Select(pr => new PerformanceReviewDTO
-                {
-                    ReviewId = pr.ReviewId,
-                    AdminId = pr.AdminId,
-                    AdminName = pr.Admin.User.FullName,
-                    EmployeeId = pr.EmployeeId,
-                    EmployeeName = pr.Employee.User.FullName,
-                    IsOnline = pr.IsOnline,
-                    MeetLocation = pr.MeetLocation,
-                    MeetLink = pr.MeetLink,
-                    StartDate = pr.StartDate,
-                    EndDate = pr.EndDate,
-                    Rating = pr.Rating,
-                    Comment = pr.Comment,
-                    DocUrl = pr.DocUrl,
-                    Status = (ReviewStatus)pr.Status
-                })
+            Gatherings = gatherings
                 .ToList()
         };
     }
@@ -93,7 +107,7 @@ public class PageService : IPageService
         
         return empManageList;
     }
-        
+
     /// <inheritdoc/>
     public async Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId)
     {
@@ -110,6 +124,19 @@ public class PageService : IPageService
             EmpUserRatingMetrics = ratingMetrics,
         };
         
+    }
+
+    /// <inheritdoc/>
+    public async Task<EmployeeLeaveOverviewPageDTO> GetEmployeeLeaveOverviewPageInfo(int employeeId)
+    {
+        var leaveRequests = await _leaveRequestService.GetLeaveRequestsByEmployeeId(employeeId);
+        var leaveBalances = await _leaveBalanceService.GetAllLeaveBalancesByEmployeeId(employeeId);
+
+        return new EmployeeLeaveOverviewPageDTO
+        {
+            LeaveRequests = leaveRequests,
+            LeaveBalances = leaveBalances
+        };
     }
     
 } 

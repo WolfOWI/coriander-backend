@@ -20,7 +20,7 @@ public interface IPerformanceReviewService
     /// </summary>
     /// <param name="numberOfEmps">The number of employees to get</param>
     /// <returns>A list of employee rating metrics</returns>
-    Task<List<EmpUserRatingMetricsDTO>> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps);
+    Task<List<EmpUserRatingMetricsDTO>> GetTopEmpUserRatingMetrics(int count);
 
     /// <summary>
     /// Get employee rating metrics by employee id
@@ -37,8 +37,13 @@ public interface IPerformanceReviewService
 
     Task<IEnumerable<PerformanceReview>> GetAllUpcomingPrm();
 
-    Task<List<EmpUserRatingMetricsDTO>> GetTopRatedEmployees();
-
+    /// <summary>
+    /// Get all upcoming performance reviews that the admin is involved in (by adminId)
+    /// </summary>
+    /// <param name="adminId">The id of the admin</param>
+    /// <returns>A list of upcoming performance reviews</returns>
+    Task<IEnumerable<PerformanceReviewDTO>> GetAllUpcomingPrmByAdminId(int adminId);
+    Task<List<TopRatedEmployeesDTO>> GetTopRatedEmployees();
     Task<PerformanceReview> UpdateReviewStatus(int reviewId, ReviewStatus newStatus);
 
 }

@@ -83,4 +83,49 @@ public class LeaveBalanceService : ILeaveBalanceService
             TotalLeaveDays = leaveBalances.Sum(lb => lb.DefaultDays)
         };
     }
+
+    // Subtract leave request days from an employee's leave balance of a specific leave type
+    /// <inheritdoc/>
+    public async Task<bool> SubtractLeaveRequestDays(int employeeId, int leaveTypeId, int days)
+    {
+        var leaveBalance = await _context.LeaveBalances
+            .FirstOrDefaultAsync(lb => lb.EmployeeId == employeeId && lb.LeaveTypeId == leaveTypeId);
+        if (leaveBalance == null)
+        {
+            return false; // Leave balance not found
+        }
+        if (leaveBalance.RemainingDays < days)
+        {   
+            // If the leave balance is less than the days requested, make the remaining days 0
+            leaveBalance.RemainingDays = 0;
+        }
+        else
+        {
+            // Subtract the leave request days from the leave balance
+            leaveBalance.RemainingDays -= days;
+        }
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    // Add days back to an employee's leave balance of a specific leave type, respecting the default days limit
+    /// <inheritdoc/>
+    public async Task<bool> AddLeaveRequestDays(int employeeId, int leaveTypeId, int days)
+    {
+        var leaveBalance = await _context.LeaveBalances
+            .Include(lb => lb.LeaveType)
+            .FirstOrDefaultAsync(lb => lb.EmployeeId == employeeId && lb.LeaveTypeId == leaveTypeId);
+        
+        if (leaveBalance == null || leaveBalance.LeaveType == null)
+        {
+            return false; // Leave balance or leave type not found
+        }
+
+        // Calculate the new remaining days, but don't exceed the default days limit
+        int newRemainingDays = Math.Min(leaveBalance.RemainingDays + days, leaveBalance.LeaveType.DefaultDays);
+        leaveBalance.RemainingDays = newRemainingDays;
+        
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

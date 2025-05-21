@@ -133,12 +133,12 @@ namespace CoriCore.Controllers
         /// </summary>
         /// <param name="numberOfEmps">The number of employees to get</param>
         /// <returns>A list of employee rating metrics</returns>
-        [HttpGet("RandomEmpUserRatingMetrics/{numberOfEmps}")]
-        public async Task<IActionResult> GetRandomEmpUserRatingMetricsByNum(int numberOfEmps)
+        [HttpGet("GetTopEmpUserRatingMetrics")]
+        public async Task<IActionResult> GetTopEmpUserRatingMetrics(int count)
         {
             try
             {
-                var metrics = await _PerformanceReviewService.GetRandomEmpUserRatingMetricsByNum(numberOfEmps);
+                var metrics = await _PerformanceReviewService.GetTopEmpUserRatingMetrics(count);
                 return Ok(metrics);
             }
             catch (ArgumentException ex)
@@ -221,7 +221,7 @@ namespace CoriCore.Controllers
                 Rating = reviewDTO.Rating,
                 Comment = reviewDTO.Comment,
                 DocUrl = reviewDTO.DocUrl,
-                Status = ReviewStatus.Upcoming // Set status to Upcoming (1) or keep the existing status
+                Status = ReviewStatus.Completed 
             };
 
             // Update the performance review in the database
@@ -264,16 +264,28 @@ namespace CoriCore.Controllers
             return Ok(reviewDTOs);
         }
 
-        [HttpGet("top-rated")]
-        public async Task<ActionResult<List<EmpUserRatingMetricsDTO>>> GetTopRatedEmployees()
+        // Get all upcoming performance reviews that the admin is involved in (by adminId)
+        [HttpGet("GetAllUpcomingPrmByAdminId/{adminId}")]
+        public async Task<IActionResult> GetAllUpcomingPrmByAdminId(int adminId)
         {
-            var topRatedEmployees = await _PerformanceReviewService.GetTopRatedEmployees();
-            if (topRatedEmployees == null || !topRatedEmployees.Any())
-            {
-                return NotFound("No top-rated employees found.");
-            }
-            return Ok(topRatedEmployees);
+            var reviews = await _PerformanceReviewService.GetAllUpcomingPrmByAdminId(adminId);
+            return Ok(reviews);
         }
+
+        [HttpGet("top-rated-employees")]
+        public async Task<ActionResult<List<TopRatedEmployeesDTO>>> GetTopRatedEmployees()
+        {
+            var topEmployees = await _PerformanceReviewService.GetTopRatedEmployees();
+
+            if (!topEmployees.Any())
+            {
+                return NotFound("No rated employees found.");
+            }
+
+            return Ok(topEmployees);
+        }
+
+
         
         [HttpPut("update-status/{id}")]
         public async Task<ActionResult<PerformanceReview>> UpdateReviewStatus(int id, [FromQuery] ReviewStatus status)

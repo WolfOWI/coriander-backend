@@ -15,6 +15,9 @@ namespace CoriCore.Interfaces
         // Get all leave requests by employee ID
         Task<List<LeaveRequestDTO>> GetLeaveRequestsByEmployeeId(int employeeId);
 
+        // Add a method to fetch all leave requests by LeaveRequestDTO
+        Task<List<LeaveRequestDTO>> GetAllLeaveRequests();
+
         // Calculate the duration between two dates (in days)
         // int DurationBetweenDates(DateTime startDate, DateTime endDate);
 

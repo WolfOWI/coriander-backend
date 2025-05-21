@@ -221,7 +221,7 @@ namespace CoriCore.Controllers
                 });
             }
 
-            return StatusCode(code, new { message });
+            return Ok(new { token, message = "Login successful" });
         }
 
 

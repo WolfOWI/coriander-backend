@@ -121,6 +121,7 @@ public class EmpUserService : IEmpUserService
             if (updateDto.EmployType.HasValue) employee.EmployType = updateDto.EmployType.Value;
             if (updateDto.EmployDate.HasValue) employee.EmployDate = updateDto.EmployDate.Value;
             if (updateDto.IsSuspended.HasValue) employee.IsSuspended = updateDto.IsSuspended.Value;
+            if (updateDto.ProfilePicture != null) employee.User.ProfilePicture = updateDto.ProfilePicture;
 
             try
             {

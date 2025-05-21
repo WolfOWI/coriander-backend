@@ -28,4 +28,17 @@ public interface IPageService
     /// <param name="employeeId">The ID of the employee</param>
     /// <returns>An EmployeeProfilePageDTO containing all necessary information</returns>
     Task<EmployeeProfilePageDTO> GetEmployeeProfilePageInfo(int employeeId);
+
+    /// <summary>
+    /// Get all the information for the Admin Dashboard page
+    /// </summary>
+    /// <returns>An AdminDashboardPageDTO containing all necessary information</returns>
+    Task<AdminDashboardPageDTO> GetAdminDashboardPageInfo(int adminId);
+
+    /// <summary>
+    /// Get all the information for the Employee Leave Overview page
+    /// </summary>
+    /// <param name="employeeId">The ID of the employee</param>
+    /// <returns>An EmployeeLeaveOverviewPageDTO containing all necessary information</returns>
+    Task<EmployeeLeaveOverviewPageDTO> GetEmployeeLeaveOverviewPageInfo(int employeeId);
 } 
