@@ -392,32 +392,73 @@ public class AuthServices : IAuthService
         return await GenerateJwt(user);
     }
 
-    public async Task<string> LoginWithGoogle(string googleToken)
+    public async Task<(int Code, string Message, string? Token)> LoginWithGoogle(string googleToken, int role)
     {
         var payload = await GoogleJsonWebSignature.ValidateAsync(googleToken);
 
-        var user = await _context
-            .Users.Include(u => u.Employee)
+        var user = await _context.Users
+            .Include(u => u.Employee)
             .Include(u => u.Admin)
             .FirstOrDefaultAsync(u => u.GoogleId == payload.Subject || u.Email == payload.Email);
 
+        // 1️⃣ If user doesn't exist
         if (user == null)
         {
+            if (role == 0)
+            {
+                return (404, "Account does not exist. Please sign up first.", null);
+            }
+
             user = new User
             {
                 FullName = payload.Name,
                 Email = payload.Email,
                 GoogleId = payload.Subject,
                 ProfilePicture = payload.Picture,
-                Role = UserRole.Unassigned,
+                IsVerified = true
             };
+
+            if (role == 1)
+            {
+                user.Role = UserRole.Employee;
+                // Employee linking will happen later (unlinked by default)
+            }
+            else if (role == 2)
+            {
+                user.Role = UserRole.Admin;
+            }
+            else
+            {
+                return (400, "Invalid role provided.", null);
+            }
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
+
+            // Link admin entity if role is Admin
+            if (role == 2)
+            {
+                var admin = new Admin { UserId = user.UserId };
+                await _context.Admins.AddAsync(admin);
+                await _context.SaveChangesAsync();
+            }
+
+            string jwt = await GenerateJwt(user);
+            return (200, "Account created and logged in successfully.", jwt);
         }
 
-        return await GenerateJwt(user);
+        // 2️⃣ If user already exists
+        if (role == 0)
+        {
+            // Login only
+            string jwt = await GenerateJwt(user);
+            return (200, "Login successful", jwt);
+        }
+
+        // If trying to sign up again with existing email
+        return (409, "Account already exists. Please sign in instead.", null);
     }
+
 
     // Verify a User's password against a hashed password
     public Task<bool> VerifyPassword(User user, string password)

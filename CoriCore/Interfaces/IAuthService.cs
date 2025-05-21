@@ -92,7 +92,7 @@ public interface IAuthService
     // ============================
 
     // All users - Login with Google (accepts OAuth token)
-    Task<string> LoginWithGoogle(string googleToken);
+    Task<(int Code, string Message, string? Token)> LoginWithGoogle(string googleToken, int role);
 
     // Employees - Register with Google (creates a new user or links existing one)
     Task<bool> RegisterWithGoogle(string googleToken);

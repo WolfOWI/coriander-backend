@@ -180,30 +180,50 @@ namespace CoriCore.Controllers
         // ========================================
 
         // Google login - returns JWT
+        // [HttpPost("google-login")]
+        // public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO dto)
+        // {
+        //     string token = await _authService.LoginWithGoogle(dto.IdToken);
+
+        //     if (string.IsNullOrEmpty(token))
+        //     {
+        //         return Unauthorized("Invalid Google login.");
+        //     }
+
+        //     Response.Cookies.Append(
+        //         "token",
+        //         token,
+        //         new CookieOptions
+        //         {
+        //             HttpOnly = false,
+        //             Secure = true,
+        //             SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
+        //             Expires = DateTime.UtcNow.AddDays(7),
+        //         }
+        //     );
+
+        //     return Ok("Login successful");
+        // }
+
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO dto)
         {
-            string token = await _authService.LoginWithGoogle(dto.IdToken);
+            var (code, message, token) = await _authService.LoginWithGoogle(dto.IdToken, dto.Role);
 
-            if (string.IsNullOrEmpty(token))
+            if (token != null)
             {
-                return Unauthorized("Invalid Google login.");
-            }
-
-            Response.Cookies.Append(
-                "token",
-                token,
-                new CookieOptions
+                Response.Cookies.Append("token", token, new CookieOptions
                 {
                     HttpOnly = false,
                     Secure = true,
-                    SameSite = SameSiteMode.Lax, // 🔁 change this to test, in production change to .strict
-                    Expires = DateTime.UtcNow.AddDays(7),
-                }
-            );
+                    SameSite = SameSiteMode.Lax,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                });
+            }
 
-            return Ok("Login successful");
+            return StatusCode(code, new { message });
         }
+
 
         // Email login - returns JWT
         [HttpPost("login")]
