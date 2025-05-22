@@ -180,7 +180,7 @@ public class MeetingService : IMeetingService
         meeting.MeetLink = dto.MeetLink;
         meeting.StartDate = dto.StartDate;
         meeting.EndDate = dto.EndDate;
-        meeting.Status = dto.Status;
+        meeting.Status = dto.Status ?? meeting.Status;
 
         try
         {
