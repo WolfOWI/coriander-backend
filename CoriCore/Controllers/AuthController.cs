@@ -215,7 +215,7 @@ namespace CoriCore.Controllers
                 Response.Cookies.Append("token", token, new CookieOptions
                 {
                     HttpOnly = false,
-                    Secure = true,
+                    Secure = false,
                     SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddDays(7)
                 });
@@ -237,7 +237,7 @@ namespace CoriCore.Controllers
                 new CookieOptions
                 {
                     HttpOnly = false,
-                    Secure = true,
+                    Secure = false,
                     SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddDays(7),
                 }
