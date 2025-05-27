@@ -21,20 +21,34 @@ namespace CoriCore.Services
         /// <inheritdoc />
         public async Task<int> EmployeeAdminExistsAsync(int userId)
         {
+            // First, make sure the user actually exists
             var user = await _context.Users.FindAsync(userId);
-
             if (user == null)
             {
-                return 400; // UserId does not exist
+                // 400 = BadRequest ⇒ userId invalid
+                return 400;
             }
 
-            if (user.Role == UserRole.Unassigned)
+            // If there’s already an Employee record for this user…
+            bool hasEmployee = await _context
+                .Employees
+                .AnyAsync(e => e.UserId == userId);
+
+            // …or an Admin record…
+            bool hasAdmin = await _context
+                .Admins
+                .AnyAsync(a => a.UserId == userId);
+
+            if (hasEmployee || hasAdmin)
             {
-                return 201; // User available for registration
+                // 400 = BadRequest ⇒ already setup
+                return 400;
             }
 
-            return 400; // User with userId already registered as Employee or Admin
+            // 201 = Created ⇒ available to register as employee
+            return 201;
         }
+
 
         /// <inheritdoc />
         public async Task<int> SetUserRoleAsync(int userId, int userRole)
