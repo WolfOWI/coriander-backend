@@ -210,6 +210,7 @@ namespace CoriCore.Controllers
         {
             var (code, message, token) = await _authService.LoginWithGoogle(dto.IdToken, dto.Role);
 
+            // Optional cookie — only used if needed
             if (token != null)
             {
                 Response.Cookies.Append("token", token, new CookieOptions
@@ -221,30 +222,35 @@ namespace CoriCore.Controllers
                 });
             }
 
-            return Ok(new { token, message = "Login successful" });
+            return StatusCode(code, new { token, message });
         }
+
 
 
         // Email login - returns JWT
         [HttpPost("login")]
         public async Task<IActionResult> EmailLogin(EmailLoginDTO user)
         {
-            string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
+            try
+            {
+                string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
 
-            Response.Cookies.Append(
-                "token",
-                jwt,
-                new CookieOptions
+                Response.Cookies.Append("token", jwt, new CookieOptions
                 {
                     HttpOnly = false,
                     Secure = false,
                     SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddDays(7),
-                }
-            );
+                });
 
-            return Ok("Login successful");
+                return Ok(new { token = jwt, message = "Login successful" });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(new { token = (string?)null, message = ex.Message });
+            }
         }
+
 
         // ========================================
         // 🟢 All users - JWTs / session management
