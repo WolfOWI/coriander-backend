@@ -72,6 +72,9 @@ builder.Services.AddCors(options =>
         // Ek het port 5121 bygesit omdat myne op daai een run - Ruan
         policy.WithOrigins(
             "https://coriander-backend.onrender.com",
+            "http://coriander-backend.onrender.com",
+            "http://localhost",
+            "localhost",
             "http://localhost:5173",   // your React dev server
             "https://localhost:5121",  // Swagger UI runs here
             "http://localhost:5121",    // fallback
