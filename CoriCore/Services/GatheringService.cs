@@ -125,27 +125,30 @@ public class GatheringService : IGatheringService
     {
         var gatherings = new List<GatheringDTO>();
 
-        // Get meetings
-        var upcomingMeetings = await _meetingService.GetMeetingsByAdminIdAndStatus(adminId, MeetStatus.Upcoming);
-        foreach (var meeting in upcomingMeetings)
+        // Get all meetings (both upcoming and completed)
+        foreach (MeetStatus status in Enum.GetValues(typeof(MeetStatus)))
         {
-            gatherings.Add(new GatheringDTO
+            var meetings = await _meetingService.GetMeetingsByAdminIdAndStatus(adminId, status);
+            foreach (var meeting in meetings)
             {
-                Id = meeting.MeetingId,
-                Type = GatheringType.Meeting,
-                AdminId = meeting.AdminId,
-                AdminName = meeting.AdminName ?? string.Empty,
-                EmployeeId = meeting.EmployeeId,
-                EmployeeName = meeting.EmployeeName ?? string.Empty,
-                IsOnline = meeting.IsOnline,
-                MeetLocation = meeting.MeetLocation,
-                MeetLink = meeting.MeetLink,
-                StartDate = meeting.StartDate,
-                EndDate = meeting.EndDate,
-                Purpose = meeting.Purpose,
-                RequestedAt = meeting.RequestedAt,
-                MeetingStatus = meeting.Status
-            });
+                gatherings.Add(new GatheringDTO
+                {
+                    Id = meeting.MeetingId,
+                    Type = GatheringType.Meeting,
+                    AdminId = meeting.AdminId,
+                    AdminName = meeting.AdminName ?? string.Empty,
+                    EmployeeId = meeting.EmployeeId,
+                    EmployeeName = meeting.EmployeeName ?? string.Empty,
+                    IsOnline = meeting.IsOnline,
+                    MeetLocation = meeting.MeetLocation,
+                    MeetLink = meeting.MeetLink,
+                    StartDate = meeting.StartDate,
+                    EndDate = meeting.EndDate,
+                    Purpose = meeting.Purpose,
+                    RequestedAt = meeting.RequestedAt,
+                    MeetingStatus = meeting.Status
+                });
+            }
         }
 
         // Get performance reviews

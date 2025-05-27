@@ -100,6 +100,13 @@ namespace CoriCore.Controllers
             var (code, message) = await _meetingService.MarkMeetingAsCompleted(meetingId);
             return StatusCode(code, message);
         }
+
+        [HttpPut("MarkAsUpcoming/{meetingId}")]
+        public async Task<IActionResult> MarkMeetingAsUpcoming(int meetingId)
+        {
+            var (code, message) = await _meetingService.MarkMeetingAsUpcoming(meetingId);
+            return StatusCode(code, message);
+        }
         // ========================================
 
         // DELETE

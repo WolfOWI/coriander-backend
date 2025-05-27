@@ -180,6 +180,7 @@ public class MeetingService : IMeetingService
         meeting.MeetLink = dto.MeetLink;
         meeting.StartDate = dto.StartDate;
         meeting.EndDate = dto.EndDate;
+        meeting.Status = dto.Status ?? meeting.Status;
 
         try
         {
@@ -262,6 +263,27 @@ public class MeetingService : IMeetingService
         catch (Exception ex)
         {
             return (500, $"Error marking meeting as completed: {ex.Message}");
+        }
+    }
+
+    public async Task<(int Code, string Message)> MarkMeetingAsUpcoming(int meetingId)
+    {
+        var meeting = await _context.Meetings.FindAsync(meetingId);
+        if (meeting == null)
+        {
+            return (404, "Meeting not found");
+        }
+
+        meeting.Status = MeetStatus.Upcoming; // update status to upcoming
+
+        try
+        {
+            await _context.SaveChangesAsync();
+            return (200, "Meeting marked as upcoming successfully");
+        }
+        catch (Exception ex)
+        {
+            return (500, $"Error marking meeting as upcoming: {ex.Message}");
         }
     }
     // ========================================

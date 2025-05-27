@@ -13,4 +13,5 @@ public class MeetingUpdateDTO
     public string? MeetLink { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+    public MeetStatus? Status { get; set; }
 }

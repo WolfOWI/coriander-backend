@@ -83,6 +83,13 @@ public interface IMeetingService
     /// <param name="meetingId">Meeting ID</param>
     /// <returns>Tuple with code and message</returns>
     Task<(int Code, string Message)> MarkMeetingAsCompleted(int meetingId);
+
+    /// <summary>
+    /// Admin marks the meeting as upcoming
+    /// </summary>
+    /// <param name="meetingId">Meeting ID</param>
+    /// <returns>Tuple with code and message</returns>
+    Task<(int Code, string Message)> MarkMeetingAsUpcoming(int meetingId);
     // ========================================
 
     // DELETE
