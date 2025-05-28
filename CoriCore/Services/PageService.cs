@@ -21,6 +21,7 @@ public class PageService : IPageService
     private readonly IEmployeeService _employeeService;
     private readonly IAdminService _adminService;
     private readonly IGatheringService _gatheringService;
+    private readonly IEmpLeaveRequestService _EmpLeaveRequestService;
 
     public PageService(
         IEmpUserService empUserService,
@@ -47,7 +48,6 @@ public class PageService : IPageService
         var adminUser = await _adminService.GetAdminUserByAdminId(adminId);
         var empUserRating = await _performanceReviewService.GetTopEmpUserRatingMetrics(5);
         var topRatedEmployees = await _performanceReviewService.GetTopRatedEmployees();
-        var leaveRequests = await _leaveRequestService.GetAllLeaveRequests();
         var empStatusTotal = await _employeeService.GetEmployeeStatusTotals();
 
         return new AdminDashboardPageDTO
@@ -55,7 +55,6 @@ public class PageService : IPageService
             AdminUser = adminUser,
             EmpUserRatingMetrics = empUserRating,
             TopRatedEmployees = topRatedEmployees,
-            LeaveRequests = leaveRequests,
             EmployeeStatusTotals = empStatusTotal
         };
     }
