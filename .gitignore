@@ -1,0 +1,137 @@
+# .NET Core build outputs
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+
+# Visual Studio files
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Visual Studio Code files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Rider files
+.idea/
+
+# Test Results and Coverage Reports
+TestResults/
+CoverageReport/
+coverage*.json
+coverage*.xml
+coverage*.info
+coverage*.cobertura.xml
+*.coverage
+*.coveragexml
+*.trx
+*.runsettings
+
+# OpenCover and other coverage tools
+OpenCover/
+.axoCover/
+*.dotCover
+
+# NuGet packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Build logs and temporary files
+*.log
+*.tlog
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Environment and configuration files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+appsettings.Development.json
+appsettings.Local.json
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Temporary and cache files
+*.swp
+*.swo
+*~
+.cache/
+.temp/
+temp/
+
+# Docker
+.dockerignore
+
+# JetBrains Rider
+*.sln.iml
+
+# Local History for Visual Studio
+.localhistory/
+.vshistory/
+
+# MSBuild Binary and Structured Log
+*.binlog
+
+# Fody - auto-generated XML schema
+FodyWeavers.xsd 
