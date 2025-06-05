@@ -28,7 +28,7 @@ namespace CoriCore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LeaveType>>> GetLeaveTypes()
         {
-            return await _context.LeaveTypes.ToListAsync();
+            return Ok(await _context.LeaveTypes.ToListAsync());
         }
 
         // GET: api/LeaveType/5
@@ -42,7 +42,7 @@ namespace CoriCore.Controllers
                 return NotFound();
             }
 
-            return leaveType;
+            return Ok(leaveType);
         }
 
         // PUT: api/LeaveType/5
