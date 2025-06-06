@@ -28,7 +28,7 @@ namespace CoriCore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EquipmentCategory>>> GetEquipmentCategories()
         {
-            return await _context.EquipmentCategories.ToListAsync();
+            return Ok(await _context.EquipmentCategories.ToListAsync());
         }
 
         // GET: api/EquipmentCategory/5
@@ -42,7 +42,7 @@ namespace CoriCore.Controllers
                 return NotFound();
             }
 
-            return equipmentCategory;
+            return Ok(equipmentCategory);
         }
 
         // PUT: api/EquipmentCategory/5
