@@ -210,18 +210,6 @@ namespace CoriCore.Controllers
         {
             var (code, message, token) = await _authService.LoginWithGoogle(dto.IdToken, dto.Role);
 
-            // Optional cookie — only used if needed
-            if (token != null)
-            {
-                Response.Cookies.Append("token", token, new CookieOptions
-                {
-                    HttpOnly = false,
-                    Secure = false,
-                    SameSite = SameSiteMode.Lax,
-                    Expires = DateTime.UtcNow.AddDays(7)
-                });
-            }
-
             return StatusCode(code, new { token, message });
         }
 
@@ -234,14 +222,6 @@ namespace CoriCore.Controllers
             try
             {
                 string jwt = await _authService.LoginWithEmail(user.Email, user.Password);
-
-                Response.Cookies.Append("token", jwt, new CookieOptions
-                {
-                    HttpOnly = false,
-                    Secure = false,
-                    SameSite = SameSiteMode.Lax,
-                    Expires = DateTime.UtcNow.AddDays(7),
-                });
 
                 return Ok(new { token = jwt, message = "Login successful" });
             }
