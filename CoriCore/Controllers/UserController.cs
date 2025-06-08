@@ -31,7 +31,7 @@ namespace CoriCore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            return Ok(await _context.Users.ToListAsync());
         }
 
         // GET: api/User/5
@@ -45,7 +45,7 @@ namespace CoriCore.Controllers
                 return NotFound();
             }
 
-            return user;
+            return Ok(user);
         }
 
         // PUT: api/User/5

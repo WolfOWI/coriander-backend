@@ -1,87 +1,10 @@
-# .NET Core build outputs
-bin/
-obj/
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
+# Project-specific files
+# (Most patterns are now handled by the root .gitignore)
 
-# Visual Studio files
-.vs/
-*.user
-*.userosscache
-*.sln.docstates
-*.userprefs
+# Additional sensitive configuration files
+appsettings.Staging.json
+appsettings.*.json
+!appsettings.json
 
-# Visual Studio Code files
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# Rider files
-.idea/
-
-# NuGet packages
-*.nupkg
-# NuGet Symbol Packages
-*.snupkg
-# The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
-# except build/, which is used as an MSBuild target.
-!**/[Pp]ackages/build/
-
-# MSTest test Results
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
-
-# .NET Core
-project.lock.json
-project.fragment.lock.json
-artifacts/
-
-# Files built by Visual Studio
-*_i.c
-*_p.c
-*_h.h
-*.ilk
-*.meta
-*.obj
-*.iobj
-*.pch
-*.pdb
-*.ipdb
-*.pgc
-*.pgd
-*.rsp
-*.sbr
-*.tlb
-*.tli
-*.tlh
-*.tmp
-*.tmp_proj
-*_wpftmp.csproj
-*.log
-*.tlog
-*.vspscc
-*.vssscc
-.builds
-*.pidb
-*.svclog
-*.scc
-
-# macOS specific
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Windows specific
-Thumbs.db
-Desktop.ini
-
-# Ignore environment variables file
-.env
-
-# Sensitive configuration files
-appsettings.Development.json
+# Project-specific temporary files
+*.tmp.cs

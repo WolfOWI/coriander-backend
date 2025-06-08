@@ -106,7 +106,7 @@ namespace CoriCore.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
         {
-            return await _context.Employees.ToListAsync();
+            return Ok(await _context.Employees.ToListAsync());
         }
 
         // GET: api/Employee/5
@@ -120,7 +120,7 @@ namespace CoriCore.Controllers
                 return NotFound();
             }
 
-            return employee;
+            return Ok(employee);
         }
 
         // POST: api/Employee
