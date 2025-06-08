@@ -29,7 +29,7 @@
       <a href="https://github.com/WolfOWI/coriander-backend"><strong>Explore the docs »</strong></a>
    <br />
    <br />
-   <a href="path/to/demonstration/video">View Demo</a>
+   <a href="https://youtu.be/EvPt8mvmRxk">View Demo</a>
     ·
     <a href="https://github.com/WolfOWI/coriander-backend/issues">Report Bug</a>
     ·
@@ -248,7 +248,7 @@ The `Development Process` is the technical implementations and functionality don
 
 To see a run through of the application, click below:
 
-[View Demonstration](path/to/video/demonstration)
+[View Demonstration](https://youtu.be/EvPt8mvmRxk)
 
 <!-- ROADMAP -->
 
