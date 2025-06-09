@@ -16,11 +16,7 @@ using Microsoft.OpenApi.Models;
 // Load environment variables (from .env file)
 Env.Load();
 
-// Debug logging for Google Meet environment variables
-Console.WriteLine("Debug: Loading Google Meet environment variables");
-Console.WriteLine($"GMEET_CLIENT_ID: {Environment.GetEnvironmentVariable("GMEET_CLIENT_ID")}");
-Console.WriteLine($"GMEET_SCOPE: {Environment.GetEnvironmentVariable("GMEET_SCOPE")}");
-Console.WriteLine($"GMEET_REDIRECT_URL: {Environment.GetEnvironmentVariable("GMEET_REDIRECT_URL")}");
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,10 +54,6 @@ builder.Services.AddScoped<IEquipmentService, EquipmentService>();
 builder.Services.AddScoped<IPageService, PageService>();
 // Image service - Local store
 builder.Services.AddScoped<IImageService, ImageService>();
-// Google Meet Token Service
-builder.Services.AddScoped<IGMeetTokenService, GMeetTokenService>();
-// Google Meet Service
-builder.Services.AddScoped<IGoogleMeetService, GoogleMeetService>();
 // ========================================
 
 // CORS
@@ -194,14 +186,7 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Configure Google Meet settings from environment variables
-builder.Services.Configure<GoogleMeetOptions>(options =>
-{
-    options.ClientId = Environment.GetEnvironmentVariable("GMEET_CLIENT_ID");
-    options.ClientSecret = Environment.GetEnvironmentVariable("GMEET_CLIENT_SECRET");
-    options.Scope = Environment.GetEnvironmentVariable("GMEET_SCOPE");
-    options.RedirectUrl = Environment.GetEnvironmentVariable("GMEET_REDIRECT_URL");
-});
+
 
 var app = builder.Build();
 

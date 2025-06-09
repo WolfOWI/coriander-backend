@@ -16,13 +16,6 @@ public class Admin
     [ForeignKey("UserId")] // Link UserId to User.UserId
     public virtual User User { get; set; } = null!;
 
-
-    // Google Meet Token fields
-    public string? GMeetAccessToken { get; set; }
-    public string? GMeetRefreshToken { get; set; }
-    public DateTime? GMeetTokenGeneratedAt { get; set; }
-    public int? GMeetTokenExpiresIn { get; set; }
-
     public ICollection<PerformanceReview>? PerformanceReviews { get; set; } = new List<PerformanceReview>();
 
 }

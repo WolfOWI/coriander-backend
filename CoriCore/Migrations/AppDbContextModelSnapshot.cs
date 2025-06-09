@@ -30,18 +30,6 @@ namespace CoriCore.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AdminId"));
 
-                    b.Property<string>("GMeetAccessToken")
-                        .HasColumnType("text");
-
-                    b.Property<string>("GMeetRefreshToken")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("GMeetTokenExpiresIn")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("GMeetTokenGeneratedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 

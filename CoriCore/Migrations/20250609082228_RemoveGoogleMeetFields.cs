@@ -6,10 +6,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CoriCore.Migrations
 {
     /// <inheritdoc />
-    public partial class AdminGMeetFields : Migration
+    public partial class RemoveGoogleMeetFields : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropColumn(
+                name: "GMeetAccessToken",
+                table: "Admins");
+
+            migrationBuilder.DropColumn(
+                name: "GMeetRefreshToken",
+                table: "Admins");
+
+            migrationBuilder.DropColumn(
+                name: "GMeetTokenExpiresIn",
+                table: "Admins");
+
+            migrationBuilder.DropColumn(
+                name: "GMeetTokenGeneratedAt",
+                table: "Admins");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
                 name: "GMeetAccessToken",
@@ -34,26 +54,6 @@ namespace CoriCore.Migrations
                 table: "Admins",
                 type: "timestamp with time zone",
                 nullable: true);
-        }
-
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(
-                name: "GMeetAccessToken",
-                table: "Admins");
-
-            migrationBuilder.DropColumn(
-                name: "GMeetRefreshToken",
-                table: "Admins");
-
-            migrationBuilder.DropColumn(
-                name: "GMeetTokenExpiresIn",
-                table: "Admins");
-
-            migrationBuilder.DropColumn(
-                name: "GMeetTokenGeneratedAt",
-                table: "Admins");
         }
     }
 }
