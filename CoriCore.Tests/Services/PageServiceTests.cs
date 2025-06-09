@@ -55,8 +55,6 @@ public class PageServiceTests
             .ReturnsAsync(new List<EmpUserRatingMetricsDTO>());
         _mockPerformanceReviewService.Setup(x => x.GetTopRatedEmployees())
             .ReturnsAsync(new List<TopRatedEmployeesDTO>());
-        _mockLeaveRequestService.Setup(x => x.GetAllLeaveRequests())
-            .ReturnsAsync(new List<LeaveRequestDTO>());
         _mockEmployeeService.Setup(x => x.GetEmployeeStatusTotals())
             .ReturnsAsync(new EmpTotalStatsDTO());
 
@@ -68,7 +66,6 @@ public class PageServiceTests
         _mockAdminService.Verify(x => x.GetAdminUserByAdminId(adminId), Times.Once);
         _mockPerformanceReviewService.Verify(x => x.GetTopEmpUserRatingMetrics(5), Times.Once);
         _mockPerformanceReviewService.Verify(x => x.GetTopRatedEmployees(), Times.Once);
-        _mockLeaveRequestService.Verify(x => x.GetAllLeaveRequests(), Times.Once);
         _mockEmployeeService.Verify(x => x.GetEmployeeStatusTotals(), Times.Once);
     }
 
