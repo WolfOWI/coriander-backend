@@ -3,31 +3,31 @@
 <!-- Repository Information & Links-->
 <br />
 
-![GitHub repo size](https://img.shields.io/github/repo-size/WolfOWI/coriander-backend?color=%000000)
-![GitHub watchers](https://img.shields.io/github/watchers/WolfOWI/coriander-backend?color=%000000)
-![GitHub language count](https://img.shields.io/github/languages/count/WolfOWI/coriander-backend?color=%000000)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/WolfOWI/coriander-backend?color=%000000)
+![GitHub repo size](https://img.shields.io/github/repo-size/WolfOWI/coriander-backend?color=88a764)
+![GitHub watchers](https://img.shields.io/github/watchers/WolfOWI/coriander-backend?color=88a764)
+![GitHub language count](https://img.shields.io/github/languages/count/WolfOWI/coriander-backend?color=88a764)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/WolfOWI/coriander-backend?color=88a764)
 [![LinkedIn][linkedin-shield]][linkedin-url]
 [![Instagram][instagram-shield]][instagram-url]
 [![Behance][behance-shield]][behance-url]
 
 <!-- HEADER SECTION -->
-<h5 align="center" style="padding:0;margin:0;">Iné Smith - Student Number</h5>
-<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - Student Number</h5>
+<h5 align="center" style="padding:0;margin:0;">Iné Smith - 221076</h5>
+<h5 align="center" style="padding:0;margin:0;">Kayla Posthumus - 231096</h5>
 <h5 align="center" style="padding:0;margin:0;">Ruan Klopper - 231280</h5>
 <h5 align="center" style="padding:0;margin:0;">Wolf Botha - 21100255</h5>
 <h6 align="center">Interactive Development 300 • 2025</h6>
 </br>
 <p align="center">
 
-  <a href="https://github.com/WolfOWI/coriander-backend">
-    <img src="path/to/cori_logo_green.png" alt="Coriander HR Backend Logo" height="140">
-  </a>
+  <div align="center" href="https://github.com/WolfOWI/coriander-backend" >
+    <img align="center" src="docs/readme-media/coricore-icon.png" alt="Coriander HR Backend Logo" height="140">
+  </div>
   
-  <h3 align="center">Coriander HR Backend</h3>
+  <h3 align="center">CoriCore API</h3>
 
   <p align="center">
-    The RESTful API backend for the Coriander HR Management System built with ASP.NET Core and PostgreSQL <br>
+    The RESTful API backend for the Coriander HR Management System built with ASP.NET Core and PostgreSQL. <br>
       <a href="https://github.com/WolfOWI/coriander-backend"><strong>Explore the docs »</strong></a>
    <br />
    <br />
@@ -53,31 +53,35 @@
   - [Database Setup](#database-setup)
 - [API Architecture](#api-architecture)
   - [Project Structure](#project-structure)
-  - [Design Patterns](#design-patterns)
-  - [Authentication \& Authorisation](#authentication--authorisation)
 - [API Endpoints](#api-endpoints)
-  - [Authentication Endpoints](#authentication-endpoints)
+  - [Authentication \& User Management](#authentication--user-management)
   - [Employee Management](#employee-management)
   - [Leave Management](#leave-management)
   - [Equipment Management](#equipment-management)
-  - [Meeting Management](#meeting-management)
-  - [Performance Reviews](#performance-reviews)
+  - [Meeting \& Performance Management](#meeting--performance-management)
+  - [Admin Management](#admin-management)
+  - [Utility Endpoints](#utility-endpoints)
 - [Database Schema](#database-schema)
   - [Core Entities](#core-entities)
   - [Relationships](#relationships)
 - [Services \& Business Logic](#services--business-logic)
   - [Authentication Service](#authentication-service)
+  - [User Service](#user-service)
   - [Employee Service](#employee-service)
+  - [Admin Service](#admin-service)
   - [Leave Management Service](#leave-management-service)
-  - [Equipment Service](#equipment-service)
+  - [Equipment Management Service](#equipment-management-service)
+  - [Meeting Service](#meeting-service)
+  - [Performance Review Service](#performance-review-service)
+  - [Gathering Service](#gathering-service)
+  - [Page Service](#page-service)
   - [Email Service](#email-service)
+  - [Image Service](#image-service)
+  - [Integration Services](#integration-services)
 - [Development Process](#development-process)
   - [Implementation Process](#implementation-process)
-    - [Highlights](#highlights)
-    - [Challenges](#challenges)
-  - [Testing Strategy](#testing-strategy)
-    - [Unit Tests](#unit-tests)
-    - [Integration Tests](#integration-tests)
+  - [Highlights](#highlights)
+  - [Challenges](#challenges)
   - [Future Implementation](#future-implementation)
 - [Deployment](#deployment)
   - [Docker Configuration](#docker-configuration)
@@ -95,31 +99,21 @@
 
 ## About the Project
 
-![Coriander HR Backend Architecture][image1]
-
 ### Project Description
 
-The Coriander HR Backend serves as the comprehensive server-side infrastructure for the Coriander HR Management System. Built with ASP.NET Core 9.0 and PostgreSQL, this RESTful API provides secure, scalable, and efficient endpoints for all HR operations including employee management, leave requests, equipment tracking, meeting scheduling, and performance reviews.
-
-The backend features a clean architecture with clear separation of concerns, implementing the Repository pattern with Entity Framework Core for data access, comprehensive authentication and authorisation using JWT tokens and Google OAuth, and robust business logic services. The system is designed to handle complex HR workflows while maintaining data integrity and security.
-
-Key features include automated email messages for 2FA, comprehensive leave balance calculations, equipment assignment tracking, and detailed performance review management. The API is fully documented with Swagger/OpenAPI specifications and includes extensive unit and integration testing.
+CoriCore API serves as the comprehensive server-side infrastructure for the Coriander HR Management System. Built with ASP.NET Core 9.0 and PostgreSQL, this RESTful API provides efficient endpoints for all HR operations including authentication, employee management, leave requests, equipment tracking, meeting scheduling, and performance reviews. The API is fully documented with Swagger/OpenAPI specifications and includes extensive unit and integration testing.
 
 ### Built With
 
-**Core Framework & Runtime**
+**Core Framework & Database**
 
 - **[ASP.NET Core 9.0](https://docs.microsoft.com/en-us/aspnet/core/)** - High-performance web API framework
-- **[.NET 9.0](https://docs.microsoft.com/en-us/dotnet/)** - Modern, cross-platform runtime
 - **[C#](https://docs.microsoft.com/en-us/dotnet/csharp/)** - Primary programming language
-
-**Database & ORM**
-
 - **[PostgreSQL](https://www.postgresql.org/)** - Advanced open-source relational database
 - **[Entity Framework Core 9.0](https://docs.microsoft.com/en-us/ef/core/)** - Object-relational mapping framework
 - **[Npgsql](https://www.npgsql.org/)** - PostgreSQL data provider for .NET
 
-**Authentication & Security**
+**Authentication**
 
 - **[JWT Bearer Authentication](https://jwt.io/)** - Stateless token-based authentication
 - **[Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2)** - Google authentication integration
@@ -140,7 +134,6 @@ Key features include automated email messages for 2FA, comprehensive leave balan
 
 - **[xUnit](https://xunit.net/)** - Unit testing framework
 - **[Moq](https://github.com/moq/moq4)** - Mocking framework for unit tests
-- **[Microsoft.EntityFrameworkCore.InMemory](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/)** - In-memory database for testing
 - **[Coverlet](https://github.com/coverlet-coverage/coverlet)** - Code coverage analysis
 
 **DevOps & Deployment**
@@ -294,45 +287,6 @@ CoriCore.Tests/
 └── CoverageReport/    # Test coverage reports
 ```
 
-### Design Patterns
-
-**Repository Pattern with Entity Framework Core**
-
-- Clean separation between data access and business logic
-- Generic repository pattern for common CRUD operations
-- Unit of Work pattern for transaction management
-
-**Dependency Injection**
-
-- Constructor injection for all services and dependencies
-- Scoped lifetime for database contexts and services
-- Interface-based programming for testability
-
-**Service Layer Architecture**
-
-- Business logic encapsulated in dedicated services
-- Clear separation of concerns between controllers and business logic
-- DTOs for data transfer and API contracts
-
-### Authentication & Authorisation
-
-**JWT Token Authentication**
-
-```csharp
-// JWT configuration with 7-day expiration
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false
-        };
-    });
-```
-
 **Google OAuth Integration**
 
 - Seamless login and registration with Google accounts
@@ -347,74 +301,176 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 ## API Endpoints
 
-### Authentication Endpoints
+### Authentication & User Management
 
-**POST** `/api/Auth/register` - Register new user with email/password
-**POST** `/api/Auth/login` - Login with email/password
-**POST** `/api/Auth/google-login` - Login with Google OAuth token
-**POST** `/api/Auth/google-register` - Register with Google OAuth
-**POST** `/api/Auth/register-verified` - Complete registration after 2FA verification
-**POST** `/api/Auth/request-verification` - Request email verification code
-**POST** `/api/Auth/verify-email-code` - Verify email with 6-digit code
+**Authentication**
+
+- **POST** `/api/Auth/register` - Register new unassigned user with email
+- **POST** `/api/Auth/register-admin` - Register admin with email
+- **POST** `/api/Auth/google-register-admin` - Register admin with Google
+- **POST** `/api/Auth/register-admin-verified` - Complete admin registration after verification
+- **POST** `/api/Auth/google-register` - Register with Google OAuth
+- **POST** `/api/Auth/register-verified` - Complete registration after verification
+- **POST** `/api/Auth/request-verification` - Request email verification code
+- **POST** `/api/Auth/verify-email-code` - Verify email with code
+- **POST** `/api/Auth/google-login` - Login with Google OAuth
+- **POST** `/api/Auth/login` - Login with email/password
+- **GET** `/api/Auth/me` - Get current user info
+- **GET** `/api/Auth/decode-token` - Decode JWT token
+- **POST** `/api/Auth/logout` - Logout user
+
+**User Management**
+
+- **GET** `/api/User` - Get all users
+- **GET** `/api/User/{id}` - Get user by ID
+- **PUT** `/api/User/{id}` - Update user information
+- **DELETE** `/api/User/{id}` - Delete user
+- **GET** `/api/User/unlinked` - Get users not linked to employees/admins
 
 ### Employee Management
 
-**GET** `/api/Employee` - Get all employees (Admin only)
-**GET** `/api/Employee/{id}` - Get employee by ID
-**POST** `/api/Employee` - Create new employee
-**PUT** `/api/Employee/{id}` - Update employee information
-**DELETE** `/api/Employee/{id}` - Deactivate employee
-**GET** `/api/Employee/by-user/{userId}` - Get employee by user ID
-**PUT** `/api/Employee/{id}/suspend` - Suspend/unsuspend employee
+**Core Employee Operations**
+
+- **GET** `/api/Employee` - Get all employees
+- **GET** `/api/Employee/{id}` - Get employee by ID
+- **POST** `/api/Employee/setup-user-as-employee` - Setup existing user as employee
+- **POST** `/api/Employee/suspension-toggle/{employeeId}` - Toggle employee suspension status
+- **DELETE** `/api/Employee/{id}` - Delete employee
+- **GET** `/api/Employee/status-totals` - Get employee status statistics
+
+**Employee User Management**
+
+- **GET** `/api/EmpUser` - Get all employee users with information
+- **GET** `/api/EmpUser/{id}` - Get employee user by ID
+- **PUT** `/api/EmpUser/edit-by-id/{id}` - Edit employee details
+- **GET** `/api/EmpUser/equip-stats/{comparedEquipId}` - Get employee equipment statistics
 
 ### Leave Management
 
-**GET** `/api/LeaveRequest` - Get all leave requests
-**GET** `/api/LeaveRequest/EmployeeId/{employeeId}` - Get employee's leave requests
-**POST** `/api/LeaveRequest` - Create new leave request
-**PUT** `/api/LeaveRequest/{id}` - Update leave request
-**DELETE** `/api/LeaveRequest/{id}` - Cancel leave request
+**Leave Requests**
 
-**GET** `/api/EmpLeaveRequest/GetAllPending` - Get pending leave requests (Admin)
-**PUT** `/api/EmpLeaveRequest/approve/{id}` - Approve leave request
-**PUT** `/api/EmpLeaveRequest/reject/{id}` - Reject leave request
+- **GET** `/api/LeaveRequest` - Get all leave requests
+- **GET** `/api/LeaveRequest/{id}` - Get specific leave request
+- **GET** `/api/LeaveRequest/EmployeeId/{employeeId}` - Get employee's leave requests
+- **POST** `/api/LeaveRequest/SubmitLeaveRequest` - Submit new leave request
+- **DELETE** `/api/LeaveRequest/{id}` - Cancel leave request
 
-**GET** `/api/LeaveBalance/employee/{employeeId}` - Get employee's leave balances
-**POST** `/api/LeaveBalance/create-defaults/{employeeId}` - Create default leave balances
+**Leave Request Administration**
+
+- **GET** `/api/EmpLeaveRequest/GetAllEmployeeLeaveRequests` - Get all employee leave requests
+- **GET** `/api/EmpLeaveRequest/GetAllPending` - Get pending leave requests
+- **GET** `/api/EmpLeaveRequest/GetAllApproved` - Get approved leave requests
+- **GET** `/api/EmpLeaveRequest/GetAllRejected` - Get rejected leave requests
+- **PUT** `/api/EmpLeaveRequest/ApproveLeaveRequestById/{leaveRequestId}` - Approve leave request
+- **PUT** `/api/EmpLeaveRequest/RejectLeaveRequestById/{leaveRequestId}` - Reject leave request
+- **PUT** `/api/EmpLeaveRequest/SetLeaveRequestToPendingById/{leaveRequestId}` - Set request to pending
+
+**Leave Types & Balances**
+
+- **GET** `/api/LeaveType` - Get all leave types
+- **GET** `/api/LeaveType/{id}` - Get leave type by ID
+- **GET** `/api/LeaveBalance/employee/{employeeId}` - Get employee's leave balances
 
 ### Equipment Management
 
-**GET** `/api/Equipment` - Get all equipment items
-**GET** `/api/Equipment/by-empId/{employeeId}` - Get equipment by employee
-**GET** `/api/Equipment/unassigned` - Get unassigned equipment
-**POST** `/api/Equipment/CreateEquipmentItems` - Create multiple equipment items
-**PUT** `/api/Equipment/{id}` - Update equipment item
-**DELETE** `/api/Equipment/{id}` - Delete equipment item
-**POST** `/api/Equipment/assign-equipment/{employeeId}` - Assign equipment to employee
-**DELETE** `/api/Equipment/unlink/{equipmentId}` - Unlink equipment from employee
+**Equipment Items**
 
-### Meeting Management
+- **GET** `/api/Equipment` - Get all equipment items
+- **GET** `/api/Equipment/by-empId/{employeeId}` - Get equipment by employee
+- **GET** `/api/Equipment/unassigned` - Get unassigned equipment
+- **POST** `/api/Equipment/CreateEquipmentItems` - Create multiple equipment items
+- **PUT** `/api/Equipment/{id}` - Update equipment item
+- **DELETE** `/api/Equipment/{id}` - Delete equipment item
+- **POST** `/api/Equipment/assign-equipment/{employeeId}` - Assign equipment to employee
+- **DELETE** `/api/Equipment/unlink/{equipmentId}` - Unlink equipment from employee
+- **DELETE** `/api/Equipment/mass-unlink/{employeeId}` - Unlink all equipment from employee
 
-**GET** `/api/Meeting/employee/{employeeId}` - Get employee's meetings
-**GET** `/api/Meeting/admin/{adminId}` - Get admin's meetings
-**POST** `/api/Meeting` - Create meeting request
-**PUT** `/api/Meeting/{id}` - Update meeting
-**PUT** `/api/Meeting/{id}/status` - Update meeting status
-**DELETE** `/api/Meeting/{id}` - Cancel meeting
+**Equipment Categories**
 
-### Performance Reviews
+- **GET** `/api/EquipmentCategory` - Get all equipment categories
+- **POST** `/api/EquipmentCategory` - Create equipment category
+- **GET** `/api/EquipmentCategory/{id}` - Get equipment category by ID
+- **PUT** `/api/EquipmentCategory/{id}` - Update equipment category
+- **DELETE** `/api/EquipmentCategory/{id}` - Delete equipment category
 
-**GET** `/api/PerformanceReview` - Get all performance reviews
-**GET** `/api/PerformanceReview/employee/{employeeId}` - Get employee's reviews
-**POST** `/api/PerformanceReview` - Create performance review
-**PUT** `/api/PerformanceReview/{id}` - Update review
-**PUT** `/api/PerformanceReview/{id}/complete` - Complete review with rating
+### Meeting & Performance Management
+
+**Meetings**
+
+- **GET** `/api/Meeting/GetAllRequestsByEmpId/{employeeId}` - Get employee's meeting requests
+- **GET** `/api/Meeting/GetAllUpcomingByAdminId/{adminId}` - Get admin's upcoming meetings
+- **GET** `/api/Meeting/GetAllPendingRequestsByAdminId/{adminId}` - Get admin's pending requests
+- **POST** `/api/Meeting/CreateRequest` - Create meeting request
+- **PUT** `/api/Meeting/ConfirmAndSchedule/{meetingId}` - Confirm and schedule meeting
+- **PUT** `/api/Meeting/Update/{meetingId}` - Update meeting
+- **PUT** `/api/Meeting/UpdateRequest/{meetingId}` - Update meeting request
+- **PUT** `/api/Meeting/Reject/{meetingId}` - Reject meeting
+- **PUT** `/api/Meeting/MarkAsCompleted/{meetingId}` - Mark meeting as completed
+- **PUT** `/api/Meeting/MarkAsUpcoming/{meetingId}` - Mark meeting as upcoming
+- **DELETE** `/api/Meeting/Delete/{meetingId}` - Delete meeting
+
+**Performance Reviews**
+
+- **GET** `/api/PerformanceReview` - Get all performance reviews
+- **GET** `/api/PerformanceReview/{id}` - Get specific review
+- **GET** `/api/PerformanceReview/GetPrmByStartDateAdminId/{adminId}/{startDate}` - Get reviews by date and admin
+- **GET** `/api/PerformanceReview/GetPrmByEmpId/{employeeId}` - Get employee's reviews
+- **GET** `/api/PerformanceReview/EmpUserRatingMetrics` - Get all employee rating metrics
+- **GET** `/api/PerformanceReview/GetTopEmpUserRatingMetrics` - Get top rated employees metrics
+- **GET** `/api/PerformanceReview/EmpUserRatingMetrics/{employeeId}` - Get specific employee metrics
+- **GET** `/api/PerformanceReview/GetAllUpcomingPrm` - Get all upcoming reviews
+- **GET** `/api/PerformanceReview/GetAllUpcomingPrmByAdminId/{adminId}` - Get admin's upcoming reviews
+- **GET** `/api/PerformanceReview/top-rated-employees` - Get top rated employees
+- **POST** `/api/PerformanceReview/CreatePerformanceReview` - Create new review
+- **PUT** `/api/PerformanceReview/UpdatePerformanceReview/{id}` - Update review
+- **PUT** `/api/PerformanceReview/update-status/{id}` - Update review status
+- **DELETE** `/api/PerformanceReview/DeletePerformanceReview/{id}` - Delete review
+
+**Gatherings (Meetings & Reviews Combined)**
+
+- **GET** `/api/Gathering/all-by-empId/{employeeId}` - Get all employee gatherings
+- **GET** `/api/Gathering/upcoming-by-empId/{employeeId}` - Get upcoming gatherings
+- **GET** `/api/Gathering/completed-by-empId/{employeeId}` - Get completed gatherings
+- **GET** `/api/Gathering/upcoming-and-completed-by-empId-desc/{employeeId}` - Get all gatherings sorted
+- **GET** `/api/Gathering/upcoming-by-adminId/{adminId}` - Get admin's upcoming gatherings
+- **GET** `/api/Gathering/completed-by-adminId/{adminId}` - Get admin's completed gatherings
+- **GET** `/api/Gathering/by-adminId/{adminId}/month/{month}` - Get admin's gatherings by month
+
+### Admin Management
+
+- **POST** `/api/Admin/promote-existing-user-to-admin` - Promote user to admin
+- **GET** `/api/Admin/admins` - Get all admins
+- **GET** `/api/Admin/adminUser/{adminId}` - Get admin by ID
+
+### Utility Endpoints
+
+**Image Management**
+
+- **POST** `/api/Image/upload` - Upload an image
+- **POST** `/api/Image/profile-picture/{userId}` - Update user's profile picture
+- **DELETE** `/api/Image/profile-picture/{userId}` - Remove user's profile picture
+
+**Email**
+
+- **POST** `/api/Email/send-test` - Send test email
+
+**Health Check**
+
+- **GET** `/api/Health` - Check API health status
+
+**Page Information**
+
+- **GET** `/api/Page/admin-emp-details/{employeeId}` - Get admin employee details page info
+- **GET** `/api/Page/admin-emp-management` - Get admin employee management page info
+- **GET** `/api/Page/employee-profile/{employeeId}` - Get employee profile page info
+- **GET** `/api/Page/admin-dashboard/{adminId}` - Get admin dashboard info
+- **GET** `/api/Page/employee-leave-overview/{employeeId}` - Get employee leave overview
 
 ## Database Schema
 
 ### Core Entities
 
-**Users Table**
+**User Table**
 
 ```sql
 - UserId (PK, Identity)
@@ -429,7 +485,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - CodeGeneratedAt (datetime, nullable)
 ```
 
-**Employees Table**
+**Admin Table**
+
+```sql
+- AdminId (PK, Identity)
+- UserId (FK to Users)
+```
+
+**Employee Table**
 
 ```sql
 - EmployeeId (PK, Identity)
@@ -447,7 +510,58 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - IsSuspended (boolean)
 ```
 
-**LeaveRequests Table**
+**PerformanceReview Table**
+
+```sql
+- ReviewId (PK, Identity)
+- AdminId (FK to Admins)
+- EmployeeId (FK to Employees)
+- IsOnline (boolean)
+- MeetLocation (varchar)
+- MeetLink (varchar)
+- StartDate (datetime)
+- EndDate (datetime)
+- Rating (int)
+- Comment (text)
+- DocUrl (text)
+- Status (enum: Upcoming, Completed)
+```
+
+**Meeting Table**
+
+```sql
+- MeetingId (PK, Identity)
+- AdminId (FK to Admins)
+- EmployeeId (FK to Employees)
+- IsOnline (boolean)
+- MeetLocation (varchar)
+- MeetLink (varchar)
+- StartDate (datetime)
+- EndDate (datetime)
+- Purpose (text)
+- RequestedAt (datetime)
+- Status (enum: Requested, Upcoming, Completed, Rejected)
+```
+
+**Equipment Table**
+
+```sql
+- EquipmentId (PK, Identity)
+- EmployeeId (FK to Employees, nullable)
+- EquipmentName (varchar)
+- EquipmentCatId (FK to EquipmentCategories)
+- AssignedDate (date, nullable)
+- Condition (enum: New, Good, Fair, Poor, Damaged)
+```
+
+**EquipmentCategory Table**
+
+```sql
+- EquipmentCatId (PK, Identity)
+- EquipmentCatName (varchar)
+```
+
+**LeaveRequest Table**
 
 ```sql
 - LeaveRequestId (PK, Identity)
@@ -457,78 +571,146 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - EndDate (date)
 - Comment (text, nullable)
 - Status (enum: Pending, Approved, Rejected)
-- CreatedAt (datetime)
 ```
 
-**Equipment Table**
+**LeaveType Table**
 
 ```sql
-- EquipmentId (PK, Identity)
-- EmployeeId (FK to Employees, nullable)
-- EquipmentCatId (FK to EquipmentCategories)
-- EquipmentName (varchar)
-- AssignedDate (date, nullable)
-- Condition (enum: New, Good, Fair, Poor, Damaged)
+- LeaveTypeId (PK, Identity)
+- LeaveTypeName (varchar)
+- Description (text)
+- DefaultDays (int)
+```
+
+**LeaveBalance Table**
+
+```sql
+- LeaveBalanceId (PK, Identity)
+- EmployeeId (FK to Employees)
+- LeaveTypeId (FK to LeaveTypes)
+- RemainingDays (decimal)
 ```
 
 ### Relationships
 
-- **User ↔ Employee**: One-to-One relationship
-- **User ↔ Admin**: One-to-One relationship
-- **Employee ↔ LeaveRequests**: One-to-Many relationship
-- **Employee ↔ Equipment**: One-to-Many relationship
-- **Employee ↔ PerformanceReviews**: One-to-Many relationship
-- **Admin ↔ PerformanceReviews**: One-to-Many relationship
-- **LeaveType ↔ LeaveRequests**: One-to-Many relationship
+**User Relationships**
+
+- User → Admin: One-to-One (User can be an Admin)
+- User → Employee: One-to-One (User can be an Employee)
+
+**Employee Relationships**
+
+- Employee → LeaveRequests: One-to-Many (Employee can have multiple leave requests)
+- Employee → Equipment: One-to-Many (Employee can have multiple equipment items)
+- Employee → PerformanceReviews: One-to-Many (Employee can have multiple performance reviews)
+- Employee → Meetings: One-to-Many (Employee can have multiple meetings)
+- Employee → LeaveBalances: One-to-Many (Employee has balance for each leave type)
+
+**Admin Relationships**
+
+- Admin → PerformanceReviews: One-to-Many (Admin conducts multiple performance reviews)
+- Admin → Meetings: One-to-Many (Admin conducts multiple meetings)
+
+**Equipment Relationships**
+
+- Equipment → EquipmentCategory: Many-to-One (Multiple equipment items can belong to one category)
+- Equipment → Employee: Many-to-One (Multiple equipment items can be assigned to one employee)
+
+**Leave Management Relationships**
+
+- LeaveType → LeaveRequests: One-to-Many (One leave type can have multiple requests)
+- LeaveType → LeaveBalances: One-to-Many (One leave type has balance for multiple employees)
+- LeaveRequest → Employee: Many-to-One (Multiple requests can belong to one employee)
+- LeaveBalance → Employee: Many-to-One (Multiple balances can belong to one employee)
 
 ## Services & Business Logic
 
 ### Authentication Service
 
-**Key Features:**
+**Core Authentication**
 
 - Password hashing using BCrypt with salt
 - JWT token generation and validation
+- Token decoding and user information retrieval
+- Session management and logout handling
+
+**OAuth Integration**
+
 - Google OAuth token verification
+- Google profile information retrieval
+- OAuth state management and validation
+
+**Email Verification**
+
 - Two-factor authentication via email
-- Role-based account creation
+- Verification code generation and validation
+- Code expiration management
 
-**Security Measures:**
+### User Service
 
-- Secure password storage with BCrypt hashing
-- JWT tokens with configurable expiration
-- Email verification for account security
-- Rate limiting for authentication attempts
+**User Management**
+
+- User registration and profile creation
+- Role management (Unassigned, Employee, Admin)
+- Profile information updates
+- User deletion and deactivation
+
+**Profile Management**
+
+- Profile picture upload and management
+- User information retrieval
+- Unlinked user management
 
 ### Employee Service
 
-**Core Functionality:**
+**Core Employee Operations**
 
-- Employee lifecycle management (create, update, suspend, terminate)
-- Default leave balance creation upon employee creation
-- Equipment assignment during employee setup
-- Employee data validation and business rules
-- Email notifications for important employee events
+- Employee registration and setup
+- Employee profile management
+- Department and position tracking
+- Salary and payment cycle management
+
+**Employment Status**
+
+- Suspension management
+- Employment type tracking
+- Employee statistics and metrics
+- Employee deletion with user role management
+
+### Admin Service
+
+**Admin Management**
+
+- Admin registration and setup
+- Admin profile management
+- User promotion to admin
+- Admin role verification
 
 ### Leave Management Service
 
-**Leave Balance Management:**
+**Leave Request Processing**
 
-- Automatic calculation of remaining leave days
-- Support for multiple leave types (Annual, Sick, Family, etc.)
-- Leave balance tracking and updates
-- Integration with payroll cycles
+- Leave request submission and validation
+- Leave duration calculation
+- Leave status management (Pending, Approved, Rejected)
+- Leave request cancellation
 
-**Leave Request Processing:**
+**Leave Balance Management**
 
-- Request validation against available balances
-- Automated approval workflows
-- Leave duration calculations
-- Manager notification system
+- Leave balance tracking per type
+- Balance updates on request approval
+- Default balance creation for new employees
+- Annual leave reset and carryover
 
-### Equipment Service
+**Leave Types**
 
-**Equipment Lifecycle:**
+- Leave type management
+- Default days configuration
+- Leave type description management
+
+### Equipment Management Service
+
+**Equipment Tracking**
 
 - Equipment registration and cataloging
 - Assignment tracking with timestamps
@@ -536,138 +718,171 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 - Equipment transfer between employees
 - Mass assignment and unassignment operations
 
-**Business Rules:**
+**Equipment Categories**
 
-- Equipment condition validation
-- Assignment history tracking
-- Automatic unassignment on employee termination
-- Equipment utilization reporting
+- Category creation and management
+- Equipment categorization
+- Category-based reporting
+
+### Meeting Service
+
+**Meeting Management**
+
+- Meeting request creation
+- Meeting scheduling and confirmation
+- Online/offline meeting setup
+- Meeting status updates
+
+**Meeting Logistics**
+
+- Location management
+- Online meeting link generation
+- Meeting purpose tracking
+- Meeting completion tracking
+
+### Performance Review Service
+
+**Review Management**
+
+- Performance review scheduling
+- Review documentation
+- Rating system management
+- Review status tracking
+
+**Review Analytics**
+
+- Employee rating metrics
+- Top performers identification
+- Performance trend analysis
+- Department performance tracking
+
+### Gathering Service
+
+**Combined Calendar Management**
+
+- Meeting and review aggregation
+- Timeline organization
+- Status-based filtering
+- Monthly view generation
+
+### Page Service
+
+**Page Data Aggregation**
+
+- Admin dashboard data compilation
+- Employee profile data assembly
+- Leave overview generation
+- Employee management data collection
 
 ### Email Service
 
-**Notification System:**
+**Email Communications**
 
-- Welcome emails for new employees
-- Leave request notifications
-- Meeting confirmations and reminders
-- Performance review notifications
-- System alerts and updates
+- Email template management
+- Notification dispatch
+- Test email functionality
+- Email delivery tracking
 
-**Email Templates:**
+### Image Service
 
-- Professional HTML email templates
-- Dynamic content insertion
-- Multi-language support ready
-- Attachment support for documents
+**Image Processing**
+
+- Image upload handling
+- Profile picture management
+- Image storage integration
+- Image deletion and cleanup
+
+### Integration Services
+
+**External Services**
+
+- Google OAuth integration
+- Email service provider integration
+- Image storage service integration
 
 ## Development Process
 
 ### Implementation Process
 
-**Architecture Decisions:**
+We followed an agile development approach with test-driven development, focusing on delivering features incrementally:
 
-- **Clean Architecture**: Implemented layered architecture with clear separation of concerns
-- **Domain-Driven Design**: Business logic encapsulated in domain services
-- **CQRS Pattern**: Separate models for read and write operations where applicable
-- **API-First Design**: RESTful API following OpenAPI specifications
+1. **Planning & Setup**
 
-**Key Technical Implementations:**
+   - Set up ASP.NET Core backend with PostgreSQL
+   - Implemented basic authentication and user management
+   - Created initial database schema
 
-- **Entity Framework Core**: Code-first approach with migrations for database management
-- **Comprehensive Validation**: Model validation using Data Annotations and FluentValidation
-- **Error Handling**: Global exception handling with detailed error responses
-- **Logging**: Structured logging with Serilog for production monitoring
-- **Performance Optimization**: Query optimization and caching strategies
+2. **Core Features**
 
-#### Highlights
+   - Admin & Employee Dashboards
+   - Employee management system
+   - Leave request system
+   - Performance reviews
 
-**Technical Achievements:**
+3. **Integration & Enhancement**
+   - Google OAuth implementation
+   - Email 2-factor authentication
+   - Equipment Tracking
+   - Meeting Requests (By Employee)
+   -
 
-- **Scalable Architecture**: Modular design supporting easy feature additions and maintenance
-- **Comprehensive Testing**: Multiple test classes covering controllers, services, and integration scenarios
-- **Security Implementation**: Multi-layered security with JWT, OAuth, and role-based access control
-- **Database Design**: Normalized database schema with efficient indexing and relationships
-- **API Documentation**: Complete Swagger documentation with example requests and responses
+### Highlights
 
-**Integration Successes:**
+**Calendar System**
 
-- **Email System**: Robust email delivery system with template management
-- **File Upload Support**: Cloudinary integration for profile picture management
-- **Real-time Features**: WebSocket support for live notifications (ready for implementation)
+- Interactive calendar interface for admins
+- Month view with daily meeting breakdowns
+- Click-to-view meeting details
+- Color-coded events (meetings, reviews)
 
-#### Challenges
+**Google OAuth Integration**
 
-**Technical Challenges:**
+- Seamless login with Google accounts
+- Automatic profile creation
+- Profile picture integration
+- Email verification bypass for Google users
 
-- **Google OAuth Complexity**: Managing different OAuth flows for login vs registration scenarios
-- **Database Migrations**: Handling complex schema changes without data loss
-- **Performance Optimization**: Optimising queries for large datasets with proper pagination
-- **CORS Configuration**: Managing cross-origin requests for different deployment environments
+**Employee Management**
 
-**Solutions Implemented:**
+- Comprehensive employee profiles with attached equipment tracking, performance review rating calculation and intuitive management of leave.
 
-- **OAuth State Management**: Implemented state parameter validation for secure OAuth flows
-- **Migration Strategy**: Developed comprehensive migration testing and rollback procedures
-- **Query Optimisation**: Implemented efficient Include statements and projection queries
-- **Environment Configuration**: Dynamic CORS policy configuration based on environment
+### Challenges
 
-### Testing Strategy
+**Google OAuth Complexity**
 
-#### Unit Tests
+- Managing different OAuth flows for registration vs login
+- Handling token refresh and expiration
+- Maintaining session state with OAuth
 
-**Comprehensive Test Coverage:**
+**Database Evolution**
 
-```bash
-# Run all tests
-dotnet test
-
-# Run tests with coverage
-dotnet test --collect:"XPlat Code Coverage"
-
-# Generate coverage report
-reportgenerator -reports:**/coverage.cobertura.xml -targetdir:CoverageReport
-```
-
-**Test Categories:**
-
-- **Controller Tests**: 100% coverage of all API endpoints
-- **Service Tests**: Business logic validation and edge case handling
-- **Authentication Tests**: JWT token generation and validation
-- **Integration Tests**: Database operations and external service integration
-
-**Test Statistics:**
-
-- **Total Test Files**: 30+ test classes
-- **Test Coverage**: 70%+ overall coverage
-- **Critical Path Coverage**: 95%+ coverage for authentication and business logic
-- **Performance Tests**: API response time and load testing
-
-#### Integration Tests
-
-**Database Integration:**
-
-- In-memory database testing for isolation
-- Migration testing for schema changes
-- Transaction rollback testing
-- Concurrency testing for data consistency
-
-**External Service Integration:**
-
-- Email service testing with mock SMTP
-- File upload testing with mock cloud storage
+- Frequent schema changes due to client requirements
+- Managing data migrations without loss
+- Restructuring relationships between entities
+- Maintaining data integrity during updates
 
 ### Future Implementation
 
-**Planned Enhancements:**
+**Multi-Company Support**
 
-- **Microservices Architecture**: Breaking down monolith into domain-specific services
-- **Event-Driven Architecture**: Implementing domain events for decoupled communication
-- **GraphQL API**: Alternative query language for flexible client requirements
-- **Advanced Caching**: Redis integration for improved performance
-- **Audit Trail**: Comprehensive change tracking and audit logging
-- **Real-time Notifications**: SignalR implementation for live updates
-- **Advanced Security**: OAuth scopes, API rate limiting, and IP whitelisting
-- **Multi-tenancy**: Support for multiple organizations within single deployment
+- Separate database schemas per company
+- Company-specific configurations
+- Isolated data storage
+- Custom branding per company
+
+**Enhanced Authentication**
+
+- Invite-based registration system
+- Admin-generated employee invitations
+- Password reset functionality
+- Two-factor authentication options
+
+**Future Features**
+
+- Document management system
+- Payroll integration
+- Mobile application
+- Advanced reporting tools
 
 ## Deployment
 
@@ -771,7 +986,7 @@ builder.Services.AddSwaggerGen(c =>
 
 ### Video Demonstration
 
-To see a run through of the application, click below:
+To see a run through of the full application, click below:
 
 [View Demonstration](https://youtu.be/EvPt8mvmRxk)
 
@@ -797,10 +1012,10 @@ Contributions are what make the open-source community such an amazing place to l
 
 ## Authors
 
-- **Iné Smith** - _UI/UX Designer & Service Architecture_ - [inesmith](https://github.com/inesmith)
-- **Kayla Posthumus** - _Frontend Integration Specialist_ - [KaylaPosthumusOW](https://github.com/KaylaPosthumusOW)
-- **Ruan Klopper** - _Lead Backend Developer & Database Architect_ - [Ruan-Klopper](https://github.com/Ruan-Klopper)
-- **Wolf Botha** - _DevOps & System Integration Lead_ - [WolfOWI](https://github.com/WolfOWI)
+- **Iné Smith** - _Lead UI/UX Designer_ - [inesmith](https://github.com/inesmith)
+- **Kayla Posthumus** - _Lead Frontend Developer_ - [KaylaPosthumusOW](https://github.com/KaylaPosthumusOW)
+- **Ruan Klopper** - _Lead Backend Developer_ - [Ruan-Klopper](https://github.com/Ruan-Klopper)
+- **Wolf Botha** - _Project Coordinator_ - [WolfOWI](https://github.com/WolfOWI)
 
 ## License
 
@@ -835,16 +1050,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 - [Visual Studio Code](https://code.visualstudio.com/) - Code editor
 - [Postman](https://www.postman.com/) - API testing and documentation
-- [Docker](https://www.docker.com/) - Containerization platform
+- [Docker](https://www.docker.com/) - Containerisation platform
 - [Git](https://git-scm.com/) - Version control system
-
-<!-- MARKDOWN LINKS & IMAGES -->
-
-[image1]: /path/to/backend-architecture-diagram.png
-[image2]: /path/to/api-endpoints-overview.png
-[image3]: /path/to/database-schema-diagram.png
-[image4]: /path/to/authentication-flow.png
-[image5]: /path/to/deployment-architecture.png
 
 <!-- Refer to https://shields.io/ for more information and options about the shield links at the top of the ReadMe file -->
 
