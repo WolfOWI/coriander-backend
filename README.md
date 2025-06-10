@@ -551,7 +551,7 @@ CoriCore.Tests/
 - EquipmentName (varchar)
 - EquipmentCatId (FK to EquipmentCategories)
 - AssignedDate (date, nullable)
-- Condition (enum: New, Good, Fair, Poor, Damaged)
+- Condition (enum: New, Good, Decent, Used)
 ```
 
 **EquipmentCategory Table**
@@ -942,7 +942,7 @@ docker run -p 5000:5000 --env-file .env coriander-backend
         "Microsoft.AspNetCore": "Warning"
       }
     },
-    "AllowedHosts": "coriander-backend.onrender.com"
+    "AllowedHosts": "YOUR-RENDER-COM-API-URL"
   }
 }
 ```
@@ -1025,7 +1025,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 - **Backend Team** - [97434628+WolfOWI@users.noreply.github.com](mailto:97434628+WolfOWI@users.noreply.github.com)
 - **Project Repository** - https://github.com/WolfOWI/coriander-backend
-- **Live API** - https://coriander-backend.onrender.com
 - **Frontend Repository** - https://github.com/WolfOWI/coriander
 
 ## Acknowledgements
